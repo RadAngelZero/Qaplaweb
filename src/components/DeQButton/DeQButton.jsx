@@ -10,7 +10,7 @@ const DeQButton = ({ imagen, background, Title, }) => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        width: "165px",
+        maxWidth: "165px",
         height: "165px",
         borderRadius: "20px",
       }}
