@@ -4,6 +4,8 @@ import './App.css';
 import { getUserProfile } from './services/database';
 import { listenToAuthState } from './services/auth';
 
+import DeQButtonPayments from './components/DeQButtonPayments/DeQButtonPayments'
+
 function useQuery() {
     const { search } = window.location;
 
@@ -39,12 +41,15 @@ function App() {
 
     return (
         <div className="App">
+             <DeQButtonPayments/>
         <header className="App-header">
             <img src={logo} className="App-logo" alt="logo" />
             <p>
             <code>Qapla Web</code>
+            
             </p>
         </header>
+       
         </div>
     );
 }
