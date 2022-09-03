@@ -2,8 +2,6 @@ import { child, DataSnapshot, equalTo, get, orderByChild, query, update } from '
 
 import { database } from './firebase';
 
-const usersChild = child(database, '/Users');
-
 //////////////////////
 // Qapla Users
 //////////////////////
@@ -15,6 +13,8 @@ const usersChild = child(database, '/Users');
  * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
  */
 export async function getUserProfileWithTwitchId(twitchId) {
+    const usersChild = child(database, '/Users');
+
     return await get(query(usersChild, orderByChild('twitchId'), equalTo(twitchId)));
 }
 
@@ -25,6 +25,7 @@ export async function getUserProfileWithTwitchId(twitchId) {
  */
 export async function getUserProfile(uid) {
     const userChild = child(database, `/Users/${uid}`);
+
     return await get(query(userChild));
 }
 
@@ -122,4 +123,18 @@ export async function streamerHasReactionsEnabled(streamerUid) {
     const streamerReactionsEnabledChild = child(database, `/StreamerAlertsSettings/${streamerUid}/reactionsEnabled`);
 
     return await get(query(streamerReactionsEnabledChild));
+}
+
+//////////////////////
+// Voice Bot Available Voices
+//////////////////////
+
+/**
+ * Returns the list of available voices for the voice bot
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getBotVoices() {
+    const voiceBotAvailableVoicesChild = child(database, 'VoiceBotAvailableVoices');
+
+    return await get(query(voiceBotAvailableVoicesChild));
 }
