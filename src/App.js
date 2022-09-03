@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useMemo } from 'react';
+
 import './App.css';
 import { getUserProfile } from './services/database';
 import { listenToAuthState } from './services/auth';

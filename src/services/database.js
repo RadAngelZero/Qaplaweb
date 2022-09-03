@@ -1,4 +1,5 @@
 import { child, DataSnapshot, equalTo, get, orderByChild, query, update } from 'firebase/database';
+
 import { database } from './firebase';
 
 const usersChild = child(database, '/Users');

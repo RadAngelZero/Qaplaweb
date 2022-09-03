@@ -1,6 +1,6 @@
-import { functions } from './firebase';
-
 import { httpsCallable } from 'firebase/functions';
+
+import { functions } from './firebase';
 
 /**
  * Generate access and refresh token for Twitch API

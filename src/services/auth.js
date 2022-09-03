@@ -1,4 +1,5 @@
 import { onAuthStateChanged, signInWithCustomToken, User, UserCredential, NextOrObserver } from 'firebase/auth';
+
 import { getUserProfileWithTwitchId } from './database';
 import { auth } from './firebase';
 import { generateAuthTokenForTwitchSignIn } from './functions';
