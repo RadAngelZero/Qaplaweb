@@ -1,15 +1,13 @@
-import logo from './logo.svg';
-import './App.css';
+  import React from "react";
+
+  import DeQButton from './DeQButton'
+  
+
 
 function App() {
     return (
-        <div className="App">
-        <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <p>
-            <code>Qapla Web</code>
-            </p>
-        </header>
+        <div>
+         
         </div>
     );
 }
