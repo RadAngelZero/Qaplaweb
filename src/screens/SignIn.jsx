@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@mui/material';
 
-import { getTwitchUserData, signInWithTwitch } from './services/twitch';
-import { getUserToken } from './services/functions';
-import { signTwitchUser } from './services/auth';
-import { createUserProfile, updateUserProfile } from './services/database';
+import { getTwitchUserData, signInWithTwitch } from '../services/twitch';
+import { getUserToken } from '../services/functions';
+import { signTwitchUser } from '../services/auth';
+import { createUserProfile, updateUserProfile } from '../services/database';
 
 function useQuery() {
     const { search } = window.location;
