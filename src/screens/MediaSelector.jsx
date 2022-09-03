@@ -56,19 +56,16 @@ const GridContainer = styled(Container)({
     padding: '0px !important',
 });
 
-const MediaSelector = (props) => {
+const MediaSelector = ({ mediaType, onMediaSelected }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const searchInput = useRef(null);
     const mainContainer = useRef(null);
-    var fetchSearch = (offset) => gf.search(searchTerm, { offset, limit: 50, type: 'gifs', rating: 'pg-13' });
-    var fetchTrending = (offset) => gf.trending({ offset, type: 'gifs', limit: 20, rating: 'pg-13' });
+
+    const fetchSearch = (offset) => gf.search(searchTerm, { offset, limit: 50, type: mediaType, rating: 'pg-13' });
+    const fetchTrending = (offset) => gf.trending({ offset, type: mediaType, limit: 20, rating: 'pg-13' });
 
     const handleSearch = (e) => {
-        setSearchTerm(e.target.value)
-    }
-
-    const handleClickSelection = (e) => {
-        console.log(e);
+        setSearchTerm(e.target.value);
     }
 
     const focusSearch = () => {
@@ -90,7 +87,7 @@ const MediaSelector = (props) => {
                     columns={mainContainer.current ? mainContainer.current.offsetWidth <= 600 ? mainContainer.current.offsetWidth <= 400 ? 2 : 3 : 4 : 0}
                     gutter={8}
                     fetchGifs={searchTerm === '' ? fetchTrending : fetchSearch}
-                    onGifClick={handleClickSelection}
+                    onGifClick={onMediaSelected}
                     key={searchTerm}
                     hideAttribution
                     noLink />
