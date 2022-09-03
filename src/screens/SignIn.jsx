@@ -13,7 +13,6 @@ function useQuery() {
 }
 
 const SignIn = ({ user }) => {
-    const [streamerUid, setStreamerUid] = useState('');
     const [isLoadingAuth, setIsLoadingAuth] = useState(false);
     const query = useQuery();
 
@@ -46,15 +45,8 @@ const SignIn = ({ user }) => {
             }
         }
 
-        const streamerUid = query.get('streamerUid');
-
-        if (streamerUid) {
-            // If we found a streamerUid in the url we save it on the local storage
-            localStorage.setItem('streamerUid', streamerUid);
-        }
-
         checkIfUsersIsSigningIn();
-    }, [user]);
+    }, [user, isLoadingAuth, query]);
 
     const signIn = () => {
         setIsLoadingAuth(true);

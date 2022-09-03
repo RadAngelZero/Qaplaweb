@@ -1,14 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { getUserProfile } from './services/database';
 import { listenToAuthState } from './services/auth';
 
+function useQuery() {
+    const { search } = window.location;
+
+    return useMemo(() => new URLSearchParams(search), [search]);
+}
+
 function App() {
     const [user, setUser] = useState(undefined);
+    const query = useQuery();
 
     useEffect(() => {
-        // Only set the listener once (when user is undefined)
         if (user === undefined) {
             listenToAuthState(async (authUser) => {
                 // Important to use user state value on conditions to prevent infinit executions
@@ -21,7 +27,15 @@ function App() {
                 }
             });
         }
-    }, [user]);
+
+        const streamerUid = query.get('streamerUid');
+
+        if (streamerUid) {
+            // If we found a streamerUid in the url we save it on the local storage
+            localStorage.setItem('streamerUid', streamerUid);
+            window.location.search = '';
+        }
+    }, [user, query]);
 
     return (
         <div className="App">

@@ -8,7 +8,7 @@ import { generateAuthTokenForTwitchSignIn } from './functions';
  * @param {NextOrObserver<User>} callback Handler of auth state changes
  */
 export function listenToAuthState(callback) {
-    onAuthStateChanged(auth, callback)
+    onAuthStateChanged(auth, callback);
 }
 
 /**

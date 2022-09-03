@@ -3,6 +3,10 @@ import { database } from './firebase';
 
 const usersChild = child(database, '/Users');
 
+//////////////////////
+// Qapla Users
+//////////////////////
+
 /**
  * Returns the found uid´s linked to the given Twitch id (it returns an object of objects but we know that
  * the relationship between uid and Twitch id is 1:1)
@@ -70,4 +74,20 @@ export async function updateUserProfile(uid, dateToUpdate) {
     const userChild = child(database, `/Users/${uid}`);
 
     await update(userChild, dateToUpdate);
+}
+
+//////////////////////
+// Reactions count
+//////////////////////
+
+/**
+ * Returns the count of prepaid reactions the user have with the given streamer
+ * @param {string} uid User identifier
+ * @param {string} streamerUid Streamer user identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getUserReactionsWithStreamer(uid, streamerUid) {
+    const reactionsCountChild = child(database, `/UsersReactionsCount/${uid}/${streamerUid}`);
+
+    return await get(query(reactionsCountChild));
 }
