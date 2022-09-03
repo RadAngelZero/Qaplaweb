@@ -1,4 +1,4 @@
-import { child, DataSnapshot, equalTo, get, orderByChild, query, update } from 'firebase/database';
+import { child, DataSnapshot, equalTo, get, orderByChild, push, query, runTransaction, TransactionResult, update } from 'firebase/database';
 
 import { database } from './firebase';
 
@@ -78,6 +78,24 @@ export async function updateUserProfile(uid, dateToUpdate) {
     await update(userChild, dateToUpdate);
 }
 
+/**
+ * Remove the amount of Qoins from the given user credits node
+ * @param {string} uid User identifier
+ * @param {number} qoinsToRemove Qoins to remove from the user
+ * @returns {Promise<TransactionResult>} Result of the transaction
+ */
+export async function removeQoinsFromUser(uid, qoinsToRemove) {
+    const userQoinsChild = child(database, `/Users/${uid}/credits`);
+
+    return await runTransaction(userQoinsChild, (userQoins) => {
+        if (userQoins && userQoins >= qoinsToRemove) {
+            userQoins -= qoinsToRemove;
+        }
+
+        return userQoins >= 0 ? userQoins : 0;
+    });
+}
+
 //////////////////////
 // Reactions count
 //////////////////////
@@ -92,6 +110,28 @@ export async function getUserReactionsWithStreamer(uid, streamerUid) {
     const reactionsCountChild = child(database, `/UsersReactionsCount/${uid}/${streamerUid}`);
 
     return await get(query(reactionsCountChild));
+}
+
+//////////////////////
+// User Streamer
+//////////////////////
+
+/**
+ * Add the amount of Qoins to the given streamer Qoins balance
+ * @param {string} streamerUid Streamer identifier
+ * @param {number} qoinsToAdd Qoins to add to the streamer
+ * @returns {Promise<TransactionResult>} Result of the transaction
+ */
+export async function addQoinsToStreamer(streamerUid, qoinsToAdd) {
+    const userStreamerChild = child(database, `/UserStreamer/${streamerUid}/qoinsBalance`);
+
+    return await runTransaction(userStreamerChild, (streamerQoinsBalance) => {
+        if (streamerQoinsBalance) {
+            streamerQoinsBalance += qoinsToAdd;
+        }
+
+        return streamerQoinsBalance ? streamerQoinsBalance : qoinsToAdd;
+    });
 }
 
 //////////////////////
@@ -137,4 +177,205 @@ export async function getBotVoices() {
     const voiceBotAvailableVoicesChild = child(database, 'VoiceBotAvailableVoices');
 
     return await get(query(voiceBotAvailableVoicesChild));
+}
+
+//////////////////////
+// Qoins Reactions
+//////////////////////
+
+/**
+ * Store cheers on the database at StreamersDonations node and remove Qoins
+ * @param {string} uid User identifier
+ * @param {number} amountQoins Amount of donated Qoins
+ * @param {string} streamerUid Streamer uid
+ * @param {object | null} media Object for cheers with specified media
+ * @param {string} media.type Type of media (one of "GIF", "EMOTE" or "MEME")
+ * @param {string} media.url Url of the media
+ * @param {string} message Message from the user
+ * @param {object | null} messageExtraData Extra data for the message
+ * @param {string} messageExtraData.voiceAPIName Google Text to speech API voice for the voice bot
+ * @param {object} messageExtraData.giphyText Object with Giphy Text data
+ * @param {Object | undefined} messageExtraData.giphyText Giphy text object
+ * @param {Array<string>} emojis Emojis for emoji rain
+ * @param {string} streamerName Name of the streamer
+ * @param {string} userName Qapla username
+ * @param {string} twitchUserName Username of Twitch
+ * @param {string} userPhotoURL URL of the user profile photo
+ * @param {function} onSuccess Function to call once the cheer is sent
+ * @param {function} onError Function to call on any possible error
+ */
+export async function sendQoinsReaction(uid, amountQoins, streamerUid, media, message, messageExtraData, emojis, streamerName, userName, twitchUserName, userPhotoURL, onSuccess, onError) {
+    const userQoinsChild = child(database, `/Users/${uid}/credits`);
+    const qoinsUpdated = await removeQoinsFromUser(uid, amountQoins);
+
+    if (qoinsUpdated.committed) {
+        const streamerBalanceUpdated = await addQoinsToStreamer(streamerUid, amountQoins);
+
+        if (streamerBalanceUpdated.committed) {
+            const streamerDonationsChild = child(database, `/StreamersDonations/${streamerUid}`);
+            const timestamp = (new Date()).getTime();
+
+            const donationRef = push(streamerDonationsChild, {
+                amountQoins,
+                media,
+                message,
+                messageExtraData,
+                emojiRain: {
+                    emojis,
+                },
+                timestamp,
+                uid,
+                read: false,
+                twitchUserName,
+                userName,
+                photoURL: userPhotoURL,
+                pointsChannelInteractions: false
+            });
+
+            const userDonationsAmountChild = child(database, `/UsersRewardsProgress/${uid}/donations/qoins`);
+
+            await runTransaction(userDonationsAmountChild, (totalDonatedQoins) => {
+                return totalDonatedQoins ? (totalDonatedQoins + amountQoins) : amountQoins
+            });
+
+            const donationsAdministrativeChild = child(database, `/StreamersDonationAdministrative/${donationRef.key}`);
+            await push(donationsAdministrativeChild, {
+                amountQoins,
+                message,
+                timestamp,
+                uid,
+                sent: false,
+                twitchUserName,
+                userName,
+                streamerName,
+                pointsChannelInteractions: false
+            });
+
+            return onSuccess();
+        } else {
+            // If we can not give the Qoins to the streamer then return the Qoins to the user
+            await runTransaction(userQoinsChild, (userQoins) => {
+                if (userQoins) {
+                    userQoins += amountQoins;
+                }
+
+                return userQoins >= 0 ? userQoins : 0;
+            });
+
+            return onError();
+        }
+    } else {
+        // Could not remove Qoins from the user
+        return onError();
+    }
+}
+
+//////////////////////
+// Prepaid Reactions
+//////////////////////
+
+/**
+ * Store cheers on the database at StreamersDonations node and remove prepaid interaction (and Qoins if necessary)
+ * @param {string} uid User identifier
+ * @param {string} userName Qapla username
+ * @param {string} twitchUserName Username of Twitch
+ * @param {string} userPhotoURL URL of the user profile photo
+ * @param {string} streamerUid Streamer uid
+ * @param {string} streamerName Name of the streamer
+ * @param {object | null} media Object for cheers with specified media
+ * @param {string} media.type Type of media (one of "GIF", "EMOTE" or "MEME")
+ * @param {string} media.url Url of the media
+ * @param {string} message Message from the user
+ * @param {object | null} messageExtraData Extra data for the message
+ * @param {string} messageExtraData.voiceAPIName Google Text to speech API voice for the voice bot
+ * @param {boolean} messageExtraData.isGiphyText True if contains giphy Text
+ * @param {Object | undefined} messageExtraData.giphyText Giphy text object
+ * @param {Array<string>} emojis Emojis for emoji rain
+ * @param {number} qoinsToRemove Amount of donated Qoins
+ * @param {function} onSuccess Function to call once the cheer is sent
+ * @param {function} onError Function to call on any possible error
+ */
+export async function sendPrepaidReaction(uid, userName, twitchUserName, userPhotoURL, streamerUid, streamerName, media, message, messageExtraData, emojis, qoinsToRemove, onSuccess, onError) {
+    let qoinsTaken = qoinsToRemove ? false : true;
+
+    if (qoinsToRemove) {
+        qoinsTaken = (await removeQoinsFromUser(uid, qoinsToRemove)).committed;
+
+        if (qoinsTaken) {
+            addQoinsToStreamer(streamerUid, qoinsToRemove)
+        }
+    }
+
+    if (qoinsTaken) {
+        const reactionsCountChild = child(database, `/UsersReactionsCount/${uid}/${streamerUid}`);
+
+        const reactionTaken = await runTransaction(reactionsCountChild, (reactionsCount) => {
+            return reactionsCount - 1;
+        });
+
+        if (reactionTaken.committed) {
+            const streamerDonationsChild = child(database, `/StreamersDonations/${streamerUid}`);
+            const timestamp = (new Date()).getTime();
+
+            const donationRef = push(streamerDonationsChild, {
+                amountQoins: qoinsToRemove,
+                media,
+                message,
+                messageExtraData,
+                emojiRain: {
+                    emojis,
+                },
+                timestamp,
+                uid,
+                read: false,
+                twitchUserName,
+                userName,
+                photoURL: userPhotoURL,
+                pointsChannelInteractions: true
+            });
+
+            if (qoinsToRemove) {
+                const userDonationsAmountChild = child(database, `/UsersRewardsProgress/${uid}/donations/qoins`);
+
+                await runTransaction(userDonationsAmountChild, (totalDonatedQoins) => {
+                    return totalDonatedQoins ? (totalDonatedQoins + qoinsToRemove) : qoinsToRemove
+                });
+            }
+
+            const donationsAdministrativeChild = child(database, `/StreamersDonationAdministrative/${donationRef.key}`);
+            await push(donationsAdministrativeChild, {
+                amountQoins: qoinsToRemove,
+                message,
+                timestamp,
+                uid,
+                sent: false,
+                twitchUserName,
+                userName,
+                streamerName,
+                pointsChannelInteractions: true
+            });
+
+            return onSuccess();
+        } else {
+            // If we can not remove the reaction from the count
+
+            // Give back Qoins to user
+            const userQoinsChild = child(database, `/Users/${uid}/credits`);
+            await runTransaction(userQoinsChild, (userQoins) => {
+                return userQoins ? (userQoins + qoinsToRemove) : qoinsToRemove;
+            });
+
+            // Remove Qoins from streamer
+            const userStreamerChild = child(database, `/UserStreamer/${streamerUid}/qoinsBalance`);
+            await runTransaction(userStreamerChild, (streamerQoinsBalance) => {
+                if (streamerQoinsBalance) {
+                    streamerQoinsBalance -= qoinsToRemove;
+                }
+
+                return streamerQoinsBalance ? (streamerQoinsBalance - qoinsToRemove) : 0;
+            });
+
+            return onError();
+        }
+    }
 }

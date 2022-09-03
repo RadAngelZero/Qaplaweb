@@ -13,6 +13,7 @@ const DeQButton = ({ imagen, background, Title, }) => {
         maxWidth: "165px",
         height: "165px",
         borderRadius: "20px",
+        backgroundImage: `url("${background}")`
       }}
     >
       <img src={imagen} alt="imagen" />
