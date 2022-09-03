@@ -1,7 +1,6 @@
 import { child, DataSnapshot, equalTo, get, orderByChild, query, update } from 'firebase/database';
-import { database } from './firebase';
 
-const usersChild = child(database, '/Users');
+import { database } from './firebase';
 
 //////////////////////
 // Qapla Users
@@ -14,6 +13,8 @@ const usersChild = child(database, '/Users');
  * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
  */
 export async function getUserProfileWithTwitchId(twitchId) {
+    const usersChild = child(database, '/Users');
+
     return await get(query(usersChild, orderByChild('twitchId'), equalTo(twitchId)));
 }
 
@@ -24,6 +25,7 @@ export async function getUserProfileWithTwitchId(twitchId) {
  */
 export async function getUserProfile(uid) {
     const userChild = child(database, `/Users/${uid}`);
+
     return await get(query(userChild));
 }
 
@@ -90,4 +92,49 @@ export async function getUserReactionsWithStreamer(uid, streamerUid) {
     const reactionsCountChild = child(database, `/UsersReactionsCount/${uid}/${streamerUid}`);
 
     return await get(query(reactionsCountChild));
+}
+
+//////////////////////
+// Streamer Public Data
+//////////////////////
+
+/**
+ * Returns the public information of the given streamer
+ * @param {string} streamerUid Stremer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getStreamerPublicData(streamerUid) {
+    const streamerPublicDataChild = child(database, `/UserStreamerPublicData/${streamerUid}`);
+
+    return await get(query(streamerPublicDataChild));
+}
+
+//////////////////////
+// Streamer Alerts Settings
+//////////////////////
+
+/**
+ * Returns the reactionsEnabled setting value of the given streamer (used to know if the Qapla overlay is
+ * enabled or not)
+ * @param {string} streamerUid Streamer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function streamerHasReactionsEnabled(streamerUid) {
+    const streamerReactionsEnabledChild = child(database, `/StreamerAlertsSettings/${streamerUid}/reactionsEnabled`);
+
+    return await get(query(streamerReactionsEnabledChild));
+}
+
+//////////////////////
+// Voice Bot Available Voices
+//////////////////////
+
+/**
+ * Returns the list of available voices for the voice bot
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getBotVoices() {
+    const voiceBotAvailableVoicesChild = child(database, 'VoiceBotAvailableVoices');
+
+    return await get(query(voiceBotAvailableVoicesChild));
 }
