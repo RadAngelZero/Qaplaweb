@@ -91,3 +91,34 @@ export async function getUserReactionsWithStreamer(uid, streamerUid) {
 
     return await get(query(reactionsCountChild));
 }
+
+//////////////////////
+// Streamer Public Data
+//////////////////////
+
+/**
+ * Returns the public information of the given streamer
+ * @param {string} streamerUid Stremer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getStreamerPublicData(streamerUid) {
+    const streamerPublicDataChild = child(database, `/UserStreamerPublicData/${streamerUid}`);
+
+    return await get(query(streamerPublicDataChild));
+}
+
+//////////////////////
+// Streamer Alerts Settings
+//////////////////////
+
+/**
+ * Returns the reactionsEnabled setting value of the given streamer (used to know if the Qapla overlay is
+ * enabled or not)
+ * @param {string} streamerUid Streamer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function streamerHasReactionsEnabled(streamerUid) {
+    const streamerReactionsEnabledChild = child(database, `/StreamerAlertsSettings/${streamerUid}/reactionsEnabled`);
+
+    return await get(query(streamerReactionsEnabledChild));
+}
