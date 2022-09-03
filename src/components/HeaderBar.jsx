@@ -35,9 +35,9 @@ const LiveIcon = styled(Box)({
 const HeaderBar = (props) => {
     return (<>
         <MainAppBar>
-            <StreamerImage src='https://static-cdn.jtvnw.net/jtv_user_pictures/5dfecb31-9033-48f8-885c-151c05689307-profile_image-70x70.png' />
+            <StreamerImage src={props.streamerImage} />
             <StreamerName>
-                {`test`}
+                {props.streamerName}
             </StreamerName>
             <LiveIcon itemType='div' />
         </MainAppBar>
