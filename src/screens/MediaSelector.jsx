@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { InputBase, Paper, Container, Box } from '@mui/material';
-import { styled } from '@mui/material/styles'
+import { styled } from '@mui/material/styles';
 import { Grid } from '@giphy/react-components';
 import { GiphyFetch } from '@giphy/js-fetch-api';
 
@@ -24,7 +24,7 @@ const MediaSelectorContainer = styled(Paper)({
 
 const SearchContainer = styled(Paper)({
     position: 'sticky',
-    top: '10px',
+    top: '82px',
     zIndex: 1000,
     flex: 1,
     display: 'flex',
