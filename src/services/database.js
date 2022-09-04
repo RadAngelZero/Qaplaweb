@@ -275,7 +275,7 @@ export async function sendQoinsReaction(uid, amountQoins, streamerUid, media, me
 //////////////////////
 
 /**
- * Store cheers on the database at StreamersDonations node and remove prepaid interaction (and Qoins if necessary)
+ * Store cheers on the database at StreamersDonations node and remove prepaid reaction (and Qoins if necessary)
  * @param {string} uid User identifier
  * @param {string} userName Qapla username
  * @param {string} twitchUserName Username of Twitch
@@ -378,4 +378,29 @@ export async function sendPrepaidReaction(uid, userName, twitchUserName, userPho
             return onError();
         }
     }
+}
+
+//////////////////////
+// Reractions Costs
+//////////////////////
+
+/**
+ * Returns all the reaction types with their costs in Qoins
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getReactionsCosts() {
+    const reactionsCostsChild = child(database, '/InteractionsCosts');
+
+    return await get(query(reactionsCostsChild));
+}
+
+/**
+ * Returns the specified reaction types with their cost in Qoins
+ * @param {string} reactionType Type of reaction to load
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getReactionTypeCost(reactionType) {
+    const reactionsCostsChild = child(database, `/InteractionsCosts/${reactionType}`);
+
+    return await get(query(reactionsCostsChild));
 }
