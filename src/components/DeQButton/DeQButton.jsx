@@ -11,12 +11,13 @@ const DeQButton = ({ imagen, background, Title, }) => {
         justifyContent: "center",
         alignItems: "center",
         maxWidth: "165px",
+        minWidth:"165px",
         height: "165px",
         borderRadius: "20px",
         backgroundImage: `url("${background}")`
       }}
     >
-      <img src={imagen} alt="imagen" />
+      <img  src={imagen} alt="imagen" />
       <h1 style={{margin:'1px', color:'#FFFFFF', fontSize:'18px', fontWeight:'600'}}>{Title}</h1>
     </div>
   );

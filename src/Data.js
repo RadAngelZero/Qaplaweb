@@ -4,6 +4,13 @@
  import iconGIF from './assets/IconGIF.png'
  import iconSticker from './assets/IconStickers.png'
  
+ import gradientChat from './assets/GradientChat.png'
+ import gradientLOL from './assets/GradientLOL.png'
+ import gradientSticker from './assets/GradientSticker.png'
+ import gradientGifd from './assets/GradientGifs.png'
+
+ import backgroundGitf from './assets/Clips.png' 
+ import background from './assets/weekend-party-animal.png'
 
 
 let prop = [
@@ -11,30 +18,43 @@ let prop = [
   {
     Title:'Memes',
     imagen:inconLOL,
-    background: 'blue',
+    background: gradientChat,
    
   },
       
   {
     Title:'Text-to-Speech',
     imagen:iconChat,
-    background: '#3fd677',
+    background: gradientLOL,
    
   },
       
   {
     Title:'Stickers',
     imagen:iconSticker,
-    background: '#bc5a5a',
+    background: gradientSticker,
     
   },
       
   {
     Title:'GIFs',
     imagen:iconGIF,
-    background: '#c0c06a',
+    background: gradientGifd,
   },
 
+]
+
+export let propPagos = [
+  {
+    title: 'Custom TTS',
+    background:backgroundGitf  ,
+    Qoins:'200'
+  },
+  {
+    title:'Pre-made clips',
+    background: background,
+    Qoins:'200'
+  }
 ]
 
 export  default prop;

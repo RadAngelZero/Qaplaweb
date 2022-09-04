@@ -1,39 +1,39 @@
 import React from "react";
 
+import qoins from "../../assets/Qoin.png";
 
-import qoins from "../../assets/Qoin.png"
-
-
-const DeQButtonPayments = ({ background }) => {
-
+const DeQButtonPayments = ({ background, Qoins, title }) => {
   return (
-    <div
-      style={{
-        borderRadius: "20px",
-        maxWidth: "341px",
-        minWidth: "341px",
-        height: "190px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "end",
-        padding: "24px",
-        backgroundImage: `url("${background}")`
-      }}
-    >
+    <div>
+      <h1 style={{ fontWeight: "600", fontSize: "22px", textAlign: "start" }}>{title}</h1>
       <div
         style={{
-          background: "#141833",
-          width: "92px",
-          height: "37px",
-          borderRadius: "10px",
+          borderRadius: "20px",
+          maxWidth: "341px",
+          minWidth: "293px",
+          height: "140px",
           display: "flex",
           justifyContent: "center",
-          alignItems: "center",
-         
+          alignItems: "end",
+          padding: "24px",
+          backgroundImage: `url("${background}")`,
+          backgroundImagePosition: "center",
         }}
       >
-        <img style={{padding:'5px'}} src={qoins} alt='icon'/>
-        <h2>200</h2>
+        <div
+          style={{
+            background: "#141833",
+            width: "92px",
+            height: "37px",
+            borderRadius: "10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <img style={{ padding: "5px" }} src={qoins} alt="icon" />
+          <h2 style={{ weight: "600", fontSize: "18px" }}>{Qoins}</h2>
+        </div>
       </div>
     </div>
   );
