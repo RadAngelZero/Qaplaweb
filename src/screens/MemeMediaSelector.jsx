@@ -43,8 +43,9 @@ const MemeMediaSelector = ({ onMediaSelected }) => {
     return (
         <MediaSelectorContainer>
             <GridContainer>
+                {memes &&
                 <ImageList variant="masonry" cols={window.innerWidth <= 320 ? 2 : 3} gap={8}>
-                    {memes && Object.keys(memes).map((memeKey) => (
+                    {Object.keys(memes).map((memeKey) => (
                         <ImageListItem key={memes[memeKey].url} style={{ cursor: 'pointer' }}>
                             <img src={`${memes[memeKey].url}?w=248&fit=crop&auto=format`}
                                 onClick={() => onMediaSelected({ type: MEMES, images: { original: memes[memeKey] } })}
@@ -53,6 +54,7 @@ const MemeMediaSelector = ({ onMediaSelected }) => {
                         </ImageListItem>
                     ))}
                 </ImageList>
+                }
             </GridContainer>
         </MediaSelectorContainer>
     );
