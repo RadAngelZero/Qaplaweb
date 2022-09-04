@@ -11,9 +11,6 @@ import iconChat from '../assets/iconChat.png';
 import iconGIF from '../assets/IconGIF.svg';
 import iconSticker from '../assets/IconStickers.png';
 import gradientGifs from '../assets/GradientGifs.png';
-import backgroundGif from '../assets/Clips.png';
-import background from '../assets/weekend-party-animal.png';
-
 import gradientChat from '../assets/GradientChat.png';
 import gradientLOL from '../assets/GradientLOL.png';
 import gradientSticker from '../assets/GradientSticker.png';
@@ -101,27 +98,26 @@ const Layout = ({ user, streamer }) => {
                 <Box>
                     <Grid container gap={3}>
                         <DeQButton
-                            Title={'Gifs'}
+                            title={'Gifs'}
                             imagen={iconGIF}
                             background={gradientGifs}
                             />
                         <DeQButton
-                            Title={'Text-To-Speech'}
+                            title={'Text-To-Speech'}
                             imagen={iconChat}
                             background={gradientChat}
                             />
                         <DeQButton
-                            Title={'Stickers'}
+                            title={'Stickers'}
                             imagen={iconSticker}
                             background={gradientSticker}
                             />
                         <DeQButton
-                            Title={'Memes'}
+                            title={'Memes'}
                             imagen={iconLOL}
                             background={gradientLOL}
                             />
                     </Grid>
-                    <div>
                     <Grid container gap={3}>
                         <DeQButtonPayments
                             backgroundImageUrl={clipsSample}
@@ -137,7 +133,6 @@ const Layout = ({ user, streamer }) => {
                             />
                         }
                     </Grid>
-                    </div>
                 </Box>
                 </>
             }
