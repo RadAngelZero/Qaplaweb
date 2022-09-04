@@ -1,10 +1,11 @@
-import React, { useState, useRef } from 'react';
-import { InputBase, Paper, Container, Box } from '@mui/material';
+import React, { useState, useRef, useEffect } from 'react';
+import { InputBase, Paper, Container, Box, ImageList, ImageListItem } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Grid } from '@giphy/react-components';
 import { GiphyFetch } from '@giphy/js-fetch-api';
 
 import { ReactComponent as SearchIcon } from '../assets/icons/Search.svg';
+import { GIPHY_TEXT } from '../utils/constants';
 
 const gf = new GiphyFetch('Kb3qFoEloWmqsI3ViTJKGkQZjxICJ3bi');
 
@@ -56,17 +57,27 @@ const GridContainer = styled(Container)({
     padding: '0px !important',
 });
 
-
-
 const MediaSelector = ({ mediaType, onMediaSelected }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [giphyText, setGiphyText] = useState([]);
     const searchInput = useRef(null);
+    useEffect(() => {
+        focusSearch();
+    }, []);
 
     const fetchSearch = (offset) => gf.search(searchTerm, { offset, limit: 50, type: mediaType, rating: 'pg-13' });
     const fetchTrending = (offset) => gf.trending({ offset, type: mediaType, limit: 20, rating: 'pg-13' });
 
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
+        if (mediaType === GIPHY_TEXT) {
+            loadGIphyText(e.target.value);
+        }
+    }
+
+    const loadGIphyText = async (text) => {
+        const giphyText = await gf.animate(text, { limit: 50, type: mediaType });
+        setGiphyText(giphyText.data);
     }
 
     const focusSearch = () => {
@@ -77,21 +88,37 @@ const MediaSelector = ({ mediaType, onMediaSelected }) => {
         <MediaSelectorContainer>
             <SearchContainer elevation={12} onClick={focusSearch}>
                 <SearchIcon style={{ opacity: 0.6 }} />
-                <SearchInput onChange={handleSearch} value={searchTerm} placeholder={`Search Giphy`} ref={searchInput} id='searchInput' />
+                <SearchInput onChange={handleSearch} value={searchTerm} placeholder={mediaType !== GIPHY_TEXT ? `Search Giphy` : 'Type to create'} ref={searchInput} id='searchInput' />
                 {searchTerm === '' &&
                     <GiphyLogo component='img' src={require('../assets/images/PoweredbyGiphy.png')} onClick={focusSearch} />
                 }
             </SearchContainer>
             <GridContainer>
-                <Grid
-                    width={window.innerWidth <= 320 ? 300 : 570}
-                    columns={window.innerWidth <= 320 ? 2 : 3}
-                    gutter={8}
-                    fetchGifs={searchTerm === '' ? fetchTrending : fetchSearch}
-                    onGifClick={onMediaSelected}
-                    key={searchTerm}
-                    hideAttribution
-                    noLink />
+                {mediaType === GIPHY_TEXT && giphyText.length > 0 ?
+                    <ImageList cols={window.innerWidth <= 320 ? 2 : 3} gap={8}>
+                        {giphyText.map((giphyText) => (
+                            <ImageListItem key={giphyText.id} style={{ cursor: 'pointer' }}>
+                                <img src={`${giphyText.images.fixed_width_small.url}?w=248&fit=crop&auto=format`}
+                                    onClick={() => onMediaSelected(giphyText)}
+                                    height={giphyText.images.fixed_width_small.height}
+                                    width={giphyText.images.fixed_width_small.width}
+                                    style={{ color: 'transparent' }}
+                                    alt='Giphy text'
+                                    loading="lazy" />
+                            </ImageListItem>
+                        ))}
+                    </ImageList>
+                :
+                    <Grid
+                        width={window.innerWidth <= 320 ? 300 : 570}
+                        columns={window.innerWidth <= 320 ? 2 : 3}
+                        gutter={8}
+                        fetchGifs={searchTerm === '' ? fetchTrending : fetchSearch}
+                        onGifClick={onMediaSelected}
+                        key={searchTerm}
+                        hideAttribution
+                        noLink />
+                }
             </GridContainer>
         </MediaSelectorContainer>
     );
