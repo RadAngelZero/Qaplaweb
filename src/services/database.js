@@ -391,7 +391,7 @@ export async function sendPrepaidReaction(uid, userName, twitchUserName, userPho
 export async function getReactionsCosts() {
     const reactionsCostsChild = child(database, '/InteractionsCosts');
 
-    return get(query(reactionsCostsChild));
+    return await get(query(reactionsCostsChild));
 }
 
 /**
@@ -402,5 +402,5 @@ export async function getReactionsCosts() {
 export async function getReactionTypeCost(reactionType) {
     const reactionsCostsChild = child(database, `/InteractionsCosts/${reactionType}`);
 
-    return get(query(reactionsCostsChild));
+    return await get(query(reactionsCostsChild));
 }
