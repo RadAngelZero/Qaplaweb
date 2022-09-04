@@ -61,9 +61,11 @@ function App() {
         }
     }, [user, query, streamer]);
 
+    // User is undefined before check auth state
     if (user !== undefined) {
         return (
             <>
+            {/* User is null if no authenticated */}
             {user === null ?
                 <SignIn />
                 :
