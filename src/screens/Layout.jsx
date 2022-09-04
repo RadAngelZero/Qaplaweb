@@ -17,6 +17,8 @@ import gradientSticker from '../assets/GradientSticker.png';
 import { getReactionSample, getReactionsSamplesCount, getReactionTypeCost, getUserReactionsWithStreamer } from "../services/database";
 import { GIPHY_CLIPS, GIPHY_TEXT } from "../utils/constants";
 
+import {Title} from '../components/DeQButtonPayments/DeQButtonPayments'
+
 const Layout = ({ user, streamer }) => {
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
     const [clipsCost, setClipsCost] = useState(null);
@@ -67,14 +69,14 @@ const Layout = ({ user, streamer }) => {
         <div>
             {!numberOfReactions !== undefined &&
                 <>
-                <h1 style={{ textAlign: "start", fontSize: "22px", fontWeight: "600", color: '#FFF' }}>
+                <Title>
                     Custom Reaction{" "}
                     <img
                     style={{ width: "20px", height: "20px" }}
                     src={ellipse}
                     alt="icon"
                     />
-                </h1>
+                </Title>
                 <div
                     style={{
                     maxWidth: "138px",
