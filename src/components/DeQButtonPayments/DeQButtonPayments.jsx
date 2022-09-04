@@ -14,7 +14,7 @@ const DeQContainerPayments = styled(Button)({
   alignItems: "end",
   padding: "24px",
 })
-const ButtonQoins = styled(Box)({
+const QoinsCostContainer = styled(Box)({
   background: "#141833",
   width: "92px",
   height: "37px",
@@ -35,10 +35,10 @@ const DeQButtonPayments = ({ backgroundImageUrl, backgroundColor = 'transparent'
           backgroundImagePosition: "center",
         }}
       >
-        <ButtonQoins>
+        <QoinsCostContainer>
           <img style={{ padding: "4px" }} src={qoins} alt="icon" />
           <h2 style={{ weight: "600", fontSize: "18px", color: '#FFF' }}>{Qoins}</h2>
-        </ButtonQoins>
+        </QoinsCostContainer>
       </DeQContainerPayments>
     </div>
   );
