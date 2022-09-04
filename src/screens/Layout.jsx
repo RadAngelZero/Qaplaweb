@@ -158,7 +158,7 @@ const Layout = ({ user, streamer, setMediaSelected }) => {
                             />
                         }
                         {customTTSSample &&
-                            <DeQButtonPayments
+                            <DeQButtonPayments onClick={() => openMediaSelector(GIPHY_TEXT)}
                                 backgroundColor={customTTSSample.background}
                                 backgroundImageUrl={customTTSSample.url}
                                 Qoins={customTTSCost}
