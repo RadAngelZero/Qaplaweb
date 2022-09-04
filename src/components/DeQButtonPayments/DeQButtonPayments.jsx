@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, styled, Typography } from "@mui/material";
+import { Box, Button, styled } from "@mui/material";
 
 import qoins from "../../assets/Qoin.png";
 
@@ -14,7 +14,7 @@ const DeQContainerPayments = styled(Button)({
   alignItems: "end",
   padding: "24px",
 })
-const ButtonQoins = styled(Button)({
+const ButtonQoins = styled(Box)({
   background: "#141833",
   width: "92px",
   height: "37px",
@@ -24,13 +24,11 @@ const ButtonQoins = styled(Button)({
   alignItems: "center",
 })
 
-const DeQButtonPayments = ({ backgroundImageUrl, backgroundColor = 'transparent', Qoins, title }) => {
- 
-
+const DeQButtonPayments = ({ backgroundImageUrl, backgroundColor = 'transparent', Qoins, title, onClick }) => {
   return (
     <div>
       <h1 style={{ fontWeight: "600", fontSize: "22px", textAlign: "start", color: '#FFF' }}>{title}</h1>
-      <DeQContainerPayments 
+      <DeQContainerPayments onClick = {onClick}
         style={{
           backgroundColor,
           backgroundImage: `url("${backgroundImageUrl}")`,
