@@ -22,7 +22,13 @@ import { GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from "../u
 import MediaSelector from "./MediaSelector";
 import MemeMediaSelector from "./MemeMediaSelector";
 
+
+import {Title} from '../components/DeQButtonPayments/DeQButtonPayments'
+
+
+
 const Layout = ({ user, streamer, setMediaSelected }) => {
+
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
     const [clipsCost, setClipsCost] = useState(null);
     const [clipsSample, setClipsSample] = useState(null);
@@ -92,14 +98,14 @@ const Layout = ({ user, streamer, setMediaSelected }) => {
         <div>
             {!numberOfReactions !== undefined &&
                 <>
-                <h1 style={{ textAlign: "start", fontSize: "22px", fontWeight: "600", color: '#FFF' }}>
+                <Title>
                     Custom Reaction{" "}
                     <img
                     style={{ width: "20px", height: "20px" }}
                     src={ellipse}
                     alt="icon"
                     />
-                </h1>
+                </Title>
                 <div
                     style={{
                     maxWidth: "138px",

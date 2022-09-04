@@ -56,7 +56,7 @@ const SignIn = ({ user }) => {
 
     return (
         <Button onClick={signIn}>
-            Sign in
+            
         </Button>
     );
 }
