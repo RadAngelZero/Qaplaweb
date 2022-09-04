@@ -6,40 +6,71 @@ import DeQButton from "../components/DeQButton/DeQButton";
 import DeQButtonPayments from "../components/DeQButtonPayments/DeQButtonPayments";
 import iconEstrella from "../assets/IconEstrella.png";
 import ellipse from "../assets/Ellipse.png";
-import prop from "../Data";
-import { propPagos } from "../Data";
 import iconLOL from '../assets/IconLOL.png';
 import iconChat from '../assets/iconChat.png';
 import iconGIF from '../assets/IconGIF.svg';
 import iconSticker from '../assets/IconStickers.png';
 import gradientGifs from '../assets/GradientGifs.png';
+import backgroundGif from '../assets/Clips.png';
+import background from '../assets/weekend-party-animal.png';
 
 import gradientChat from '../assets/GradientChat.png';
 import gradientLOL from '../assets/GradientLOL.png';
 import gradientSticker from '../assets/GradientSticker.png';
-import { getUserReactionsWithStreamer } from "../services/database";
+import { getReactionSample, getReactionsSamplesCount, getReactionTypeCost, getUserReactionsWithStreamer } from "../services/database";
+import { GIPHY_CLIPS, GIPHY_TEXT } from "../utils/constants";
 
-const Layout = ({ user, streamerUid }) => {
+const Layout = ({ user, streamer }) => {
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
+    const [clipsCost, setClipsCost] = useState(null);
+    const [clipsSample, setClipsSample] = useState(null);
+    const [customTTSCost, setCustomTTSCost] = useState(null);
+    const [customTTSSample, setCustomTTSSample] = useState(null);
 
     useEffect(() => {
-        async function getReactions() {
-            console.log(streamerUid);
-            const numberOfReactions = await getUserReactionsWithStreamer(user.id, streamerUid);
+        async function getReactionsSample() {
+            const clipsLength = await getReactionsSamplesCount(GIPHY_CLIPS);
+            let index = Math.floor(Math.random() * clipsLength.val());
+            const clipsSample = await getReactionSample(GIPHY_CLIPS, index);
+            setClipsSample(clipsSample.val());
 
-            setNumberOfReactions(numberOfReactions.val());
+            const textLength = await getReactionsSamplesCount(GIPHY_TEXT);
+            index = Math.floor(Math.random() * textLength.val());
+            const textSample = await getReactionSample(GIPHY_TEXT, index);
+            setCustomTTSSample(textSample.val());
         }
 
-        if (user && user.id && streamerUid) {
-            getReactions();
+        async function getReactionsCosts() {
+            const clipsCost = await getReactionTypeCost(GIPHY_CLIPS);
+            const customTTSCost = await getReactionTypeCost(GIPHY_TEXT);
+            setClipsCost(clipsCost.val());
+            setCustomTTSCost(customTTSCost.val());
         }
-    }, [user]);
+
+        async function getReactionsCount() {
+            const numberOfReactions = await getUserReactionsWithStreamer(user.id, streamer.uid);
+
+            setNumberOfReactions(numberOfReactions.val() || 0);
+        }
+
+        if (user && user.id && streamer) {
+            getReactionsCount();
+        }
+
+        if (!clipsCost && !customTTSCost) {
+            getReactionsCosts();
+        }
+
+        if (!clipsSample && !customTTSSample) {
+            getReactionsSample();
+        }
+    }, [user, clipsCost, customTTSCost]);
 
     return (
         <div>
             {numberOfReactions !== undefined &&
                 <>
-                <h1 style={{ textAlign: "start", fontSize: "22px", fontWeight: "600" }}>
+                <h1 style={{ textAlign: "start", fontSize: "22px", fontWeight: "600", color: '#FFF' }}>
                     Custom Reaction{" "}
                     <img
                     style={{ width: "20px", height: "20px" }}
@@ -65,7 +96,7 @@ const Layout = ({ user, streamerUid }) => {
                     src={iconEstrella}
                     alt="icon"
                     />
-                    <p style={{ fontWeight: "500", fontSize: "16px" }}>({numberOfReactions}) Ractions </p>
+                    <p style={{ fontWeight: "500", fontSize: "16px", color: '#FFF' }}>({numberOfReactions}) Reactions </p>
                 </div>
                 <Box>
                     <Grid container gap={3}>
@@ -92,13 +123,19 @@ const Layout = ({ user, streamerUid }) => {
                     </Grid>
                     <div>
                     <Grid container gap={3}>
-                        {propPagos.map((el) => (
                         <DeQButtonPayments
-                            background={el.background}
-                            Qoins={el.Qoins}
-                            title={el.title}
+                            backgroundImageUrl={clipsSample}
+                            Qoins={clipsCost}
+                            title={'Clips'}
                         />
-                        ))}
+                        {customTTSSample &&
+                            <DeQButtonPayments
+                                backgroundColor={customTTSSample.background}
+                                backgroundImageUrl={customTTSSample.url}
+                                Qoins={customTTSCost}
+                                title={'Custom TTS'}
+                            />
+                        }
                     </Grid>
                     </div>
                 </Box>

@@ -2,10 +2,10 @@ import React from "react";
 
 import qoins from "../../assets/Qoin.png";
 
-const DeQButtonPayments = ({ background, Qoins, title }) => {
+const DeQButtonPayments = ({ backgroundImageUrl, backgroundColor = 'transparent', Qoins, title }) => {
   return (
     <div>
-      <h1 style={{ fontWeight: "600", fontSize: "22px", textAlign: "start" }}>{title}</h1>
+      <h1 style={{ fontWeight: "600", fontSize: "22px", textAlign: "start", color: '#FFF' }}>{title}</h1>
       <div
         style={{
           borderRadius: "20px",
@@ -16,7 +16,8 @@ const DeQButtonPayments = ({ background, Qoins, title }) => {
           justifyContent: "center",
           alignItems: "end",
           padding: "24px",
-          backgroundImage: `url("${background}")`,
+          backgroundColor,
+          backgroundImage: `url("${backgroundImageUrl}")`,
           backgroundImagePosition: "center",
         }}
       >
@@ -32,7 +33,7 @@ const DeQButtonPayments = ({ background, Qoins, title }) => {
           }}
         >
           <img style={{ padding: "5px" }} src={qoins} alt="icon" />
-          <h2 style={{ weight: "600", fontSize: "18px" }}>{Qoins}</h2>
+          <h2 style={{ weight: "600", fontSize: "18px", color: '#FFF' }}>{Qoins}</h2>
         </div>
       </div>
     </div>

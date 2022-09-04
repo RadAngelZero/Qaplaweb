@@ -404,3 +404,30 @@ export async function getReactionTypeCost(reactionType) {
 
     return await get(query(reactionsCostsChild));
 }
+
+//////////////////////
+// Reractions Sample
+//////////////////////
+
+/**
+ * Gets the length of reactions samples for the given type
+ * @param {string} type Type of reaction to get sample
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getReactionsSamplesCount(type) {
+    const reactionsSamplesLength = child(database, `/ReactionsSamples/${type}/length`);
+
+    return await get(query(reactionsSamplesLength));
+}
+
+/**
+ * Gets the specified (by the index) reaction sample
+ * @param {string} type Type of reaction to get sample
+ * @param {number} index Index of the sample to get
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getReactionSample(type, index) {
+    const reactionsSample = child(database, `/ReactionsSamples/${type}/samples/${index}`);
+
+    return await get(query(reactionsSample));
+}
