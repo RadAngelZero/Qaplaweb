@@ -164,6 +164,11 @@ const Layout = ({ user, streamer, setMediaSelected }) => {
                 </>
                 }
                 <Dialog open={openMediaDialog}
+                    PaperProps={{
+                        style: {
+                            backgroundColor: 'transparent'
+                        }
+                    }}
                     onClose={() => setOpenMediaDialog(false)}
                     fullWidth
                     fullScreen={fullScreen}
@@ -171,6 +176,11 @@ const Layout = ({ user, streamer, setMediaSelected }) => {
                     <MediaSelector onMediaSelected={onMediaSelected} mediaType={mediaType} />
                 </Dialog>
                 <Dialog open={openMemeMediaDialog}
+                    PaperProps={{
+                        style: {
+                            backgroundColor: 'transparent'
+                        }
+                    }}
                     onClose={() => setOpenMemeMediaDialog(false)}
                     fullWidth
                     fullScreen={fullScreen}
