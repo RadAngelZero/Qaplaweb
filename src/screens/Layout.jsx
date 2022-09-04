@@ -119,11 +119,13 @@ const Layout = ({ user, streamer }) => {
                             />
                     </Grid>
                     <Grid container gap={3}>
-                        <DeQButtonPayments
-                            backgroundImageUrl={clipsSample}
-                            Qoins={clipsCost}
-                            title={'Clips'}
-                        />
+                        {clipsSample &&
+                            <DeQButtonPayments
+                                backgroundImageUrl={clipsSample}
+                                Qoins={clipsCost}
+                                title={'Clips'}
+                            />
+                        }
                         {customTTSSample &&
                             <DeQButtonPayments
                                 backgroundColor={customTTSSample.background}
