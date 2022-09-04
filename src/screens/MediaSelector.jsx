@@ -24,7 +24,7 @@ const MediaSelectorContainer = styled(Paper)({
 
 const SearchContainer = styled(Paper)({
     position: 'sticky',
-    top: '82px',
+    top: 16,
     zIndex: 1000,
     flex: 1,
     display: 'flex',
@@ -56,10 +56,11 @@ const GridContainer = styled(Container)({
     padding: '0px !important',
 });
 
+
+
 const MediaSelector = ({ mediaType, onMediaSelected }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const searchInput = useRef(null);
-    const mainContainer = useRef(null);
 
     const fetchSearch = (offset) => gf.search(searchTerm, { offset, limit: 50, type: mediaType, rating: 'pg-13' });
     const fetchTrending = (offset) => gf.trending({ offset, type: mediaType, limit: 20, rating: 'pg-13' });
@@ -72,8 +73,8 @@ const MediaSelector = ({ mediaType, onMediaSelected }) => {
         searchInput.current.childNodes[0].focus();
     }
 
-    return (<>
-        <MediaSelectorContainer ref={mainContainer}>
+    return (
+        <MediaSelectorContainer>
             <SearchContainer elevation={12} onClick={focusSearch}>
                 <SearchIcon style={{ opacity: 0.6 }} />
                 <SearchInput onChange={handleSearch} value={searchTerm} placeholder={`Search Giphy`} ref={searchInput} id='searchInput' />
@@ -83,8 +84,8 @@ const MediaSelector = ({ mediaType, onMediaSelected }) => {
             </SearchContainer>
             <GridContainer>
                 <Grid
-                    width={mainContainer.current ? mainContainer.current.offsetWidth <= 600 ? mainContainer.current.offsetWidth * 0.9 : mainContainer.current.offsetWidth * 0.95 : 0}
-                    columns={mainContainer.current ? mainContainer.current.offsetWidth <= 600 ? mainContainer.current.offsetWidth <= 400 ? 2 : 3 : 4 : 0}
+                    width={window.innerWidth <= 320 ? 300 : 570}
+                    columns={window.innerWidth <= 320 ? 2 : 3}
                     gutter={8}
                     fetchGifs={searchTerm === '' ? fetchTrending : fetchSearch}
                     onGifClick={onMediaSelected}
@@ -93,7 +94,7 @@ const MediaSelector = ({ mediaType, onMediaSelected }) => {
                     noLink />
             </GridContainer>
         </MediaSelectorContainer>
-    </>)
+    );
 }
 
 export default MediaSelector;

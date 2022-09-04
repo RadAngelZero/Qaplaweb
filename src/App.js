@@ -2,17 +2,13 @@ import { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { getUserProfile } from './services/database';
+import { getStreamerPublicData, getUserProfile } from './services/database';
 import { listenToAuthState } from './services/auth';
 
-
-import DeQButtonPayments from './components/DeQButtonPayments/DeQButtonPayments';
 import HeaderBar from './components/HeaderBar';
-import MediaSelector from './screens/MediaSelector';
 // import ChatBot from './screens/ChatBot';
 import Layout from './screens/Layout';
 import SignIn from './screens/SignIn';
-
 
 function useQuery() {
     const { search } = window.location;
@@ -28,10 +24,18 @@ const MainContainer = styled(Box)({
 
 function App() {
     const [user, setUser] = useState(undefined);
-    const [streamerUid, setStreamerUid] = useState('');
+    const [streamer, setStreamer] = useState(null);
+    const [mediaSelected, setMediaSelected] = useState(null);
     const query = useQuery();
 
     useEffect(() => {
+        async function getStreamer(uid) {
+            const streamer = await getStreamerPublicData(uid);
+            if (streamer.exists()) {
+                setStreamer({ ...streamer.val(), uid });
+            }
+        }
+
         if (user === undefined) {
             listenToAuthState(async (authUser) => {
                 // Important to use user state value on conditions to prevent infinit executions
@@ -52,29 +56,33 @@ function App() {
             localStorage.setItem('streamerUid', streamerUidQuery);
         }
 
-        if (!streamerUid && localStorage.getItem('streamerUid')) {
-            setStreamerUid(localStorage.getItem('streamerUid'));
+        if (!streamer && localStorage.getItem('streamerUid')) {
+            getStreamer(localStorage.getItem('streamerUid'));
         }
-    }, [user, query, streamerUid]);
+    }, [user, query, streamer]);
 
-    return (<>
-        <HeaderBar
-            streamerName={`Rad`}
-            streamerImage={`https://static-cdn.jtvnw.net/jtv_user_pictures/1e6d9d8b-a96f-4f87-8405-558a0c389bd7-profile_image-70x70.png`}
-        />
-        {/* <div className="App">
-            <DeQButtonPayments />
-        </div> */}
-        {/* <MainContainer itemType='div'>
-            <MediaSelector />
-        </MainContainer> */}
-        <MainContainer itemType='div'>
-            <Layout user={user} streamerUid={streamerUid} />
-        </MainContainer>
-        {/* <MainContainer itemType='div'>
-            <ChatBot />
-        </MainContainer> */}
-    </>);
+    if (user !== undefined) {
+        return (
+            <>
+            {user === null ?
+                <SignIn />
+                :
+                <>
+                {streamer &&
+                    <HeaderBar
+                        streamerName={streamer.displayName}
+                        streamerImage={streamer.photoUrl} />
+                }
+                <MainContainer itemType='div'>
+                    <Layout setMediaSelected={setMediaSelected} user={user} streamer={streamer} />
+                </MainContainer>
+                </>
+            }
+            </>
+        );
+    }
+
+    return null;
 
 }
 

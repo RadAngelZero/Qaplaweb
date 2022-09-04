@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
+import Dialog from "@mui/material/Dialog";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 import DeQButton from "../components/DeQButton/DeQButton";
 import DeQButtonPayments from "../components/DeQButtonPayments/DeQButtonPayments";
@@ -15,14 +18,21 @@ import gradientChat from '../assets/GradientChat.png';
 import gradientLOL from '../assets/GradientLOL.png';
 import gradientSticker from '../assets/GradientSticker.png';
 import { getReactionSample, getReactionsSamplesCount, getReactionTypeCost, getUserReactionsWithStreamer } from "../services/database";
-import { GIPHY_CLIPS, GIPHY_TEXT } from "../utils/constants";
+import { GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from "../utils/constants";
+import MediaSelector from "./MediaSelector";
+import MemeMediaSelector from "./MemeMediaSelector";
 
-const Layout = ({ user, streamer }) => {
+const Layout = ({ user, streamer, setMediaSelected }) => {
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
     const [clipsCost, setClipsCost] = useState(null);
     const [clipsSample, setClipsSample] = useState(null);
     const [customTTSCost, setCustomTTSCost] = useState(null);
     const [customTTSSample, setCustomTTSSample] = useState(null);
+    const [openMediaDialog, setOpenMediaDialog] = useState(false);
+    const [mediaType, setMediaType] = useState(GIPHY_GIFS);
+    const [openMemeMediaDialog, setOpenMemeMediaDialog] = useState(false);
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     useEffect(() => {
         async function getReactionsSample() {
@@ -63,6 +73,21 @@ const Layout = ({ user, streamer }) => {
         }
     }, [user, clipsCost, customTTSCost]);
 
+    const openMediaSelector = (mediaType) => {
+        if (mediaType !== MEMES) {
+            setOpenMediaDialog(true);
+        } else {
+            setOpenMemeMediaDialog(true);
+        }
+
+        setMediaType(mediaType);
+    }
+
+    const onMediaSelected = (media) => {
+        setOpenMediaDialog(false);
+        setMediaSelected(media);
+    }
+
     return (
         <div>
             {numberOfReactions !== undefined &&
@@ -97,22 +122,22 @@ const Layout = ({ user, streamer }) => {
                 </div>
                 <Box>
                     <Grid container gap={3}>
-                        <DeQButton
+                        <DeQButton onClick={() => openMediaSelector(GIPHY_GIFS)}
                             title={'Gifs'}
                             imagen={iconGIF}
                             background={gradientGifs}
                             />
-                        <DeQButton
+                        <DeQButton onClick={() => openMediaSelector(GIPHY_GIFS)}
                             title={'Text-To-Speech'}
                             imagen={iconChat}
                             background={gradientChat}
                             />
-                        <DeQButton
+                        <DeQButton onClick={() => openMediaSelector(GIPHY_STICKERS)}
                             title={'Stickers'}
                             imagen={iconSticker}
                             background={gradientSticker}
                             />
-                        <DeQButton
+                        <DeQButton onClick={() => openMediaSelector(MEMES)}
                             title={'Memes'}
                             imagen={iconLOL}
                             background={gradientLOL}
@@ -120,7 +145,7 @@ const Layout = ({ user, streamer }) => {
                     </Grid>
                     <Grid container gap={3}>
                         {clipsSample &&
-                            <DeQButtonPayments
+                            <DeQButtonPayments onClick={() => openMediaSelector(GIPHY_CLIPS)}
                                 backgroundImageUrl={clipsSample}
                                 Qoins={clipsCost}
                                 title={'Clips'}
@@ -137,7 +162,21 @@ const Layout = ({ user, streamer }) => {
                     </Grid>
                 </Box>
                 </>
-            }
+                }
+                <Dialog open={openMediaDialog}
+                    onClose={() => setOpenMediaDialog(false)}
+                    fullWidth
+                    fullScreen={fullScreen}
+                    maxWidth='sm'>
+                    <MediaSelector onMediaSelected={onMediaSelected} mediaType={mediaType} />
+                </Dialog>
+                <Dialog open={openMemeMediaDialog}
+                    onClose={() => setOpenMemeMediaDialog(false)}
+                    fullWidth
+                    fullScreen={fullScreen}
+                    maxWidth='sm'>
+                    <MemeMediaSelector onMediaSelected={onMediaSelected} />
+                </Dialog>
         </div>
     );
 };
