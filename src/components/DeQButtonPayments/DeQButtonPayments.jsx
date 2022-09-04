@@ -1,13 +1,12 @@
 import React from "react";
 
-import { Button, styled, Typography} from "@mui/material";
+
+import { Button, styled, Typography,Box,} from "@mui/material";
+
 
 import qoins from "../../assets/Qoin.png";
 
 
-const DeQContainerPayments = styled('div')({
-
-})
 
 const DeQContainerPaymentsButton = styled(Button)({
   borderRadius: "20px",
@@ -20,7 +19,11 @@ const DeQContainerPaymentsButton = styled(Button)({
   padding: "24px",
 })
 
-const ButtonQoins = styled(Button)({
+
+
+
+const QoinsCostContainer = styled(Box)({
+
   background: "#141833",
   width: "92px",
   height: "37px",
@@ -29,6 +32,7 @@ const ButtonQoins = styled(Button)({
   justifyContent: "center",
   alignItems: "center",
 })
+
 
 export const Title = styled(Typography)({
   fontWeight: "600",
@@ -43,27 +47,30 @@ export const Title = styled(Typography)({
 
 })
 
-const DeQButtonPayments = ({ backgroundImageUrl, backgroundColor = 'transparent', Qoins, title }) => {
+
  
 
+  
+    const DeQButtonPayments = ({ backgroundImageUrl, backgroundColor = 'transparent', Qoins, title, onClick }) => {
+
   return (
-    <DeQContainerPayments>
-      <Title> 
+    <div>
+       <Title> 
          {title}
       </Title>
-      <DeQContainerPaymentsButton
+      <DeQContainerPaymentsButton onClick = {onClick}
         style={{
           backgroundColor,
           backgroundImage: `url("${backgroundImageUrl}")`,
           backgroundImagePosition: "center",
         }}
       >
-        <ButtonQoins>
+        <QoinsCostContainer>
           <img style={{ padding: "4px" }} src={qoins} alt="icon" />
           <h1 style={{ weight: "600", fontSize: "18px", color: '#FFF' }}>{Qoins}</h1>
-        </ButtonQoins>
-      </DeQContainerPaymentsButton>
-    </DeQContainerPayments>
+        </QoinsCostContainer>
+        </DeQContainerPaymentsButton>
+    </div>
   );
 };
 

@@ -431,3 +431,17 @@ export async function getReactionSample(type, index) {
 
     return await get(query(reactionsSample));
 }
+
+//////////////////////
+// Qapla Reactions
+//////////////////////
+
+/**
+ * Returns the Qapla library of memes
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getQaplaMemesLibrary() {
+    const memesLibrary = child(database, `/QaplaInteractions/Memes`);
+
+    return await get(query(memesLibrary));
+}
