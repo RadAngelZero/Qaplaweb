@@ -9,7 +9,9 @@ import { listenToAuthState } from './services/auth';
 import DeQButtonPayments from './components/DeQButtonPayments/DeQButtonPayments';
 import HeaderBar from './components/HeaderBar';
 import MediaSelector from './screens/MediaSelector';
-import ChatBot from './screens/ChatBot';
+// import ChatBot from './screens/ChatBot';
+import Layout from './screens/Layout';
+import SignIn from './screens/SignIn';
 
 
 function useQuery() {
@@ -20,10 +22,13 @@ function useQuery() {
 
 const MainContainer = styled(Box)({
     marginTop: '72px',
+    paddingRight: 64,
+    paddingLeft: 64
 })
 
 function App() {
     const [user, setUser] = useState(undefined);
+    const [streamerUid, setStreamerUid] = useState('');
     const query = useQuery();
 
     useEffect(() => {
@@ -40,16 +45,17 @@ function App() {
             });
         }
 
-        const streamerUid = query.get('streamerUid');
+        const streamerUidQuery = query.get('streamerUid');
 
-        if (streamerUid) {
+        if (streamerUidQuery) {
             // If we found a streamerUid in the url we save it on the local storage
-            localStorage.setItem('streamerUid', streamerUid);
-            window.location.search = '';
+            localStorage.setItem('streamerUid', streamerUidQuery);
         }
-    }, [user, query]);
 
-
+        if (!streamerUid && localStorage.getItem('streamerUid')) {
+            setStreamerUid(localStorage.getItem('streamerUid'));
+        }
+    }, [user, query, streamerUid]);
 
     return (<>
         <HeaderBar
@@ -63,8 +69,11 @@ function App() {
             <MediaSelector />
         </MainContainer> */}
         <MainContainer itemType='div'>
-            <ChatBot />
+            <Layout user={user} streamerUid={streamerUid} />
         </MainContainer>
+        {/* <MainContainer itemType='div'>
+            <ChatBot />
+        </MainContainer> */}
     </>);
 
 }

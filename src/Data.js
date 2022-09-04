@@ -1,7 +1,7 @@
 
  import inconLOL from './assets/IconLOL.png'
  import iconChat from './assets/iconChat.png'
- import iconGIF from './assets/IconGIF.png'
+ import iconGIF from './assets/IconGIF.svg'
  import iconSticker from './assets/IconStickers.png'
  
  import gradientChat from './assets/GradientChat.png'
