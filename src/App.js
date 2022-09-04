@@ -74,6 +74,7 @@ function App() {
         {/* <MainContainer itemType='div'>
             <ChatBot />
         </MainContainer> */}
+        
     </>);
 
 }

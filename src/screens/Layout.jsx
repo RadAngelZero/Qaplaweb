@@ -65,7 +65,7 @@ const Layout = ({ user, streamer }) => {
 
     return (
         <div>
-            {numberOfReactions !== undefined &&
+            {!numberOfReactions !== undefined &&
                 <>
                 <h1 style={{ textAlign: "start", fontSize: "22px", fontWeight: "600", color: '#FFF' }}>
                     Custom Reaction{" "}
