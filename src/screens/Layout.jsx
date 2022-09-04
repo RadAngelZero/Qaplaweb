@@ -96,7 +96,7 @@ const Layout = ({ user, streamer, setMediaSelected }) => {
 
     return (
         <div>
-            {!numberOfReactions !== undefined &&
+            {numberOfReactions !== undefined &&
                 <>
                 <Title>
                     Custom Reaction{" "}
