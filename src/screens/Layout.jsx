@@ -27,7 +27,7 @@ import {Title} from '../components/DeQButtonPayments/DeQButtonPayments'
 
 
 
-const Layout = ({ user, streamer, setMediaSelected }) => {
+const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, setGiphyText }) => {
 
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
     const [clipsCost, setClipsCost] = useState(null);
@@ -35,7 +35,6 @@ const Layout = ({ user, streamer, setMediaSelected }) => {
     const [customTTSCost, setCustomTTSCost] = useState(null);
     const [customTTSSample, setCustomTTSSample] = useState(null);
     const [openMediaDialog, setOpenMediaDialog] = useState(false);
-    const [mediaType, setMediaType] = useState(GIPHY_GIFS);
     const [openMemeMediaDialog, setOpenMemeMediaDialog] = useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -90,8 +89,13 @@ const Layout = ({ user, streamer, setMediaSelected }) => {
     }
 
     const onMediaSelected = (media) => {
+        if (mediaType === GIPHY_TEXT) {
+            setGiphyText(media);
+        } else {
+            setMediaSelected(media);
+        }
         setOpenMediaDialog(false);
-        setMediaSelected(media);
+        setOpenMemeMediaDialog(false);
     }
 
     return (

@@ -5,12 +5,9 @@ import { getTwitchUserData, signInWithTwitch } from '../services/twitch';
 import { getUserToken } from '../services/functions';
 import { signTwitchUser } from '../services/auth';
 import { createUserProfile, updateUserProfile } from '../services/database';
-
 import logoQapla from "../assets/QaplaExtruded.png"
 import {ReactComponent as IconTwich} from '../assets/twitch-glitch-dark.svg'
-
 import gifs from "../assets/giphy.gif"
-import zIndex from '@mui/material/styles/zIndex';
 
 
 function useQuery() {
@@ -25,8 +22,7 @@ const SigninContainer = styled(Box)({
     justifyContent: 'center',
     alignItems: 'center',
     height:'100vh',
-})
-
+});
 
 const BottonContainer = styled(Box)((({ theme }) => ({
     [theme.breakpoints.down('md')]: {
@@ -34,7 +30,6 @@ const BottonContainer = styled(Box)((({ theme }) => ({
     },
     [theme.breakpoints.up('md')]: {
         width: 600,
-        
     },
     background:'linear-gradient(135.92deg, #A716EE 2.95%, #2C07FA 100%)',
     boxShadow: '0px 4px 5px #263238',
@@ -48,59 +43,49 @@ const BottonContainer = styled(Box)((({ theme }) => ({
     position: 'absolute',
     bottom: '0px',
     zIndex:'1'
-    
-})))
-   
-
+})));
 
 const ContentItem = styled(Box)({
-  maxWidth:'356px',
-  minWidth: '356px',
-  maxHeight: '350px',
-  display: 'flex',
-  flexDirection:'column',
-  justifyContent: 'space-between',
-  alignItems: 'start',
-  marginLeft: '15px',
-  marginBottom: '40px'
-
-})
+    maxWidth:'356px',
+    minWidth: '356px',
+    maxHeight: '350px',
+    display: 'flex',
+    flexDirection:'column',
+    justifyContent: 'space-between',
+    alignItems: 'start',
+    marginLeft: '15px',
+    marginBottom: '40px'
+});
 
 const Text = styled(Typography)({
-fontStyle: 'normal',
-fontWeight: '700',
-fontSize: '40px',
-lineHeight: '48px',
-color: '#FFFFFF',
-marginBottom: '70px',
-marginTop: '50px'
-})
+    fontStyle: 'normal',
+    fontWeight: '700',
+    fontSize: '40px',
+    lineHeight: '48px',
+    color: '#FFFFFF',
+    marginBottom: '70px',
+    marginTop: '50px'
+});
 
 const ButtonTwitch = styled(Button)({
- background:'#000000',
- color: '#FFFFFF',
- width:'260px',
- height:'74px',
- borderRadius: '100px',
- fontWeight:'600',
- lineHeight: '19.09',
- '&:hover':{
-    backgroundColor: '#000000',
-    opacity: '0.8'
-  }
- 
+    background:'#000000',
+    color: '#FFFFFF',
+    width:'260px',
+    height:'74px',
+    borderRadius: '100px',
+    fontWeight:'600',
+    lineHeight: '19.09',
+    '&:hover':{
+        backgroundColor: '#000000',
+        opacity: '0.8'
+    }
 
-})
+});
 
 const Gifs = styled('img')({
     minWidth: '880px',
     maxWidth:'834px',
-})
-
-
-
-
-
+});
 
 const SignIn = ({ user }) => {
     const [isLoadingAuth, setIsLoadingAuth] = useState(false);
@@ -127,10 +112,6 @@ const SignIn = ({ user }) => {
                             photoUrl: user.photoURL
                         });
                     }
-
-                    // Successful auth
-                    // Get streamer to react
-                    // const streamer = localStorage.getItem('streamerUid');
                 }
             }
         }
@@ -146,19 +127,17 @@ const SignIn = ({ user }) => {
 
     return (
         <SigninContainer itemType='div'>
-           
             <Gifs src={gifs} alt='Gifs'/>
-            
-                    <BottonContainer itemType='div'>
-                        <ContentItem itemType='div'>
-                            <img src={logoQapla } alt="icon"/>
-                                 <Text>Link your Twich to react on stream</Text>
-                                    <ButtonTwitch onClick={() => signIn()}>
-                                        <IconTwich style={{ padding:'5px'}}/>
-                                         Continue with Twich
-                                    </ButtonTwitch>
-                        </ContentItem> 
-                    </BottonContainer>
+            <BottonContainer itemType='div'>
+                <ContentItem itemType='div'>
+                    <img src={logoQapla } alt="icon"/>
+                    <Text>Link your Twich to react on stream</Text>
+                    <ButtonTwitch onClick={signIn}>
+                        <IconTwich style={{ padding:'5px'}}/>
+                            Continue with Twich
+                    </ButtonTwitch>
+                </ContentItem>
+            </BottonContainer>
         </SigninContainer>
     );
 }
