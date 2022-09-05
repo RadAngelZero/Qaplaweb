@@ -76,7 +76,7 @@ const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, set
         if (!clipsSample && !customTTSSample) {
             getReactionsSample();
         }
-    }, [user, clipsCost, customTTSCost]);
+    }, [user, clipsCost, customTTSCost, clipsSample, customTTSSample, streamer]);
 
     const openMediaSelector = (mediaType) => {
         if (mediaType !== MEMES) {

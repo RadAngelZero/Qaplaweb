@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { AccordionSummary, Box, Button, Dialog, Grid, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
 import styled from '@emotion/styled';
 import { GiphyFetch } from '@giphy/js-fetch-api';
-import { Video } from '@giphy/react-components';
 
 import { ReactComponent as IconGIF } from '../assets/IconGIF.svg';
 import { ReactComponent as QoinIcon } from '../assets/icons/Qoin.svg';
@@ -178,7 +177,7 @@ const Checkout = ({ media, setMediaSelected, giphyText, setGiphyText, mediaType,
     }
 
     const onMediaSelected = (media) => {
-        if (media.type == GIPHY_TEXT || media.type === 'text') {
+        if (media.type === GIPHY_TEXT || media.type === 'text') {
             setGiphyText(media);
         } else {
             setMediaSelected(media);
