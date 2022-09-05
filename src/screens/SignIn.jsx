@@ -9,6 +9,9 @@ import { createUserProfile, updateUserProfile } from '../services/database';
 import logoQapla from "../assets/QaplaExtruded.png"
 import {ReactComponent as IconTwich} from '../assets/twitch-glitch-dark.svg'
 
+import gifs from "../assets/giphy.gif"
+import zIndex from '@mui/material/styles/zIndex';
+
 
 function useQuery() {
     const { search } = window.location;
@@ -21,36 +24,45 @@ const SigninContainer = styled(Box)({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    height:'100vh'
+    height:'100vh',
 })
-const TopContainer = styled(Box)({
-    height:'40%'
- })
 
-const BottonContainer = styled(Box)({
+
+const BottonContainer = styled(Box)((({ theme }) => ({
+    [theme.breakpoints.down('md')]: {
+        width: '100%'
+    },
+    [theme.breakpoints.up('md')]: {
+        width: 600,
+        
+    },
     background:'linear-gradient(135.92deg, #A716EE 2.95%, #2C07FA 100%)',
     boxShadow: '0px 4px 5px #263238',
-    height:'520px',
     minWidth: '834px',
     maxWidth:'834px',
     display: 'flex',
     justifyContent: 'start',
     alignItems: 'start',
     padding:'24px',
-    borderRadius:'40px 40px 0px 0px'
+    borderRadius:'40px 40px 0px 0px',
+    position: 'absolute',
+    bottom: '0px',
+    zIndex:'1'
     
-})
+})))
+   
+
 
 const ContentItem = styled(Box)({
   maxWidth:'356px',
   minWidth: '356px',
-  height: '450px',
+  maxHeight: '350px',
   display: 'flex',
   flexDirection:'column',
-  justifyContent: 'space-evenly',
+  justifyContent: 'space-between',
   alignItems: 'start',
-  marginLeft: '15px'
- 
+  marginLeft: '15px',
+  marginBottom: '40px'
 
 })
 
@@ -59,7 +71,9 @@ fontStyle: 'normal',
 fontWeight: '700',
 fontSize: '40px',
 lineHeight: '48px',
-color: '#FFFFFF'
+color: '#FFFFFF',
+marginBottom: '70px',
+marginTop: '50px'
 })
 
 const ButtonTwitch = styled(Button)({
@@ -69,9 +83,18 @@ const ButtonTwitch = styled(Button)({
  height:'74px',
  borderRadius: '100px',
  fontWeight:'600',
- lineHeight: '19.09'
+ lineHeight: '19.09',
+ '&:hover':{
+    backgroundColor: '#000000',
+    opacity: '0.8'
+  }
  
 
+})
+
+const Gifs = styled('img')({
+    minWidth: '880px',
+    maxWidth:'834px',
 })
 
 
@@ -123,15 +146,14 @@ const SignIn = ({ user }) => {
 
     return (
         <SigninContainer itemType='div'>
-            <TopContainer itemType='div'>
-            gfg hola
+           
+            <Gifs src={gifs} alt='Gifs'/>
             
-            </TopContainer>
                     <BottonContainer itemType='div'>
                         <ContentItem itemType='div'>
                             <img src={logoQapla } alt="icon"/>
                                  <Text>Link your Twich to react on stream</Text>
-                                    <ButtonTwitch>
+                                    <ButtonTwitch onClick={() => signIn()}>
                                         <IconTwich style={{ padding:'5px'}}/>
                                          Continue with Twich
                                     </ButtonTwitch>
