@@ -127,7 +127,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                     justifyContent: "start",
                     alignItems: "center",
                     padding: "10px",
-                    marginBottom: "16px",
+                    marginBottom: "24px",
                     borderRadius: "10px",
                     }}
                 >
@@ -138,47 +138,57 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                     />
                     <p style={{ fontWeight: "500", fontSize: "16px", color: '#FFF' }}>({numberOfReactions}) Reactions </p>
                 </div>
-                <Box>
-                    <Grid container gap={3}>
+                <Grid container columnSpacing={2} rowSpacing={2}>
+                    <Grid item md={3} alignContent='center'>
                         <DeQButton onClick={() => openMediaSelector(GIPHY_GIFS)}
                             title={'Gifs'}
                             imagen={iconGIF}
                             background={gradientGifs}
                             />
+                    </Grid>
+                    <Grid item md={3}>
                         <DeQButton onClick={() => onSuccess('chatbot')}
                             title={'Text-To-Speech'}
                             imagen={iconChat}
                             background={gradientChat}
                             />
+                    </Grid>
+                    <Grid item md={3}>
                         <DeQButton onClick={() => openMediaSelector(GIPHY_STICKERS)}
                             title={'Stickers'}
                             imagen={iconSticker}
                             background={gradientSticker}
                             />
+                    </Grid>
+                    <Grid item md={3}>
                         <DeQButton onClick={() => openMediaSelector(MEMES)}
                             title={'Memes'}
                             imagen={iconLOL}
                             background={gradientLOL}
                             />
                     </Grid>
-                    <Grid container gap={3}>
-                        {clipsSample &&
+                </Grid>
+                <Grid container style={{ marginTop: 24 }}>
+                    {clipsSample &&
+                        <Grid item md={6}>
                             <DeQButtonPayments onClick={() => openMediaSelector(GIPHY_CLIPS)}
                                 backgroundImageUrl={clipsSample}
                                 Qoins={clipsCost}
                                 title={'Clips'}
                             />
-                        }
-                        {customTTSSample &&
+                        </Grid>
+                    }
+                    {customTTSSample &&
+                        <Grid item md={6}>
                             <DeQButtonPayments onClick={() => openMediaSelector(GIPHY_TEXT)}
                                 backgroundColor={customTTSSample.background}
                                 backgroundImageUrl={customTTSSample.url}
                                 Qoins={customTTSCost}
                                 title={'Custom TTS'}
                             />
-                        }
-                    </Grid>
-                </Box>
+                        </Grid>
+                    }
+                </Grid>
                 </>
                 }
                 <Dialog open={openMediaDialog}

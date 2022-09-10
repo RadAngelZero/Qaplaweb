@@ -11,7 +11,7 @@ import qoins from "../../assets/Qoin.png";
 const DeQContainerPaymentsButton = styled(Button)({
   borderRadius: "20px",
   maxWidth: "341px",
-  minWidth: "341px",
+  minWidth: "320px",
   height: "190px",
   display: "flex",
   justifyContent: "center",
