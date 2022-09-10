@@ -57,7 +57,7 @@ const GridContainer = styled(Container)({
     padding: '0px !important',
 });
 
-const MediaSelector = ({ mediaType, onMediaSelected }) => {
+const MediaSelector = ({ mediaType, onMediaSelected, setMessage }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [giphyText, setGiphyText] = useState([]);
     const searchInput = useRef(null);
@@ -84,6 +84,12 @@ const MediaSelector = ({ mediaType, onMediaSelected }) => {
         searchInput.current.childNodes[0].focus();
     }
 
+    const onGiphyTextSelected = (giphyText) => {
+        console.log(giphyText);
+        onMediaSelected(giphyText);
+        setMessage(searchTerm);
+    }
+
     return (
         <MediaSelectorContainer>
             <SearchContainer elevation={12} onClick={focusSearch}>
@@ -106,7 +112,7 @@ const MediaSelector = ({ mediaType, onMediaSelected }) => {
                         {giphyText.map((giphyText) => (
                             <ImageListItem key={giphyText.id} style={{ cursor: 'pointer' }}>
                                 <img src={`${giphyText.images.fixed_width_small.url}?w=248&fit=crop&auto=format`}
-                                    onClick={() => onMediaSelected(giphyText)}
+                                    onClick={() => onGiphyTextSelected(giphyText)}
                                     height={giphyText.images.fixed_width_small.height}
                                     width={giphyText.images.fixed_width_small.width}
                                     style={{ color: 'transparent' }}

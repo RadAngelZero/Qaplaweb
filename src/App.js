@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { getStreamerPublicData, getUserProfile, listenToUserProfile } from './services/database';
+import { getStreamerPublicData, listenToUserProfile } from './services/database';
 import { listenToAuthState } from './services/auth';
 
 import HeaderBar from './components/HeaderBar';
@@ -94,7 +94,8 @@ function App() {
                         setMediaType={setMediaType}
                         setGiphyText={setGiphyText}
                         onSuccess={(nextStep) => setCurrentStep(nextStep)}
-                        setCost={addToDonationCost} />
+                        setCost={addToDonationCost}
+                        setMessage={setMessage} />
             case 'chatbot':
                 return <ChatBot message={message}
                         setMessage={setMessage}
@@ -109,7 +110,6 @@ function App() {
                 return <Checkout media={mediaSelected}
                         setMediaSelected={setMediaSelected}
                         mediaType={mediaType}
-                        setMediaType={setMediaType}
                         giphyText={giphyText}
                         setGiphyText={setGiphyText}
                         message={message}
@@ -119,7 +119,8 @@ function App() {
                         setCost={addToDonationCost}
                         editMessage={() => setCurrentStep('chatbot')}
                         onSuccess={onDonationSent}
-                        streamer={streamer} />
+                        streamer={streamer}
+                        setMessage={setMessage} />
             default:
                 break;
         }

@@ -28,8 +28,8 @@ const CheerPreview = ({ donation }) => {
             {donation.media &&
                 <>
                 {donation.media && (donation.media.type === MEMES || donation.media.type === GIPHY_GIFS || donation.media.type === 'gif' || donation.media.type === GIPHY_STICKERS || donation.media.type === 'sticker') ?
-                    <img src={donation.media.images.original.url} alt='' style={{
-                        aspectRatio: donation.media.images.original.width / donation.media.images.original.height,
+                    <img src={donation.media.url} alt='' style={{
+                        aspectRatio: donation.media.width / donation.media.height,
                         display: 'flex',
                         alignSelf: 'flex-end',
                         maxHeight: '20vh',

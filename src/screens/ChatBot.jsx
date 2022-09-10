@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Typography, Paper, InputBase, Box, Button, Dialog } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -234,7 +234,6 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
 
     const sendTTS = (e, voice) => {
         const choosenVoice = voice ? voice : selectedVoice;
-        console.log(choosenVoice);
         setMessage(localMessage);
         setBotVoice(choosenVoice);
         if (choosenVoice.cost) {

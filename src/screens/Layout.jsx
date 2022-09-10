@@ -17,7 +17,7 @@ import gradientGifs from '../assets/GradientGifs.png';
 import gradientChat from '../assets/GradientChat.png';
 import gradientLOL from '../assets/GradientLOL.png';
 import gradientSticker from '../assets/GradientSticker.png';
-import { getReactionSample, getReactionsSamplesCount, getReactionTypeCost, getUserReactionsWithStreamer, listenUserReactionsWithStreamer } from "../services/database";
+import { getReactionSample, getReactionsSamplesCount, getReactionTypeCost, listenUserReactionsWithStreamer } from "../services/database";
 import { GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from "../utils/constants";
 import MediaSelector from "./MediaSelector";
 import MemeMediaSelector from "./MemeMediaSelector";
@@ -27,7 +27,7 @@ import {Title} from '../components/DeQButtonPayments/DeQButtonPayments'
 
 
 
-const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, setGiphyText, onSuccess, setCost }) => {
+const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, setGiphyText, onSuccess, setCost, setMessage }) => {
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
     const [clipsCost, setClipsCost] = useState(null);
     const [clipsSample, setClipsSample] = useState(null);
@@ -35,6 +35,7 @@ const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, set
     const [customTTSSample, setCustomTTSSample] = useState(null);
     const [openMediaDialog, setOpenMediaDialog] = useState(false);
     const [openMemeMediaDialog, setOpenMemeMediaDialog] = useState(false);
+    const [localMediaType, setLocalMediaType] = useState(GIPHY_GIFS);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -84,20 +85,21 @@ const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, set
             setOpenMemeMediaDialog(true);
         }
 
-        setMediaType(mediaType);
+        setLocalMediaType(mediaType);
     }
 
     const onMediaSelected = (media) => {
         setOpenMediaDialog(false);
         setOpenMemeMediaDialog(false);
-        if (mediaType === GIPHY_TEXT) {
+        if (localMediaType === GIPHY_TEXT) {
             setGiphyText(media);
         } else {
+            setMediaType(localMediaType);
             setMediaSelected(media);
         }
 
-        if (mediaType === GIPHY_TEXT || mediaType === GIPHY_CLIPS) {
-            setCost(mediaType === GIPHY_TEXT ? customTTSCost : clipsCost);
+        if (localMediaType === GIPHY_TEXT || localMediaType === GIPHY_CLIPS) {
+            setCost(localMediaType === GIPHY_TEXT ? customTTSCost : clipsCost);
             onSuccess('checkout');
         } else {
             onSuccess('chatbot');
@@ -189,7 +191,7 @@ const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, set
                     fullWidth
                     fullScreen={fullScreen}
                     maxWidth='sm'>
-                    <MediaSelector onMediaSelected={onMediaSelected} mediaType={mediaType} />
+                    <MediaSelector onMediaSelected={onMediaSelected} mediaType={localMediaType} setMessage={setMessage} />
                 </Dialog>
                 <Dialog open={openMemeMediaDialog}
                     PaperProps={{
