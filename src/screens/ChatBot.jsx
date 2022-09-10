@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
-import { Typography, Paper, InputBase, Box, Button } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Typography, Paper, InputBase, Box, Button, Dialog } from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { ReactComponent as SendIcon } from '../assets/icons/SendIcon.svg';
+import { ReactComponent as QoinIcon } from './../assets/icons/Qoin.svg';
+import { getBotVoices } from '../services/database';
+import MediaSelector from './MediaSelector';
+import MemeMediaSelector from './MemeMediaSelector';
+import { GIPHY_GIFS, GIPHY_STICKERS, MEMES } from '../utils/constants';
 
 const MediaSelectorContainer = styled(Paper)({
     display: 'flex',
@@ -135,22 +141,89 @@ const OptionButton = styled(Button)({
     alignSelf: 'flex-end',
     textTransform: 'none',
     padding: '16px 24px',
+    marginTop: 16
 });
 
-const ChatBot = (props) => {
-    const [message, setMessage] = useState('');
-    const [messageSent, setMessageSent] = useState(false);
+const VoiceCost = styled(Typography)({
+    background: 'linear-gradient(227.05deg, #FFD3FB 9.95%, #F5FFCB 48.86%, #9FFFDD 90.28%), #FFFFFF',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+    fontSize: '16px',
+    fontWeight: '500',
+    lineHeight: '24px',
+    letterSpacing: '0px',
+    marginLeft: 32,
+    display: 'flex',
+    alignItems: 'center'
+});
 
+const ConfirmationButton = styled(Button)({
+    backgroundColor: '#00FFDD',
+    border: '2px solid',
+    color: '#0D1021',
+    pading: '2px',
+    borderRadius: '20px',
+    alignSelf: 'flex-end',
+    textTransform: 'none',
+    padding: '16px 24px',
+    marginTop: 16,
+    fontSize: 16,
+    marginBottom: 24,
+    fontWeight: '700',
+    '&:hover': {
+        backgroundColor: '#00FFDD',
+        opacity: 0.95
+    }
+});
+
+const ChatBot = ({ setMessage, setBotVoice, setMediaSelected, mediaType, setMediaType }) => {
+    const [localMessage, setLocalMessage] = useState('');
+    const [messageSent, setMessageSent] = useState(false);
+    const [availabeVoices, setAvailabeVoices] = useState({});
+    const [selectedVoice, setSelectedVoice] = useState(null);
+    const [openMediaDialog, setOpenMediaDialog] = useState(false);
+    const [openMemeMediaDialog, setOpenMemeMediaDialog] = useState(false);
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     const handleMessageChange = (e) => {
-        setMessage(e.target.value);
+        setLocalMessage(e.target.value);
     }
 
-    const handleSendButton = () => {
-        setMessageSent(true);
+    const handleSendButton = async (e) => {
+        if (e.type === 'click' || e.key === 'Enter') {
+            setMessageSent(true);
+            const voices = await getBotVoices();
+            if (voices.exists()) {
+                setAvailabeVoices(voices.val());
+            }
+        }
     }
 
-    return (<>
+    const openMediaSelector = (mediaType) => {
+        if (mediaType !== MEMES) {
+            setOpenMediaDialog(true);
+        } else {
+            setOpenMemeMediaDialog(true);
+        }
+
+        setMediaType(mediaType);
+    }
+
+    const onMediaSelected = (media) => {
+        setMediaSelected(media);
+        setOpenMediaDialog(false);
+        setOpenMemeMediaDialog(false);
+    }
+
+    const sendTTS = () => {
+        setMessage(localMessage);
+        setBotVoice(selectedVoice);
+    }
+
+    return (
+        <>
         <MediaSelectorContainer>
             <HeaderText>
                 {`💬 Text-to-speech`}
@@ -170,7 +243,7 @@ const ChatBot = (props) => {
                 {messageSent && <>
                     <UserChatBubble itemType='div'>
                         <ChatBubbleText>
-                            {`${message}`}
+                            {localMessage}
                         </ChatBubbleText>
                     </UserChatBubble>
                     <SenderChatBubble style={{ flexDirection: 'column' }}>
@@ -181,11 +254,52 @@ const ChatBot = (props) => {
                             {`🤖 Now choose a bot voice:`}
                         </ChatBubbleText>
                     </SenderChatBubble>
-                    <OptionButton>
-                        <ChatBubbleText>
-                            {`Google Translate`}
-                        </ChatBubbleText>
-                    </OptionButton>
+                    {!selectedVoice ?
+                        Object.keys(availabeVoices).sort((a, b) => availabeVoices[a].cost - availabeVoices[b].cost).map((voiceKey) => (
+                            <OptionButton key={voiceKey} onClick={() => setSelectedVoice({ voiceName: voiceKey, ...availabeVoices[voiceKey] })}>
+                                <ChatBubbleText>
+                                    {voiceKey}
+                                </ChatBubbleText>
+                                {availabeVoices[voiceKey].cost > 0 &&
+                                    <VoiceCost>
+                                        <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
+                                        {availabeVoices[voiceKey].cost}
+                                    </VoiceCost>
+                                }
+                            </OptionButton>
+                        ))
+                        :
+                        <>
+                        <UserChatBubble itemType='div'>
+                            <ChatBubbleText>
+                                {selectedVoice.voiceName}
+                            </ChatBubbleText>
+                        </UserChatBubble>
+                        <SenderChatBubble style={{ flexDirection: 'column' }}>
+                            <ChatBubbleText>
+                                {`👌 Want to add some fun media to your TTS?`}
+                            </ChatBubbleText>
+                        </SenderChatBubble>
+                        <OptionButton onClick={() => openMediaSelector(GIPHY_GIFS)}>
+                            <ChatBubbleText>
+                                Add GIF to my TTS
+                            </ChatBubbleText>
+                        </OptionButton>
+                        <OptionButton onClick={() => openMediaSelector(GIPHY_STICKERS)}>
+                            <ChatBubbleText>
+                                Add Sticker to my TTS
+                            </ChatBubbleText>
+                        </OptionButton>
+                        <OptionButton onClick={() => openMediaSelector(MEMES)}>
+                            <ChatBubbleText>
+                                Add Meme to my TTS
+                            </ChatBubbleText>
+                        </OptionButton>
+                        <ConfirmationButton onClick={sendTTS}>
+                            Only Send TTS
+                        </ConfirmationButton>
+                        </>
+                    }
                 </>}
                 {!messageSent &&
                     <SkipButton>
@@ -197,7 +311,7 @@ const ChatBot = (props) => {
                 {!messageSent &&
                     <ChatInputExternalContainer itemType='div'>
                         <ChatInputContainer itemType='div'>
-                            <ChatInput value={message} onChange={handleMessageChange} />
+                            <ChatInput autoFocus value={localMessage} onChange={handleMessageChange} onKeyPress={handleSendButton} />
                         </ChatInputContainer>
                         <SendIconContainer itemType='div'>
                             <SendIcon onClick={handleSendButton} />
@@ -206,7 +320,32 @@ const ChatBot = (props) => {
                 }
             </BottomContainer>
         </MediaSelectorContainer>
-    </>);
+        <Dialog open={openMediaDialog}
+            PaperProps={{
+                style: {
+                    backgroundColor: 'transparent'
+                }
+            }}
+            onClose={() => setOpenMediaDialog(false)}
+            fullWidth
+            fullScreen={fullScreen}
+            maxWidth='sm'>
+            <MediaSelector onMediaSelected={onMediaSelected} mediaType={mediaType} />
+        </Dialog>
+        <Dialog open={openMemeMediaDialog}
+            PaperProps={{
+                style: {
+                    backgroundColor: 'transparent'
+                }
+            }}
+            onClose={() => setOpenMemeMediaDialog(false)}
+            fullWidth
+            fullScreen={fullScreen}
+            maxWidth='sm'>
+            <MemeMediaSelector onMediaSelected={onMediaSelected} />
+        </Dialog>
+        </>
+    );
 }
 
 export default ChatBot;
