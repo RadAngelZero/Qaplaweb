@@ -3,6 +3,7 @@ import { GiphyFetch } from '@giphy/js-fetch-api';
 import { Video } from '@giphy/react-components';
 
 import { GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, MEMES } from '../../utils/constants';
+import { ReactComponent as QoinIcon } from '../../assets/icons/Qoin.svg';
 
 const gf = new GiphyFetch('Kb3qFoEloWmqsI3ViTJKGkQZjxICJ3bi');
 
@@ -16,7 +17,6 @@ const CheerPreview = ({ donation }) => {
         }
 
         if ((donation.media && (donation.media.type === GIPHY_CLIPS || donation.media.type === 'video') && donation.media.id)) {
-            setClip(null);
             getClip();
         }
     }, [clip, donation]);
@@ -82,7 +82,7 @@ const CheerPreview = ({ donation }) => {
                         fontSize: '12px',
                         textAlign: 'center'
                     }}>
-                        <b style={{ color: '#0AFFD2' }}>{`Qapla `}</b>
+                        <b style={{ color: '#0AFFD2' }}>{`${donation.twitchUserName} `}</b>
                         {donation.amountQoins ?
                             <>
                             <div style={{ margin: '0 6px' }}>has sent you</div>
@@ -99,9 +99,9 @@ const CheerPreview = ({ donation }) => {
                 </div>
                 {donation.amountQoins ?
                     <>
-                    <div style={{ width: '10px' }}></div>
+                    <div style={{ width: '5px' }}></div>
                     <div style={{ display: 'flex', alignSelf: 'center' }}>
-                        {/* <DonatedQoin style={{ display: 'flex', width: '38px', height: '38px' }} /> */}
+                        <QoinIcon style={{ display: 'flex', width: '20px', height: '20px' }} />
                     </div>
                     </>
                     :

@@ -11,13 +11,13 @@ import iconEstrella from "../assets/IconEstrella.png";
 import ellipse from "../assets/Ellipse.png";
 import iconLOL from '../assets/IconLOL.png';
 import iconChat from '../assets/iconChat.png';
-import iconGIF from '../assets/IconGIF.svg';
+import iconGIF from '../assets/icons/IconGIF.svg';
 import iconSticker from '../assets/IconStickers.png';
 import gradientGifs from '../assets/GradientGifs.png';
 import gradientChat from '../assets/GradientChat.png';
 import gradientLOL from '../assets/GradientLOL.png';
 import gradientSticker from '../assets/GradientSticker.png';
-import { getReactionSample, getReactionsSamplesCount, getReactionTypeCost, getUserReactionsWithStreamer } from "../services/database";
+import { getReactionSample, getReactionsSamplesCount, getReactionTypeCost, getUserReactionsWithStreamer, listenUserReactionsWithStreamer } from "../services/database";
 import { GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from "../utils/constants";
 import MediaSelector from "./MediaSelector";
 import MemeMediaSelector from "./MemeMediaSelector";
@@ -27,8 +27,7 @@ import {Title} from '../components/DeQButtonPayments/DeQButtonPayments'
 
 
 
-const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, setGiphyText }) => {
-
+const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, setGiphyText, onSuccess, setCost }) => {
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
     const [clipsCost, setClipsCost] = useState(null);
     const [clipsSample, setClipsSample] = useState(null);
@@ -60,9 +59,9 @@ const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, set
         }
 
         async function getReactionsCount() {
-            const numberOfReactions = await getUserReactionsWithStreamer(user.id, streamer.uid);
-
-            setNumberOfReactions(numberOfReactions.val() || 0);
+            listenUserReactionsWithStreamer(user.id, streamer.uid, (reactions) => {
+                setNumberOfReactions(reactions.val() || 0);
+            });
         }
 
         if (user && user.id && streamer) {
@@ -89,13 +88,20 @@ const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, set
     }
 
     const onMediaSelected = (media) => {
+        setOpenMediaDialog(false);
+        setOpenMemeMediaDialog(false);
         if (mediaType === GIPHY_TEXT) {
             setGiphyText(media);
         } else {
             setMediaSelected(media);
         }
-        setOpenMediaDialog(false);
-        setOpenMemeMediaDialog(false);
+
+        if (mediaType === GIPHY_TEXT || mediaType === GIPHY_CLIPS) {
+            setCost(mediaType === GIPHY_TEXT ? customTTSCost : clipsCost);
+            onSuccess('checkout');
+        } else {
+            onSuccess('chatbot');
+        }
     }
 
     return (
@@ -137,7 +143,7 @@ const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, set
                             imagen={iconGIF}
                             background={gradientGifs}
                             />
-                        <DeQButton onClick={() => openMediaSelector(GIPHY_GIFS)}
+                        <DeQButton onClick={() => onSuccess('chatbot')}
                             title={'Text-To-Speech'}
                             imagen={iconChat}
                             background={gradientChat}

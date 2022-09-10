@@ -8,6 +8,7 @@ const MainAppBar = styled(AppBar)({
     flexDirection: 'row',
     alignItems: 'center',
     padding: '20px',
+    paddingLeft: '64px',
 });
 
 const StreamerImage = styled(Avatar)({

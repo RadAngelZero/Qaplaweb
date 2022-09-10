@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, Paper, InputBase, Box, Button, Dialog } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { ReactComponent as SendIcon } from '../assets/icons/SendIcon.svg';
 import { ReactComponent as QoinIcon } from './../assets/icons/Qoin.svg';
+import { ReactComponent as GifIcon } from './../assets/icons/IconGIF.svg';
+import { ReactComponent as StickerIcon } from './../assets/icons/Sticker.svg';
+import { ReactComponent as MemesIcon } from './../assets/icons/Memes.svg';
 import { getBotVoices } from '../services/database';
 import MediaSelector from './MediaSelector';
 import MemeMediaSelector from './MemeMediaSelector';
@@ -32,6 +35,7 @@ const HeaderText = styled(Typography)({
     fontSize: '22px',
     fontWeight: '500',
     lineHeight: '24px',
+    marginBottom: 24
 });
 
 const BottomContainer = styled(Box)({
@@ -69,6 +73,10 @@ const SkipButton = styled(Button)({
     padding: '9.6px 24px',
     alignSelf: 'flex-start',
     marginBottom: '40px',
+    '&:hover': {
+        backgroundColor: '#4040FF4F',
+        opacity: 0.9
+    }
 });
 
 const SkipButtonText = styled(Typography)({
@@ -100,7 +108,6 @@ const SenderChatBubble = styled(Box)({
     padding: '16px 24px',
     borderRadius: '4px 20px 20px 20px',
     alignSelf: 'flex-start',
-    marginBottom: '16px',
     display: 'flex',
 });
 
@@ -177,7 +184,7 @@ const ConfirmationButton = styled(Button)({
     }
 });
 
-const ChatBot = ({ setMessage, setBotVoice, setMediaSelected, mediaType, setMediaType }) => {
+const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSelected, mediaType, setMediaType, setCost, onSuccess }) => {
     const [localMessage, setLocalMessage] = useState('');
     const [messageSent, setMessageSent] = useState(false);
     const [availabeVoices, setAvailabeVoices] = useState({});
@@ -215,11 +222,25 @@ const ChatBot = ({ setMessage, setBotVoice, setMediaSelected, mediaType, setMedi
         setMediaSelected(media);
         setOpenMediaDialog(false);
         setOpenMemeMediaDialog(false);
+        sendTTS();
     }
 
-    const sendTTS = () => {
+    const onVoiceSelected = (voice) => {
+        setSelectedVoice(voice);
+        if (mediaSelected) {
+            sendTTS(null, voice);
+        }
+    }
+
+    const sendTTS = (e, voice) => {
+        const choosenVoice = voice ? voice : selectedVoice;
+        console.log(choosenVoice);
         setMessage(localMessage);
-        setBotVoice(selectedVoice);
+        setBotVoice(choosenVoice);
+        if (choosenVoice.cost) {
+            setCost(choosenVoice.cost);
+        }
+        onSuccess();
     }
 
     return (
@@ -229,7 +250,7 @@ const ChatBot = ({ setMessage, setBotVoice, setMediaSelected, mediaType, setMedi
                 {`💬 Text-to-speech`}
             </HeaderText>
             <BottomContainer itemType='div'>
-                <SenderChatBubble itemType='div'>
+                <SenderChatBubble itemType='div' style={{ marginBottom: !message && mediaSelected ? 16 : 40 }}>
                     <ChatBubbleText>
                         {`🗣 `}
                     </ChatBubbleText>
@@ -240,7 +261,8 @@ const ChatBot = ({ setMessage, setBotVoice, setMediaSelected, mediaType, setMedi
                         {` What do you want to say?`}
                     </ChatBubbleText>
                 </SenderChatBubble>
-                {messageSent && <>
+                {messageSent &&
+                    <>
                     <UserChatBubble itemType='div'>
                         <ChatBubbleText>
                             {localMessage}
@@ -256,7 +278,7 @@ const ChatBot = ({ setMessage, setBotVoice, setMediaSelected, mediaType, setMedi
                     </SenderChatBubble>
                     {!selectedVoice ?
                         Object.keys(availabeVoices).sort((a, b) => availabeVoices[a].cost - availabeVoices[b].cost).map((voiceKey) => (
-                            <OptionButton key={voiceKey} onClick={() => setSelectedVoice({ voiceName: voiceKey, ...availabeVoices[voiceKey] })}>
+                            <OptionButton key={voiceKey} onClick={() => onVoiceSelected({ voiceName: voiceKey, ...availabeVoices[voiceKey] })}>
                                 <ChatBubbleText>
                                     {voiceKey}
                                 </ChatBubbleText>
@@ -275,34 +297,42 @@ const ChatBot = ({ setMessage, setBotVoice, setMediaSelected, mediaType, setMedi
                                 {selectedVoice.voiceName}
                             </ChatBubbleText>
                         </UserChatBubble>
-                        <SenderChatBubble style={{ flexDirection: 'column' }}>
-                            <ChatBubbleText>
-                                {`👌 Want to add some fun media to your TTS?`}
-                            </ChatBubbleText>
-                        </SenderChatBubble>
-                        <OptionButton onClick={() => openMediaSelector(GIPHY_GIFS)}>
-                            <ChatBubbleText>
-                                Add GIF to my TTS
-                            </ChatBubbleText>
-                        </OptionButton>
-                        <OptionButton onClick={() => openMediaSelector(GIPHY_STICKERS)}>
-                            <ChatBubbleText>
-                                Add Sticker to my TTS
-                            </ChatBubbleText>
-                        </OptionButton>
-                        <OptionButton onClick={() => openMediaSelector(MEMES)}>
-                            <ChatBubbleText>
-                                Add Meme to my TTS
-                            </ChatBubbleText>
-                        </OptionButton>
-                        <ConfirmationButton onClick={sendTTS}>
-                            Only Send TTS
-                        </ConfirmationButton>
+                        {!mediaSelected &&
+                            <>
+                            <SenderChatBubble style={{ flexDirection: 'column' }}>
+                                <ChatBubbleText>
+                                    {`👌 Want to add some fun media to your TTS?`}
+                                </ChatBubbleText>
+                            </SenderChatBubble>
+                            <OptionButton onClick={() => openMediaSelector(GIPHY_GIFS)}>
+                                <GifIcon width={24} height={24} style={{ marginRight: 16 }} />
+                                <ChatBubbleText>
+                                    Add GIF to my TTS
+                                </ChatBubbleText>
+                            </OptionButton>
+                            <OptionButton onClick={() => openMediaSelector(GIPHY_STICKERS)}>
+                                <StickerIcon width={24} height={24} style={{ marginRight: 16 }} />
+                                <ChatBubbleText>
+                                    Add Sticker to my TTS
+                                </ChatBubbleText>
+                            </OptionButton>
+                            <OptionButton onClick={() => openMediaSelector(MEMES)}>
+                                <MemesIcon width={24} height={24} style={{ marginRight: 16 }} />
+                                <ChatBubbleText>
+                                    Add Meme to my TTS
+                                </ChatBubbleText>
+                            </OptionButton>
+                            <ConfirmationButton onClick={sendTTS}>
+                                Only Send TTS
+                            </ConfirmationButton>
+                            </>
+                        }
                         </>
                     }
-                </>}
-                {!messageSent &&
-                    <SkipButton>
+                    </>
+                }
+                {!message && !messageSent && mediaSelected &&
+                    <SkipButton onClick={onSuccess}>
                         <SkipButtonText>
                             {`Skip`}
                         </SkipButtonText>
@@ -311,7 +341,13 @@ const ChatBot = ({ setMessage, setBotVoice, setMediaSelected, mediaType, setMedi
                 {!messageSent &&
                     <ChatInputExternalContainer itemType='div'>
                         <ChatInputContainer itemType='div'>
-                            <ChatInput autoFocus value={localMessage} onChange={handleMessageChange} onKeyPress={handleSendButton} />
+                            <ChatInput autoFocus
+                                value={localMessage}
+                                onChange={handleMessageChange}
+                                onKeyPress={handleSendButton}
+                                inputProps={{
+                                    maxLength: 100
+                                }} />
                         </ChatInputContainer>
                         <SendIconContainer itemType='div'>
                             <SendIcon onClick={handleSendButton} />

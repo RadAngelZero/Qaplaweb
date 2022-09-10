@@ -3,23 +3,25 @@ import { AccordionSummary, Box, Button, Dialog, Grid, Paper, Typography, useMedi
 import styled from '@emotion/styled';
 import { GiphyFetch } from '@giphy/js-fetch-api';
 
-import { ReactComponent as IconGIF } from '../assets/IconGIF.svg';
+import { ReactComponent as GifIcon } from './../assets/icons/IconGIF.svg';
+import { ReactComponent as StickerIcon } from './../assets/icons/Sticker.svg';
+import { ReactComponent as MemesIcon } from './../assets/icons/Memes.svg';
+import { ReactComponent as TTSIcon } from './../assets/icons/TTSIcon.svg';
 import { ReactComponent as QoinIcon } from '../assets/icons/Qoin.svg';
-import IconChat from '../assets/iconChat.png';
 import GradientChat from '../assets/GradientChat.png';
 import GradientLOL from '../assets/GradientLOL.png';
 import CheerPreview from '../components/CheerPreview/CheerPreview';
 import EmojiSelector from './EmojiSelector';
 import MediaSelector from './MediaSelector';
 import MemeMediaSelector from './MemeMediaSelector';
-import { GIPHY_TEXT, MEMES } from '../utils/constants';
+import { GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from '../utils/constants';
+import { getReactionTypeCost, sendPrepaidReaction } from '../services/database';
 
 const gf = new GiphyFetch('Kb3qFoEloWmqsI3ViTJKGkQZjxICJ3bi');
 
 const PreviewContainer = styled(Paper)({
-    backgroundColor: '#141539',
-    width: '100%',
-    borderRadius: 20
+    backgroundColor: 'transparent',
+    width: '100%'
 });
 
 const CheckoutContainer = styled(Paper)({
@@ -97,7 +99,6 @@ const ExtraTipContainer = styled(Button)({
     paddingBottom: 30,
     paddingLeft: 14,
     paddingRight: 14,
-    backgroundColor: '#141539',
     borderRadius: 20,
     marginRight: 16,
     marginBottom: 16,
@@ -142,28 +143,42 @@ const SendButtonText = styled(Typography)({
     fontWeight: 600
 });
 
-const Checkout = ({ media, setMediaSelected, giphyText, setGiphyText, mediaType, setMediaType }) => {
-    const [clip, setClip] = useState(null);
+const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botVoice, mediaType, setMediaType, message, donationCost, setCost, editMessage, streamer, onSuccess }) => {
     const [openEmojiSelector, setOpenEmojiSelector] = useState(false);
     const [openMediaDialog, setOpenMediaDialog] = useState(false);
     const [openMemeMediaDialog, setOpenMemeMediaDialog] = useState(false);
     const [emoji, setEmoji] = useState('');
+    const [emojiRaidCost, setEmojiRaidCost] = useState(0);
+    const [giphyTextCost, setGiphyTextCost] = useState(0);
+    const [extraTip, setExtraTip] = useState(0);
+    const [lockSendReactionButton, setLockSendReactionButton] = useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     useEffect(() => {
-        const getClip = async () => {
-            const { data } = await gf.gif('zAfuVgdHlEjS6gX6Aj');
-            setClip(data);
+        async function getCosts() {
+            const emojiRaidCost = await getReactionTypeCost('emoji');
+            if (emojiRaidCost.exists()) {
+                setEmojiRaidCost(emojiRaidCost.val());
+            }
+
+            const giphyTextCost = await getReactionTypeCost(GIPHY_TEXT);
+            if (giphyTextCost.exists()) {
+                setGiphyTextCost(giphyTextCost.val());
+            }
         }
 
-        if (!clip) {
-            getClip();
+        if (!emojiRaidCost && !giphyTextCost) {
+            getCosts();
         }
-    }, [clip]);
+    }, [emojiRaidCost, giphyTextCost]);
 
-    const onEmojiSelected = (emoji) => {
-        setEmoji(emoji.native);
+    const onEmojiSelected = (selectedEmoji) => {
+        // Only add to cost the first time an emoji is selected
+        if (!emoji) {
+            setCost(emojiRaidCost);
+        }
+        setEmoji(selectedEmoji.native);
         setOpenEmojiSelector(false);
     }
 
@@ -178,6 +193,9 @@ const Checkout = ({ media, setMediaSelected, giphyText, setGiphyText, mediaType,
 
     const onMediaSelected = (media) => {
         if (media.type === GIPHY_TEXT || media.type === 'text') {
+            if (!giphyText) {
+                setCost(giphyTextCost);
+            }
             setGiphyText(media);
         } else {
             setMediaSelected(media);
@@ -186,114 +204,186 @@ const Checkout = ({ media, setMediaSelected, giphyText, setGiphyText, mediaType,
         setOpenMemeMediaDialog(false);
     }
 
+    const setOtherExtraTip = () => {
+        const extraTip = Number(prompt('Extra tip:'));
+        if (!isNaN(extraTip)) {
+            setExtraTip(extraTip);
+        } else {
+            alert('Invalid tip');
+        }
+    }
+
+    const sendReaction = () => {
+        setLockSendReactionButton(true);
+        const totalDonationCost = donationCost + extraTip;
+        console.log(user.credits, totalDonationCost);
+        if (user.credits >= totalDonationCost) {
+            sendPrepaidReaction(
+                user.id,
+                user.userName,
+                user.twitchUsername,
+                user.photoUrl,
+                streamer.uid,
+                streamer.displayName,
+                {
+                    id: media.id ? media.id : null,
+                    type: media.type,
+                    ...media.images.original
+                },
+                message,
+                {
+                    giphyText,
+                    ...botVoice
+                },
+                emoji ? [emoji] : [],
+                totalDonationCost,
+                () => { onSuccess(); alert('success'); setLockSendReactionButton(false); },
+                () => alert('Error')
+            );
+        } else {
+            setLockSendReactionButton(false);
+        }
+    }
+
+    const renderMediaIcon = () => {
+        switch (mediaType) {
+            case GIPHY_GIFS:
+                return <GifIcon width={50} height={50} />;
+            case GIPHY_STICKERS:
+                return <StickerIcon width={50} height={50} />;
+            case MEMES:
+                return <MemesIcon width={50} height={50} />;
+            default:
+                break;
+        }
+    }
+
     return (
         <CheckoutContainer>
             <PreviewContainer>
                 <CheerPreview donation={{
-                    amountQoins: 1000,
-                    message: 'Test',
+                    amountQoins: donationCost,
+                    message,
                     timestamp: (new Date()).getTime(),
-                    uid: '',
+                    uid: user.id,
                     read: false,
-                    twitchUserName: 'QAPLA',
+                    twitchUserName: user.twitchUsername,
                     emojiRain: {
-                        emojis: ['👋']
+                        emojis: emoji ? [emoji] : []
                     },
                     media,
                     messageExtraData: {
-                        voiceAPIName: 'pt-BR-Standard-B',
-                        giphyText
+                        giphyText,
+                        ...botVoice
                     },
-                    userName: 'QAPLA',
+                    userName: user.userName,
                     photoURL: ''
                 }} />
             </PreviewContainer>
             <Grid container>
-                <Grid xs={12}>
+                <Grid item xs={12}>
                     <SectionTitle>
                         Add Ons
                     </SectionTitle>
                 </Grid>
-                <Grid xs={12}>
-                    <Grid container style={{ justifyContent: 'space-between' }}>
-                        <AddOnButton style={{ background: `url(${GradientChat})` }} onClick={() => setOpenEmojiSelector(true)}>
-                            <div>
-                                {emoji || '🤡'}
-                            </div>
-                            <AddOnText>
-                                Emoji Raid
-                            </AddOnText>
-                            <QoinsCostContainer>
-                                <div style={{ display: 'flex', marginLeft: 14, alignSelf: 'center' }}>
-                                    <QoinIcon />
+                <Grid item xs={12}>
+                    <Grid container rowSpacing={2}>
+                        {emojiRaidCost &&
+                            <Grid item md={3}>
+                                <AddOnButton style={{ background: `url(${GradientChat})` }} onClick={() => setOpenEmojiSelector(true)}>
+                                    <div>
+                                        {emoji || '🤡'}
+                                    </div>
+                                    <AddOnText>
+                                        Emoji Raid
+                                    </AddOnText>
+                                    <QoinsCostContainer>
+                                        <div style={{ display: 'flex', marginLeft: 14, alignSelf: 'center' }}>
+                                            <QoinIcon />
+                                        </div>
+                                        <QoinsCostText>
+                                            200
+                                        </QoinsCostText>
+                                    </QoinsCostContainer>
+                                </AddOnButton>
+                            </Grid>
+                        }
+                        <Grid item md={3}>
+                            <AddOnButton style={{ background: `url(${GradientLOL})` }} onClick={() => openMediaSelector(GIPHY_TEXT)}>
+                                <div>
+                                    🤡
                                 </div>
-                                <QoinsCostText>
-                                    200
-                                </QoinsCostText>
-                            </QoinsCostContainer>
-                        </AddOnButton>
-                        <AddOnButton style={{ background: `url(${GradientLOL})` }} onClick={() => openMediaSelector(GIPHY_TEXT)}>
-                            <div>
-                                🤡
-                            </div>
-                            <AddOnText>
-                                TTS personalizado
-                            </AddOnText>
-                            <QoinsCostContainer>
-                                <div style={{ display: 'flex', marginLeft: 14, alignSelf: 'center' }}>
-                                    <QoinIcon />
-                                </div>
-                                <QoinsCostText>
-                                    200
-                                </QoinsCostText>
-                            </QoinsCostContainer>
-                        </AddOnButton>
-                        <EditButton onClick={() => openMediaSelector(mediaType)}>
-                            <div>
-                                <IconGIF />
-                            </div>
-                            <p style={{ weight: "700", fontSize: "18px", margin: 0 }}>
-                                Edit GIF
-                            </p>
-                        </EditButton>
-                        <EditButton>
-                            <div>
-                                <img src={IconChat} alt="Chat" />
-                            </div>
-                            <p style={{ weight: "700", fontSize: "18px", margin: 0 }}>
-                                Edit TTS
-                            </p>
-                        </EditButton>
+                                <AddOnText>
+                                    TTS personalizado
+                                </AddOnText>
+                                <QoinsCostContainer>
+                                    <div style={{ display: 'flex', marginLeft: 14, alignSelf: 'center' }}>
+                                        <QoinIcon />
+                                    </div>
+                                    <QoinsCostText>
+                                        200
+                                    </QoinsCostText>
+                                </QoinsCostContainer>
+                            </AddOnButton>
+                        </Grid>
+                        {media &&
+                            <Grid item md={3}>
+                                <EditButton onClick={() => openMediaSelector(mediaType)}>
+                                    <div>
+                                        {renderMediaIcon()}
+                                    </div>
+                                    <p style={{ weight: "700", fontSize: "18px", margin: 0 }}>
+                                        Edit {mediaType}
+                                    </p>
+                                </EditButton>
+                            </Grid>
+                        }
+                        {message !== '' &&
+                            <Grid item md={3}>
+                                <EditButton onClick={editMessage}>
+                                    <div>
+                                        <TTSIcon />
+                                    </div>
+                                    <p style={{ weight: "700", fontSize: "18px", margin: 0 }}>
+                                        Edit TTS
+                                    </p>
+                                </EditButton>
+                            </Grid>
+                        }
                     </Grid>
                 </Grid>
                 <Grid item sm={8} md={6}>
                     <Grid container style={{ justifyContent: 'space-between' }}>
                     </Grid>
-                    <Grid xs={12}>
+                    <Grid item xs={12}>
                         <SectionTitle>
                             Send Extra Tip
                         </SectionTitle>
                     </Grid>
-                    <Grid xs={12} style={{ justifyContent: 'space-between' }}>
-                        <ExtraTipContainer>
+                    <Grid item xs={12} style={{ justifyContent: 'space-between' }}>
+                        <ExtraTipContainer onClick={() => setExtraTip(200)}
+                            style={{ background: extraTip === 200 ? 'linear-gradient(118.67deg, #2D07FA -6.39%, #A716EE 101.45%), #141539' : '#141539' }}>
                             <div style={{ display: 'flex', alignSelf: 'center', marginRight: 6 }}>
                                 <QoinIcon />
                             </div>
                             200
                         </ExtraTipContainer>
-                        <ExtraTipContainer>
+                        <ExtraTipContainer onClick={() => setExtraTip(500)}
+                            style={{ background: extraTip === 500 ? 'linear-gradient(118.67deg, #2D07FA -6.39%, #A716EE 101.45%), #141539' : '#141539' }}>
                             <div style={{ display: 'flex', alignSelf: 'center', marginRight: 6 }}>
                                 <QoinIcon />
                             </div>
                             500
                         </ExtraTipContainer>
-                        <ExtraTipContainer>
+                        <ExtraTipContainer onClick={() => setExtraTip(1000)}
+                            style={{ background: extraTip === 1000 ? 'linear-gradient(118.67deg, #2D07FA -6.39%, #A716EE 101.45%), #141539' : '#141539' }}>
                             <div style={{ display: 'flex', alignSelf: 'center', marginRight: 6 }}>
                                 <QoinIcon />
                             </div>
                             1000
                         </ExtraTipContainer>
-                        <ExtraTipContainer style={{ marginRight: 0 }}>
+                        <ExtraTipContainer onClick={setOtherExtraTip}
+                            style={{ marginRight: 0, background: extraTip > 0 && extraTip !== 200 && extraTip !== 500 && extraTip !== 1000 ? 'linear-gradient(118.67deg, #2D07FA -6.39%, #A716EE 101.45%), #141539' : '#141539' }}>
                             <div style={{ display: 'flex', alignSelf: 'center', marginRight: 6 }}>
                                 <QoinIcon />
                             </div>
@@ -306,16 +396,17 @@ const Checkout = ({ media, setMediaSelected, giphyText, setGiphyText, mediaType,
                         <Grid item xs={12}>
                             {/* This must be an accordion */}
                             <TotalAccordion>
-                                <AccordionSummary style={{ height: 80, padding: 0 }}>
+                                <AccordionSummary style={{ height: 80, padding: 0, cursor: 'default' }}>
                                     <TotalText>
                                         Total
                                     </TotalText>
                                     <TotalText style={{ textAlign: 'end' }}>
-                                        0
+                                        {donationCost + extraTip}
                                     </TotalText>
                                 </AccordionSummary>
                             </TotalAccordion>
-                            <SendButton>
+                            <SendButton disabled={lockSendReactionButton}
+                                onClick={sendReaction}>
                                 <SendButtonText>
                                     Send Reaction
                                 </SendButtonText>

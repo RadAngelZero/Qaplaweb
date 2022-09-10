@@ -1,4 +1,4 @@
-import { child, DataSnapshot, equalTo, get, orderByChild, push, query, runTransaction, TransactionResult, update } from 'firebase/database';
+import { child, DataSnapshot, equalTo, get, orderByChild, push, query, runTransaction, TransactionResult, update, onValue } from 'firebase/database';
 
 import { database } from './firebase';
 
@@ -16,6 +16,16 @@ export async function getUserProfileWithTwitchId(twitchId) {
     const usersChild = child(database, '/Users');
 
     return await get(query(usersChild, orderByChild('twitchId'), equalTo(twitchId)));
+}
+
+/**
+ * Listen for changes on the given user profile
+ * @param {string} uid User identifier
+ * @param {DataSnapshot} callback Handler for the database results
+ */
+export function listenToUserProfile(uid, callback) {
+    const userChild = child(database, `/Users/${uid}`);
+    return onValue(query(userChild), callback);
 }
 
 /**
@@ -99,6 +109,18 @@ export async function removeQoinsFromUser(uid, qoinsToRemove) {
 //////////////////////
 // Reactions count
 //////////////////////
+
+/**
+ * Listen for changes on the given user profile
+ * @param {string} uid User identifier
+ * @param {string} streamerUid Streamer user identifier
+ * @param {DataSnapshot} callback Handler for the database results
+ */
+export function listenUserReactionsWithStreamer(uid, streamerUid, callback) {
+    const reactionsCountChild = child(database, `/UsersReactionsCount/${uid}/${streamerUid}`);
+
+    return onValue(query(reactionsCountChild), callback);
+}
 
 /**
  * Returns the count of prepaid reactions the user have with the given streamer
@@ -317,6 +339,7 @@ export async function sendPrepaidReaction(uid, userName, twitchUserName, userPho
             const streamerDonationsChild = child(database, `/StreamersDonations/${streamerUid}`);
             const timestamp = (new Date()).getTime();
 
+            console.log(media);
             const donationRef = push(streamerDonationsChild, {
                 amountQoins: qoinsToRemove,
                 media,

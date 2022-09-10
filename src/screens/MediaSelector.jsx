@@ -88,7 +88,14 @@ const MediaSelector = ({ mediaType, onMediaSelected }) => {
         <MediaSelectorContainer>
             <SearchContainer elevation={12} onClick={focusSearch}>
                 <SearchIcon style={{ opacity: 0.6 }} />
-                <SearchInput onChange={handleSearch} value={searchTerm} placeholder={mediaType !== GIPHY_TEXT ? `Search Giphy` : 'Type to create'} ref={searchInput} id='searchInput' />
+                <SearchInput value={searchTerm}
+                    onChange={handleSearch}
+                    placeholder={mediaType !== GIPHY_TEXT ? `Search Giphy` : 'Type to create'}
+                    ref={searchInput}
+                    id='searchInput'
+                    inputProps={{
+                    maxLength: 50
+                    }} />
                 {searchTerm === '' &&
                     <GiphyLogo component='img' src={require('../assets/images/PoweredbyGiphy.png')} onClick={focusSearch} />
                 }

@@ -2,13 +2,16 @@ import { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { getStreamerPublicData, getUserProfile } from './services/database';
+import { getStreamerPublicData, getUserProfile, listenToUserProfile } from './services/database';
 import { listenToAuthState } from './services/auth';
 
 import HeaderBar from './components/HeaderBar';
 // import ChatBot from './screens/ChatBot';
 import Layout from './screens/Layout';
 import SignIn from './screens/SignIn';
+import Checkout from './screens/Checkout';
+import { GIPHY_CLIPS } from './utils/constants';
+import ChatBot from './screens/ChatBot';
 
 function useQuery() {
     const { search } = window.location;
@@ -26,6 +29,12 @@ function App() {
     const [user, setUser] = useState(undefined);
     const [streamer, setStreamer] = useState(null);
     const [mediaSelected, setMediaSelected] = useState(null);
+    const [mediaType, setMediaType] = useState(GIPHY_CLIPS);
+    const [giphyText, setGiphyText] = useState(null);
+    const [message, setMessage] = useState('');
+    const [botVoice, setBotVoice] = useState(null);
+    const [currentStep, setCurrentStep] = useState('deQk');
+    const [cost, setCost] = useState(0);
     const query = useQuery();
 
     useEffect(() => {
@@ -40,8 +49,11 @@ function App() {
             listenToAuthState(async (authUser) => {
                 // Important to use user state value on conditions to prevent infinit executions
                 if (!user && authUser) {
-                    const userSnapshot = await getUserProfile(authUser.uid);
-                    setUser(userSnapshot.val());
+                    listenToUserProfile(authUser.uid, (userSnapshot) => {
+                        if (userSnapshot.exists()) {
+                            setUser(userSnapshot.val());
+                        }
+                    });
                     // user === undefined is first load || user to handle signOut
                 } else if ((user === undefined || user) && !authUser) {
                     setUser(null);
@@ -61,6 +73,58 @@ function App() {
         }
     }, [user, query, streamer]);
 
+    const addToDonationCost = (valueToAdd) => setCost(cost + valueToAdd);
+
+    const onDonationSent = () => {
+        setMediaSelected(null);
+        setGiphyText(null);
+        setMessage('');
+        setBotVoice(null);
+        setCurrentStep('deQk');
+        setCost(0);
+    }
+
+    const renderSection = () => {
+        switch (currentStep) {
+            case 'deQk':
+                return <Layout setMediaSelected={setMediaSelected}
+                        user={user}
+                        streamer={streamer}
+                        mediaType={mediaType}
+                        setMediaType={setMediaType}
+                        setGiphyText={setGiphyText}
+                        onSuccess={(nextStep) => setCurrentStep(nextStep)}
+                        setCost={addToDonationCost} />
+            case 'chatbot':
+                return <ChatBot message={message}
+                        setMessage={setMessage}
+                        setBotVoice={setBotVoice}
+                        mediaType={mediaType}
+                        setMediaType={setMediaType}
+                        mediaSelected={mediaSelected}
+                        setMediaSelected={setMediaSelected}
+                        onSuccess={() => setCurrentStep('checkout')}
+                        setCost={addToDonationCost} />
+            case 'checkout':
+                return <Checkout media={mediaSelected}
+                        setMediaSelected={setMediaSelected}
+                        mediaType={mediaType}
+                        setMediaType={setMediaType}
+                        giphyText={giphyText}
+                        setGiphyText={setGiphyText}
+                        message={message}
+                        user={user}
+                        botVoice={botVoice}
+                        donationCost={cost}
+                        setCost={addToDonationCost}
+                        editMessage={() => setCurrentStep('chatbot')}
+                        onSuccess={onDonationSent}
+                        streamer={streamer} />
+            default:
+                break;
+        }
+    }
+
     // User is undefined before check auth state
     if (user !== undefined) {
         return (
@@ -76,7 +140,7 @@ function App() {
                         streamerImage={streamer.photoUrl} />
                 }
                 <MainContainer itemType='div'>
-                    <Layout setMediaSelected={setMediaSelected} user={user} streamer={streamer} />
+                    {renderSection()}
                 </MainContainer>
                 </>
             }
