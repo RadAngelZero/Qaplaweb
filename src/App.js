@@ -22,7 +22,11 @@ function useQuery() {
 const MainContainer = styled(Box)({
     marginTop: '72px',
     paddingRight: 64,
-    paddingLeft: 64
+    paddingLeft: 64,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column'
 })
 
 function App() {
@@ -135,12 +139,12 @@ function App() {
                 <SignIn />
                 :
                 <>
-                {streamer &&
-                    <HeaderBar
-                        streamerName={streamer.displayName}
-                        streamerImage={streamer.photoUrl} />
-                }
                 <MainContainer itemType='div'>
+                    {streamer &&
+                        <HeaderBar
+                            streamerName={streamer.displayName}
+                            streamerImage={streamer.photoUrl} />
+                    }
                     {renderSection()}
                 </MainContainer>
                 </>

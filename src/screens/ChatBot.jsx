@@ -13,12 +13,11 @@ import MediaSelector from './MediaSelector';
 import MemeMediaSelector from './MemeMediaSelector';
 import { GIPHY_GIFS, GIPHY_STICKERS, MEMES } from '../utils/constants';
 
-const MediaSelectorContainer = styled(Paper)({
+const ChatBotContainer = styled(Paper)({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
     backgroundColor: '#0D1021',
-    padding: '16px',
     borderRadius: '0px',
     borderTopLeftRadius: '10px',
     borderTopRightRadius: '10px',
@@ -44,6 +43,8 @@ const BottomContainer = styled(Box)({
     marginTop: 'auto',
     bottom: '0px',
     flexDirection: 'column',
+    minHeight: '60vh',
+    justifyContent: 'space-between'
 });
 
 const ChatInputExternalContainer = styled(Box)({
@@ -51,7 +52,7 @@ const ChatInputExternalContainer = styled(Box)({
     alignItems: 'center',
     width: '100%',
     backgroundColor: '#141539',
-    padding: '16px 40px',
+    padding: '16px 0px',
     marginBottom: '-16px',
 });
 
@@ -65,6 +66,7 @@ const ChatInputContainer = styled(Paper)({
     padding: '0px 16px',
     borderRadius: '50px',
     minWidth: '260px',
+    marginLeft: 16
 });
 
 const SkipButton = styled(Button)({
@@ -101,6 +103,7 @@ const ChatInput = styled(InputBase)({
 
 const SendIconContainer = styled(Box)({
     marginLeft: '16px',
+    marginRight: 16
 });
 
 const SenderChatBubble = styled(Box)({
@@ -244,7 +247,7 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
 
     return (
         <>
-        <MediaSelectorContainer>
+        <ChatBotContainer>
             <HeaderText>
                 {`💬 Text-to-speech`}
             </HeaderText>
@@ -338,7 +341,7 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                     </SkipButton>
                 }
                 {!messageSent &&
-                    <ChatInputExternalContainer itemType='div'>
+                    <ChatInputExternalContainer style={{ justifyContent: 'flex-end' }} itemType='div'>
                         <ChatInputContainer itemType='div'>
                             <ChatInput autoFocus
                                 value={localMessage}
@@ -354,7 +357,7 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                     </ChatInputExternalContainer>
                 }
             </BottomContainer>
-        </MediaSelectorContainer>
+        </ChatBotContainer>
         <Dialog open={openMediaDialog}
             PaperProps={{
                 style: {

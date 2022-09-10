@@ -2,13 +2,14 @@ import React from 'react';
 import { AppBar, Avatar, Typography, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-const MainAppBar = styled(AppBar)({
+const MainAppBar = styled(Box)({
     backgroundColor: '#0D1021',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    padding: '20px',
-    paddingLeft: '64px',
+    maxWidth: '835px',
+    width: '100%',
+    marginBottom: 24
 });
 
 const StreamerImage = styled(Avatar)({
@@ -23,6 +24,7 @@ const StreamerName = styled(Typography)({
     lineHeight: '20px',
     letterSpacing: '0.5px',
     marginLeft: '8px',
+    color: '#FFF'
 });
 
 const LiveIcon = styled(Box)({

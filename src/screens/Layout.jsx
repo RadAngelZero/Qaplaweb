@@ -27,7 +27,7 @@ import {Title} from '../components/DeQButtonPayments/DeQButtonPayments'
 
 
 
-const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, setGiphyText, onSuccess, setCost, setMessage }) => {
+const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, onSuccess, setCost, setMessage }) => {
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
     const [clipsCost, setClipsCost] = useState(null);
     const [clipsSample, setClipsSample] = useState(null);
@@ -107,7 +107,7 @@ const Layout = ({ user, streamer, setMediaSelected, mediaType, setMediaType, set
     }
 
     return (
-        <div>
+        <div style={{ maxWidth: '835px', width: '100%' }}>
             {numberOfReactions !== undefined &&
                 <>
                 <Title>

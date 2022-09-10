@@ -27,13 +27,14 @@ const PreviewContainer = styled(Paper)({
 });
 
 const CheckoutContainer = styled(Paper)({
-    flex: 1,
-    padding: 40,
+    flexDirection: 'column',
     backgroundColor: '#0D1021',
+    width: '100%',
+    height: '100vh',
     maxWidth: '835px',
     WebkitBoxSizing: 'border-box',
     MozBoxSizing: 'border-box',
-    boxSizing: 'border-box',
+    boxSizing: 'border-box'
 });
 
 const SectionTitle = styled(Typography)({

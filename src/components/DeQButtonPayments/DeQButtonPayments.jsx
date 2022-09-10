@@ -41,9 +41,7 @@ export const Title = styled(Typography)({
     color: '#FFF',
     display: 'block',
     lineHeight:'26px',
-    marginBlockStart: '0.67em',
     marginBlockEnd: '0.67em',
-    paddingTop:'20px'
 
 })
 
