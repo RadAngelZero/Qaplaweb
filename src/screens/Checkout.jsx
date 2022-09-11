@@ -216,7 +216,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
 
     const setOtherExtraTip = () => {
         const extraTip = Number(prompt('Extra tip:'));
-        if (!isNaN(extraTip)) {
+        if (!isNaN(extraTip) && extraTip >= 0) {
             setExtraTip(extraTip);
         } else {
             alert('Invalid tip');
@@ -254,6 +254,18 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
         }
     }
 
+    const removeEmojiRaid = (e) => {
+        e.stopPropagation();
+        setEmoji('');
+        setCost(-1 * emojiRaidCost);
+    }
+
+    const removeGiphyText = (e) => {
+        e.stopPropagation();
+        setGiphyText(null);
+        setCost(-1 * giphyTextCost);
+    }
+
     const renderMediaIcon = () => {
         switch (mediaType) {
             case GIPHY_GIFS:
@@ -271,7 +283,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
         <CheckoutContainer>
             <PreviewContainer>
                 <CheerPreview donation={{
-                    amountQoins: donationCost,
+                    amountQoins: donationCost + extraTip,
                     message,
                     timestamp: (new Date()).getTime(),
                     uid: user.id,
@@ -308,7 +320,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                                     <AddOnButton style={{ background: !emoji ? `url(${GradientChat})` : 'linear-gradient(121.21deg, #2D07FA 0%, #A716EE 100%), #141539' }}
                                         onClick={() => setOpenEmojiSelector(true)}>
                                         {emoji !== '' &&
-                                            <DeleteIconButton onClick={(e) => { e.stopPropagation(); setEmoji(''); }}>
+                                            <DeleteIconButton onClick={removeEmojiRaid}>
                                                 <DeleteIcon width={16} height={16} />
                                             </DeleteIconButton>
                                         }
@@ -333,7 +345,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                                 <AddOnButton style={{ background: !giphyText ? `url(${GradientLOL})` : 'linear-gradient(121.21deg, #2D07FA 0%, #A716EE 100%), #141539' }}
                                     onClick={() => openMediaSelector(GIPHY_TEXT)}>
                                     {giphyText &&
-                                        <DeleteIconButton onClick={(e) => { e.stopPropagation(); setGiphyText(null); }}>
+                                        <DeleteIconButton onClick={removeGiphyText}>
                                             <DeleteIcon width={16} height={16} />
                                         </DeleteIconButton>
                                     }

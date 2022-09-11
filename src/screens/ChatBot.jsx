@@ -263,6 +263,13 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                         {` What do you want to say?`}
                     </ChatBubbleText>
                 </SenderChatBubble>
+                {!message && !messageSent && mediaSelected &&
+                    <SkipButton onClick={onSuccess}>
+                        <SkipButtonText>
+                            {`Skip`}
+                        </SkipButtonText>
+                    </SkipButton>
+                }
                 {messageSent &&
                     <>
                     <UserChatBubble itemType='div'>
@@ -332,13 +339,6 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                         </>
                     }
                     </>
-                }
-                {!message && !messageSent && mediaSelected &&
-                    <SkipButton onClick={onSuccess}>
-                        <SkipButtonText>
-                            {`Skip`}
-                        </SkipButtonText>
-                    </SkipButton>
                 }
                 {!messageSent &&
                     <ChatInputExternalContainer style={{ justifyContent: 'flex-end' }} itemType='div'>
