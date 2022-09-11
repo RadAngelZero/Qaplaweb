@@ -7,11 +7,14 @@ import { ReactComponent as SendIcon } from '../assets/icons/SendIcon.svg';
 import { ReactComponent as QoinIcon } from './../assets/icons/Qoin.svg';
 import { ReactComponent as GifIcon } from './../assets/icons/IconGIF.svg';
 import { ReactComponent as StickerIcon } from './../assets/icons/Sticker.svg';
+import TTSIcon from './../assets/icons/TTSIcon.svg';
 import { ReactComponent as MemesIcon } from './../assets/icons/Memes.svg';
+import gradientChat from '../assets/GradientChat.png';
 import { getBotVoices } from '../services/database';
 import MediaSelector from './MediaSelector';
 import MemeMediaSelector from './MemeMediaSelector';
 import { GIPHY_GIFS, GIPHY_STICKERS, MEMES } from '../utils/constants';
+import DeQButton from '../components/DeQButton/DeQButton';
 
 const ChatBotContainer = styled(Paper)({
     display: 'flex',
@@ -22,7 +25,7 @@ const ChatBotContainer = styled(Paper)({
     borderTopLeftRadius: '10px',
     borderTopRightRadius: '10px',
     width: '100%',
-    height: '100vh',
+    height: '65vh',
     maxWidth: '835px',
     WebkitBoxSizing: 'border-box',
     MozBoxSizing: 'border-box',
@@ -40,11 +43,11 @@ const HeaderText = styled(Typography)({
 const BottomContainer = styled(Box)({
     display: 'flex',
     width: '100%',
-    marginTop: 'auto',
     bottom: '0px',
     flexDirection: 'column',
-    minHeight: '60vh',
-    justifyContent: 'space-between'
+    height: '100%',
+    justifyContent: 'flex-end',
+    overflow: 'hidden'
 });
 
 const ChatInputExternalContainer = styled(Box)({
@@ -154,7 +157,7 @@ const OptionButton = styled(Button)({
     marginTop: 16
 });
 
-const VoiceCost = styled(Typography)({
+const QoinsCost = styled(Typography)({
     background: 'linear-gradient(227.05deg, #FFD3FB 9.95%, #F5FFCB 48.86%, #9FFFDD 90.28%), #FFFFFF',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
@@ -163,7 +166,7 @@ const VoiceCost = styled(Typography)({
     fontWeight: '500',
     lineHeight: '24px',
     letterSpacing: '0px',
-    marginLeft: 32,
+    marginLeft: 16,
     display: 'flex',
     alignItems: 'center'
 });
@@ -187,7 +190,7 @@ const ConfirmationButton = styled(Button)({
     }
 });
 
-const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSelected, mediaType, setMediaType, setCost, onSuccess }) => {
+const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSelected, mediaType, setMediaType, setCost, onSuccess, costs, numberOfReactions }) => {
     const [localMessage, setLocalMessage] = useState('');
     const [messageSent, setMessageSent] = useState(false);
     const [availabeVoices, setAvailabeVoices] = useState({});
@@ -222,6 +225,10 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
     }
 
     const onMediaSelected = (media) => {
+        if (numberOfReactions <= 0) {
+            setCost(costs[mediaType]);
+        }
+
         setMediaSelected(media);
         setOpenMediaDialog(false);
         setOpenMemeMediaDialog(false);
@@ -231,7 +238,10 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
     const onVoiceSelected = (voice) => {
         setSelectedVoice(voice);
         if (mediaSelected) {
+            setCost(voice.cost + costs['tts']);
             sendTTS(null, voice);
+        } else {
+            setCost(voice.cost);
         }
     }
 
@@ -239,9 +249,6 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
         const choosenVoice = voice ? voice : selectedVoice;
         setMessage(localMessage);
         setBotVoice(choosenVoice);
-        if (choosenVoice.cost) {
-            setCost(choosenVoice.cost);
-        }
         onSuccess();
     }
 
@@ -252,6 +259,16 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                 {`💬 Text-to-speech`}
             </HeaderText>
             <BottomContainer itemType='div'>
+                {mediaSelected && numberOfReactions <= 0 &&
+                    <div style={{ marginBottom: 24 }}>
+                        <DeQButton onClick={() => {}}
+                            title={'Text-To-Speech'}
+                            imagen={TTSIcon}
+                            background={gradientChat}
+                            showCost={numberOfReactions <= 0}
+                            cost={costs['tts']} />
+                    </div>
+                }
                 <SenderChatBubble itemType='div' style={{ marginBottom: !message && mediaSelected ? 16 : 40 }}>
                     <ChatBubbleText>
                         {`🗣 `}
@@ -292,10 +309,10 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                                     {voiceKey}
                                 </ChatBubbleText>
                                 {availabeVoices[voiceKey].cost > 0 &&
-                                    <VoiceCost>
+                                    <QoinsCost>
                                         <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
                                         {availabeVoices[voiceKey].cost}
-                                    </VoiceCost>
+                                    </QoinsCost>
                                 }
                             </OptionButton>
                         ))
@@ -318,18 +335,30 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                                 <ChatBubbleText>
                                     Add GIF to my TTS
                                 </ChatBubbleText>
+                                <QoinsCost>
+                                    <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
+                                    {costs[GIPHY_GIFS]}
+                                </QoinsCost>
                             </OptionButton>
                             <OptionButton onClick={() => openMediaSelector(GIPHY_STICKERS)}>
                                 <StickerIcon width={24} height={24} style={{ marginRight: 16 }} />
                                 <ChatBubbleText>
                                     Add Sticker to my TTS
                                 </ChatBubbleText>
+                                <QoinsCost>
+                                    <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
+                                    {costs[GIPHY_STICKERS]}
+                                </QoinsCost>
                             </OptionButton>
                             <OptionButton onClick={() => openMediaSelector(MEMES)}>
                                 <MemesIcon width={24} height={24} style={{ marginRight: 16 }} />
                                 <ChatBubbleText>
                                     Add Meme to my TTS
                                 </ChatBubbleText>
+                                <QoinsCost>
+                                    <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
+                                    {costs[MEMES]}
+                                </QoinsCost>
                             </OptionButton>
                             <ConfirmationButton onClick={sendTTS}>
                                 Only Send TTS
