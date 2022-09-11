@@ -4,7 +4,7 @@ import React from "react";
 import { Button, styled, Typography,Box,} from "@mui/material";
 
 
-import qoins from "../../assets/Qoin.png";
+import { ReactComponent as QoinIcon } from "../../assets/icons/Qoin.svg";
 
 
 
@@ -31,6 +31,7 @@ const QoinsCostContainer = styled(Box)({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.35)'
 })
 
 
@@ -64,7 +65,7 @@ export const Title = styled(Typography)({
         }}
       >
         <QoinsCostContainer>
-          <img style={{ padding: "4px" }} src={qoins} alt="icon" />
+          <QoinIcon style={{ padding: "4px" }} />
           <h1 style={{ weight: "600", fontSize: "18px", color: '#FFF' }}>{Qoins}</h1>
         </QoinsCostContainer>
         </DeQContainerPaymentsButton>

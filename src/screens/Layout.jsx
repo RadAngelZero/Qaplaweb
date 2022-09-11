@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
@@ -17,15 +16,11 @@ import gradientGifs from '../assets/GradientGifs.png';
 import gradientChat from '../assets/GradientChat.png';
 import gradientLOL from '../assets/GradientLOL.png';
 import gradientSticker from '../assets/GradientSticker.png';
-import { getReactionSample, getReactionsSamplesCount, getReactionTypeCost, listenUserReactionsWithStreamer } from "../services/database";
+import { getReactionSample, getReactionsCosts, getReactionsSamplesCount, listenUserReactionsWithStreamer } from "../services/database";
 import { GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from "../utils/constants";
 import MediaSelector from "./MediaSelector";
 import MemeMediaSelector from "./MemeMediaSelector";
-
-
-import {Title} from '../components/DeQButtonPayments/DeQButtonPayments'
-
-
+import {Title} from '../components/DeQButtonPayments/DeQButtonPayments';
 
 const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, onSuccess, setCost, setMessage }) => {
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
@@ -36,6 +31,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
     const [openMediaDialog, setOpenMediaDialog] = useState(false);
     const [openMemeMediaDialog, setOpenMemeMediaDialog] = useState(false);
     const [localMediaType, setLocalMediaType] = useState(GIPHY_GIFS);
+    const [costs, setCosts] = useState({});
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -52,11 +48,12 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
             setCustomTTSSample(textSample.val());
         }
 
-        async function getReactionsCosts() {
-            const clipsCost = await getReactionTypeCost(GIPHY_CLIPS);
-            const customTTSCost = await getReactionTypeCost(GIPHY_TEXT);
-            setClipsCost(clipsCost.val());
-            setCustomTTSCost(customTTSCost.val());
+        async function getAllReactionsCosts() {
+            const costs = await getReactionsCosts();
+
+            if (costs.exists()) {
+                setCosts(costs.val());
+            }
         }
 
         async function getReactionsCount() {
@@ -70,7 +67,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
         }
 
         if (!clipsCost && !customTTSCost) {
-            getReactionsCosts();
+            getAllReactionsCosts();
         }
 
         if (!clipsSample && !customTTSSample) {
@@ -102,8 +99,20 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
             setCost(localMediaType === GIPHY_TEXT ? customTTSCost : clipsCost);
             onSuccess('checkout');
         } else {
+            if (numberOfReactions <= 0) {
+                setCost(costs[localMediaType]);
+            }
+
             onSuccess('chatbot');
         }
+    }
+
+    const onTTSSelected = () => {
+        if (numberOfReactions <= 0) {
+            setCost(costs['tts']);
+        }
+
+        onSuccess('chatbot');
     }
 
     return (
@@ -118,54 +127,60 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                     alt="icon"
                     />
                 </Title>
-                <div
-                    style={{
-                    maxWidth: "138px",
-                    height: "36px",
-                    backgroundColor: "#1C1E64",
-                    display: "flex",
-                    justifyContent: "start",
-                    alignItems: "center",
-                    padding: "10px",
-                    marginBottom: "24px",
-                    borderRadius: "10px",
-                    }}
-                >
-                    <img
-                    style={{ width: "14px", height: "14px", padding: "3px" }}
-                    src={iconEstrella}
-                    alt="icon"
-                    />
-                    <p style={{ fontWeight: "500", fontSize: "16px", color: '#FFF' }}>({numberOfReactions}) Reactions </p>
-                </div>
+                {numberOfReactions &&
+                    <div
+                        style={{
+                        maxWidth: "138px",
+                        height: "36px",
+                        backgroundColor: "#1C1E64",
+                        display: "flex",
+                        justifyContent: "start",
+                        alignItems: "center",
+                        padding: "10px",
+                        marginBottom: "24px",
+                        borderRadius: "10px",
+                        }}
+                    >
+                        <img
+                        style={{ width: "14px", height: "14px", padding: "3px" }}
+                        src={iconEstrella}
+                        alt="icon"
+                        />
+                        <p style={{ fontWeight: "500", fontSize: "16px", color: '#FFF' }}>({numberOfReactions}) Reactions </p>
+                    </div>
+                }
                 <Grid container columnSpacing={2} rowSpacing={2}>
                     <Grid item md={3} alignContent='center'>
                         <DeQButton onClick={() => openMediaSelector(GIPHY_GIFS)}
                             title={'Gifs'}
                             imagen={iconGIF}
                             background={gradientGifs}
-                            />
+                            showCost={numberOfReactions <= 0}
+                            cost={costs[GIPHY_GIFS]} />
                     </Grid>
                     <Grid item md={3}>
-                        <DeQButton onClick={() => onSuccess('chatbot')}
+                        <DeQButton onClick={onTTSSelected}
                             title={'Text-To-Speech'}
                             imagen={iconChat}
                             background={gradientChat}
-                            />
+                            showCost={numberOfReactions <= 0}
+                            cost={costs['tts']} />
                     </Grid>
                     <Grid item md={3}>
                         <DeQButton onClick={() => openMediaSelector(GIPHY_STICKERS)}
                             title={'Stickers'}
                             imagen={iconSticker}
                             background={gradientSticker}
-                            />
+                            showCost={numberOfReactions <= 0}
+                            cost={costs[GIPHY_STICKERS]} />
                     </Grid>
                     <Grid item md={3}>
                         <DeQButton onClick={() => openMediaSelector(MEMES)}
                             title={'Memes'}
                             imagen={iconLOL}
                             background={gradientLOL}
-                            />
+                            showCost={numberOfReactions <= 0}
+                            cost={costs[MEMES]} />
                     </Grid>
                 </Grid>
                 <Grid container style={{ marginTop: 24 }}>
@@ -173,7 +188,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                         <Grid item md={6}>
                             <DeQButtonPayments onClick={() => openMediaSelector(GIPHY_CLIPS)}
                                 backgroundImageUrl={clipsSample}
-                                Qoins={clipsCost}
+                                Qoins={costs[GIPHY_CLIPS]}
                                 title={'Clips'}
                             />
                         </Grid>
@@ -183,7 +198,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                             <DeQButtonPayments onClick={() => openMediaSelector(GIPHY_TEXT)}
                                 backgroundColor={customTTSSample.background}
                                 backgroundImageUrl={customTTSSample.url}
-                                Qoins={customTTSCost}
+                                Qoins={costs[GIPHY_TEXT]}
                                 title={'Custom TTS'}
                             />
                         </Grid>
