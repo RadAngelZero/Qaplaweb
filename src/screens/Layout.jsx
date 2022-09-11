@@ -3,15 +3,16 @@ import Dialog from "@mui/material/Dialog";
 import Grid from "@mui/material/Grid";
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
 import DeQButton from "../components/DeQButton/DeQButton";
 import DeQButtonPayments from "../components/DeQButtonPayments/DeQButtonPayments";
 import iconEstrella from "../assets/IconEstrella.png";
 import ellipse from "../assets/Ellipse.png";
-import iconLOL from '../assets/IconLOL.png';
-import iconChat from '../assets/iconChat.png';
-import iconGIF from '../assets/icons/IconGIF.svg';
-import iconSticker from '../assets/IconStickers.png';
+import { ReactComponent as MemesIcon } from '../assets/icons/Memes.svg';
+import { ReactComponent as TTSIcon } from '../assets/icons/TTSIcon.svg';
+import { ReactComponent as GifIcon } from '../assets/icons/IconGIF.svg';
+import { ReactComponent as StickerIcon } from '../assets/icons/Sticker.svg';
 import gradientGifs from '../assets/GradientGifs.png';
 import gradientChat from '../assets/GradientChat.png';
 import gradientLOL from '../assets/GradientLOL.png';
@@ -32,6 +33,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
     const [localMediaType, setLocalMediaType] = useState(GIPHY_GIFS);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getReactionsSample() {
@@ -97,12 +99,12 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
             {numberOfReactions !== undefined &&
                 <>
                 <Title>
-                    Custom Reaction{" "}
-                    <img
+                    {t('Layout.customReaction')}
+                    {/* <img
                     style={{ width: "20px", height: "20px" }}
                     src={ellipse}
                     alt="icon"
-                    />
+                    /> */}
                 </Title>
                 {numberOfReactions &&
                     <div
@@ -130,7 +132,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                     <Grid item md={3} alignContent='center'>
                         <DeQButton onClick={() => openMediaSelector(GIPHY_GIFS)}
                             title={'Gifs'}
-                            imagen={iconGIF}
+                            Icon={GifIcon}
                             background={gradientGifs}
                             showCost={numberOfReactions <= 0}
                             cost={costs[GIPHY_GIFS]} />
@@ -138,7 +140,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                     <Grid item md={3}>
                         <DeQButton onClick={onTTSSelected}
                             title={'Text-To-Speech'}
-                            imagen={iconChat}
+                            Icon={TTSIcon}
                             background={gradientChat}
                             showCost={numberOfReactions <= 0}
                             cost={costs['tts']} />
@@ -146,7 +148,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                     <Grid item md={3}>
                         <DeQButton onClick={() => openMediaSelector(GIPHY_STICKERS)}
                             title={'Stickers'}
-                            imagen={iconSticker}
+                            Icon={StickerIcon}
                             background={gradientSticker}
                             showCost={numberOfReactions <= 0}
                             cost={costs[GIPHY_STICKERS]} />
@@ -154,7 +156,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                     <Grid item md={3}>
                         <DeQButton onClick={() => openMediaSelector(MEMES)}
                             title={'Memes'}
-                            imagen={iconLOL}
+                            Icon={MemesIcon}
                             background={gradientLOL}
                             showCost={numberOfReactions <= 0}
                             cost={costs[MEMES]} />
@@ -176,7 +178,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                                 backgroundColor={customTTSSample.background}
                                 backgroundImageUrl={customTTSSample.url}
                                 Qoins={costs[GIPHY_TEXT]}
-                                title={'Custom TTS'}
+                                title={t('Layout.customTTS')}
                             />
                         </Grid>
                     }

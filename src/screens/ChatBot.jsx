@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Typography, Paper, InputBase, Box, Button, Dialog } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as SendIcon } from '../assets/icons/SendIcon.svg';
 import { ReactComponent as QoinIcon } from './../assets/icons/Qoin.svg';
 import { ReactComponent as GifIcon } from './../assets/icons/IconGIF.svg';
 import { ReactComponent as StickerIcon } from './../assets/icons/Sticker.svg';
-import TTSIcon from './../assets/icons/TTSIcon.svg';
+import { ReactComponent as TTSIcon } from './../assets/icons/TTSIcon.svg';
 import { ReactComponent as MemesIcon } from './../assets/icons/Memes.svg';
 import gradientChat from '../assets/GradientChat.png';
 import { getBotVoices } from '../services/database';
@@ -199,6 +200,7 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
     const [openMemeMediaDialog, setOpenMemeMediaDialog] = useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+    const { t } = useTranslation();
 
     const handleMessageChange = (e) => {
         setLocalMessage(e.target.value);
@@ -263,7 +265,7 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                     <div style={{ marginBottom: 24 }}>
                         <DeQButton onClick={() => {}}
                             title={'Text-To-Speech'}
-                            imagen={TTSIcon}
+                            Icon={TTSIcon}
                             background={gradientChat}
                             showCost={numberOfReactions <= 0}
                             cost={costs['tts']} />
@@ -274,16 +276,16 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                         {`🗣 `}
                     </ChatBubbleText>
                     <ChatBubbleTextAccent>
-                        {` Speak your mind! `}
+                        {t('ChatBot.writeYourMessage')}
                     </ChatBubbleTextAccent>
                     <ChatBubbleText>
-                        {` What do you want to say?`}
+                        {t('ChatBot.whatYouWantToSay')}
                     </ChatBubbleText>
                 </SenderChatBubble>
                 {!message && !messageSent && mediaSelected &&
                     <SkipButton onClick={onSuccess}>
                         <SkipButtonText>
-                            {`Skip`}
+                            {t('ChatBot.skip')}
                         </SkipButtonText>
                     </SkipButton>
                 }
@@ -296,10 +298,10 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                     </UserChatBubble>
                     <SenderChatBubble style={{ flexDirection: 'column' }}>
                         <ChatBubbleText>
-                            {`🔥 Slaaay`}
+                            {t('ChatBot.chooseABotVoiceP1')}
                         </ChatBubbleText>
                         <ChatBubbleText>
-                            {`🤖 Now choose a bot voice:`}
+                            {t('ChatBot.chooseABotVoiceP2')}
                         </ChatBubbleText>
                     </SenderChatBubble>
                     {!selectedVoice ?
@@ -327,13 +329,13 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                             <>
                             <SenderChatBubble style={{ flexDirection: 'column' }}>
                                 <ChatBubbleText>
-                                    {`👌 Want to add some fun media to your TTS?`}
+                                    {t('ChatBot.wantToAddMedia')}
                                 </ChatBubbleText>
                             </SenderChatBubble>
                             <OptionButton onClick={() => openMediaSelector(GIPHY_GIFS)}>
                                 <GifIcon width={24} height={24} style={{ marginRight: 16 }} />
                                 <ChatBubbleText>
-                                    Add GIF to my TTS
+                                    {t('ChatBot.addMediaToMyTTS', { mediaType: 'GIF' })}
                                 </ChatBubbleText>
                                 <QoinsCost>
                                     <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
@@ -343,7 +345,7 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                             <OptionButton onClick={() => openMediaSelector(GIPHY_STICKERS)}>
                                 <StickerIcon width={24} height={24} style={{ marginRight: 16 }} />
                                 <ChatBubbleText>
-                                    Add Sticker to my TTS
+                                    {t('ChatBot.addMediaToMyTTS', { mediaType: 'Sticker' })}
                                 </ChatBubbleText>
                                 <QoinsCost>
                                     <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
@@ -353,7 +355,7 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                             <OptionButton onClick={() => openMediaSelector(MEMES)}>
                                 <MemesIcon width={24} height={24} style={{ marginRight: 16 }} />
                                 <ChatBubbleText>
-                                    Add Meme to my TTS
+                                    {t('ChatBot.addMediaToMyTTS', { mediaType: 'Meme' })}
                                 </ChatBubbleText>
                                 <QoinsCost>
                                     <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
@@ -361,7 +363,7 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                                 </QoinsCost>
                             </OptionButton>
                             <ConfirmationButton onClick={sendTTS}>
-                                Only Send TTS
+                                {t('ChatBot.onlySendTTS')}
                             </ConfirmationButton>
                             </>
                         }

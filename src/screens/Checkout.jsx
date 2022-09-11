@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { AccordionSummary, Box, Button, Dialog, Grid, IconButton, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
 import styled from '@emotion/styled';
 import { GiphyFetch } from '@giphy/js-fetch-api';
+import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as GifIcon } from './../assets/icons/IconGIF.svg';
 import { ReactComponent as StickerIcon } from './../assets/icons/Sticker.svg';
@@ -46,6 +47,7 @@ const SectionTitle = styled(Typography)({
 });
 
 const AddOnButton = styled(Button)({
+    textTransform: 'none',
     width: 167,
     height: 130,
     borderRadius: 20,
@@ -79,6 +81,7 @@ const QoinsCostText = styled(Typography)({
 });
 
 const EditButton = styled(Button)({
+    textTransform: 'none',
     width: 167,
     height: 130,
     borderRadius: 20,
@@ -127,6 +130,7 @@ const TotalText = styled(Typography)({
 });
 
 const SendButton = styled(Button)({
+    textTransform: 'none',
     marginTop: 24,
     borderRadius: 16,
     background: '#00FFDD',
@@ -164,6 +168,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
     const [localMediaType, setLocalMediaType] = useState(GIPHY_GIFS);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getCosts() {
@@ -353,7 +358,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                                         <img src={MakeItPop} style={{ height: 75, width: 150 }} />
                                     </div>
                                     <AddOnText style={{ color: !giphyText ? '#0D1021' : '#FFF' }}>
-                                        TTS personalizado
+                                        {t('Checkout.customTTS')}
                                     </AddOnText>
                                     <QoinsCostContainer>
                                         <div style={{ display: 'flex', marginLeft: 14, alignSelf: 'center' }}>
@@ -372,7 +377,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                                             {renderMediaIcon()}
                                         </div>
                                         <p style={{ weight: "700", fontSize: "18px", margin: 0 }}>
-                                            Edit {mediaType}
+                                            {t(`Checkout.edit.${mediaType}`)}
                                         </p>
                                     </EditButton>
                                 </Grid>
@@ -384,7 +389,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                                             <TTSIcon />
                                         </div>
                                         <p style={{ weight: "700", fontSize: "18px", margin: 0 }}>
-                                            Edit TTS
+                                            {t('Checkout.edit.tts')}
                                         </p>
                                     </EditButton>
                                 </Grid>
@@ -398,7 +403,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                     </Grid>
                     <Grid item xs={12}>
                         <SectionTitle>
-                            Send Extra Tip
+                            {t('Checkout.sendTip')}
                         </SectionTitle>
                     </Grid>
                     <Grid item xs={12} style={{ justifyContent: 'space-between' }}>
@@ -428,7 +433,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                             <div style={{ display: 'flex', alignSelf: 'center', marginRight: 6 }}>
                                 <QoinIcon />
                             </div>
-                            Other
+                            {t('Checkout.other')}
                         </ExtraTipContainer>
                     </Grid>
                 </Grid>
@@ -449,7 +454,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                             <SendButton disabled={lockSendReactionButton}
                                 onClick={sendReaction}>
                                 <SendButtonText>
-                                    Send Reaction
+                                    {t('Checkout.sendReaction')}
                                 </SendButtonText>
                             </SendButton>
                         </Grid>

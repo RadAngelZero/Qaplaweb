@@ -38,13 +38,13 @@ const QoinsCost = styled(Typography)({
   color: '#FFF'
 });
 
-const DeQButton = ({ imagen, background, title, onClick, showCost, cost }) => {
+const DeQButton = ({ Icon, background, title, onClick, showCost, cost }) => {
   return (
     <DeQContainer onClick={onClick} style={{
       backgroundImage: `url("${background}")`,
       background: background
     }}>
-      <img src={imagen} alt="imagen" />
+      <Icon width={50} height={50} />
       <Title>
         {title}
       </Title>

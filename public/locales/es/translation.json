@@ -2,5 +2,28 @@
     "Layout": {
         "customReaction": "Reacción",
         "customTTS": "TTS personalizado"
+    },
+    "ChatBot": {
+        "writeYourMessage": "Escribe tu mensaje",
+        "whatYouWantToSay": "🗣 ¿Qué le quieres decir en el directo?",
+        "skip": "Omitir",
+        "TTS": "Text-to-Speech",
+        "chooseABotVoiceP1": "🔥 ¡Cool!",
+        "chooseABotVoiceP2": "🤖 Ahora escoge una voz para el bot:",
+        "wantToAddMedia": "👌 ¿Deseas agregar multimedia divertida a tu TTS?",
+        "addMediaToMyTTS": "Agregar {{mediaType}} a mi TTS",
+        "onlySendTTS": "Solo enviar TTS"
+    },
+    "Checkout": {
+        "customTTS": "TTS personalizado",
+        "edit": {
+            "gifs": "Editar Gif",
+            "stickers": "Editar Sticker",
+            "memes": "Editar Meme",
+            "tts": "Editar TTS"
+        },
+        "sendTip": "Agregar Extra Tip",
+        "other": "Otra",
+        "sendReaction": "Enviar Reacción"
     }
 }
