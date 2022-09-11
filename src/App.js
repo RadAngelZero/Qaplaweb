@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { getStreamerPublicData, listenToUserProfile } from './services/database';
+import { getReactionsCosts, getStreamerPublicData, listenToUserProfile, listenUserReactionsWithStreamer } from './services/database';
 import { listenToAuthState } from './services/auth';
 
 import HeaderBar from './components/HeaderBar';
@@ -39,6 +39,8 @@ function App() {
     const [botVoice, setBotVoice] = useState(null);
     const [currentStep, setCurrentStep] = useState('deQk');
     const [cost, setCost] = useState(0);
+    const [reactionsCosts, setreactionsCosts] = useState({});
+    const [numberOfReactions, setNumberOfReactions] = useState(undefined);
     const query = useQuery();
 
     useEffect(() => {
@@ -47,6 +49,28 @@ function App() {
             if (streamer.exists()) {
                 setStreamer({ ...streamer.val(), uid });
             }
+        }
+
+        async function getAllReactionsCosts() {
+            const costs = await getReactionsCosts();
+
+            if (costs.exists()) {
+                setreactionsCosts(costs.val());
+            }
+        }
+
+        async function getReactionsCount() {
+            listenUserReactionsWithStreamer(user.id, streamer.uid, (reactions) => {
+                setNumberOfReactions(reactions.val() || 0);
+            });
+        }
+
+        if (numberOfReactions === undefined && user && user.id && streamer) {
+            getReactionsCount();
+        }
+
+        if (Object.keys(reactionsCosts).length <= 0) {
+            getAllReactionsCosts();
         }
 
         if (user === undefined) {
@@ -91,7 +115,10 @@ function App() {
     const renderSection = () => {
         switch (currentStep) {
             case 'deQk':
-                return <Layout setMediaSelected={setMediaSelected}
+                return (
+                    <Layout setMediaSelected={setMediaSelected}
+                        costs={reactionsCosts}
+                        numberOfReactions={numberOfReactions}
                         user={user}
                         streamer={streamer}
                         mediaType={mediaType}
@@ -100,9 +127,13 @@ function App() {
                         onSuccess={(nextStep) => setCurrentStep(nextStep)}
                         setCost={addToDonationCost}
                         setMessage={setMessage} />
+                );
             case 'chatbot':
-                return <ChatBot message={message}
+                return (
+                    <ChatBot message={message}
                         setMessage={setMessage}
+                        costs={reactionsCosts}
+                        numberOfReactions={numberOfReactions}
                         setBotVoice={setBotVoice}
                         mediaType={mediaType}
                         setMediaType={setMediaType}
@@ -110,8 +141,10 @@ function App() {
                         setMediaSelected={setMediaSelected}
                         onSuccess={() => setCurrentStep('checkout')}
                         setCost={addToDonationCost} />
+                );
             case 'checkout':
-                return <Checkout media={mediaSelected}
+                return (
+                    <Checkout media={mediaSelected}
                         setMediaSelected={setMediaSelected}
                         mediaType={mediaType}
                         giphyText={giphyText}
@@ -125,6 +158,7 @@ function App() {
                         onSuccess={onDonationSent}
                         streamer={streamer}
                         setMessage={setMessage} />
+                );
             default:
                 break;
         }

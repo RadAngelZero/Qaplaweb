@@ -8,6 +8,7 @@ const DeQContainer = styled(Button)({
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
+  maxWidth:"165px",
   minWidth:"165px",
   height: "165px",
   borderRadius: "20px"

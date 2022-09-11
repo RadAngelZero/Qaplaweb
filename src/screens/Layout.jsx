@@ -16,14 +16,13 @@ import gradientGifs from '../assets/GradientGifs.png';
 import gradientChat from '../assets/GradientChat.png';
 import gradientLOL from '../assets/GradientLOL.png';
 import gradientSticker from '../assets/GradientSticker.png';
-import { getReactionSample, getReactionsCosts, getReactionsSamplesCount, listenUserReactionsWithStreamer } from "../services/database";
+import { getReactionSample, getReactionsSamplesCount } from "../services/database";
 import { GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from "../utils/constants";
 import MediaSelector from "./MediaSelector";
 import MemeMediaSelector from "./MemeMediaSelector";
 import {Title} from '../components/DeQButtonPayments/DeQButtonPayments';
 
-const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, onSuccess, setCost, setMessage }) => {
-    const [numberOfReactions, setNumberOfReactions] = useState(undefined);
+const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, onSuccess, setCost, setMessage, costs, numberOfReactions }) => {
     const [clipsCost, setClipsCost] = useState(null);
     const [clipsSample, setClipsSample] = useState(null);
     const [customTTSCost, setCustomTTSCost] = useState(null);
@@ -31,7 +30,6 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
     const [openMediaDialog, setOpenMediaDialog] = useState(false);
     const [openMemeMediaDialog, setOpenMemeMediaDialog] = useState(false);
     const [localMediaType, setLocalMediaType] = useState(GIPHY_GIFS);
-    const [costs, setCosts] = useState({});
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -46,28 +44,6 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
             index = Math.floor(Math.random() * textLength.val());
             const textSample = await getReactionSample(GIPHY_TEXT, index);
             setCustomTTSSample(textSample.val());
-        }
-
-        async function getAllReactionsCosts() {
-            const costs = await getReactionsCosts();
-
-            if (costs.exists()) {
-                setCosts(costs.val());
-            }
-        }
-
-        async function getReactionsCount() {
-            listenUserReactionsWithStreamer(user.id, streamer.uid, (reactions) => {
-                setNumberOfReactions(reactions.val() || 0);
-            });
-        }
-
-        if (user && user.id && streamer) {
-            getReactionsCount();
-        }
-
-        if (!clipsCost && !customTTSCost) {
-            getAllReactionsCosts();
         }
 
         if (!clipsSample && !customTTSSample) {
@@ -96,7 +72,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
         }
 
         if (localMediaType === GIPHY_TEXT || localMediaType === GIPHY_CLIPS) {
-            setCost(localMediaType === GIPHY_TEXT ? customTTSCost : clipsCost);
+            setCost(localMediaType === GIPHY_TEXT ? costs[GIPHY_TEXT] : costs[GIPHY_CLIPS]);
             onSuccess('checkout');
         } else {
             if (numberOfReactions <= 0) {
@@ -109,6 +85,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
 
     const onTTSSelected = () => {
         if (numberOfReactions <= 0) {
+            console.log(costs['tts']);
             setCost(costs['tts']);
         }
 
