@@ -24,9 +24,7 @@ import MemeMediaSelector from "./MemeMediaSelector";
 import {Title} from '../components/DeQButtonPayments/DeQButtonPayments';
 
 const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, onSuccess, setCost, setMessage, costs, numberOfReactions }) => {
-    const [clipsCost, setClipsCost] = useState(null);
     const [clipsSample, setClipsSample] = useState(null);
-    const [customTTSCost, setCustomTTSCost] = useState(null);
     const [customTTSSample, setCustomTTSSample] = useState(null);
     const [openMediaDialog, setOpenMediaDialog] = useState(false);
     const [openMemeMediaDialog, setOpenMemeMediaDialog] = useState(false);
@@ -51,7 +49,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
         if (!clipsSample && !customTTSSample) {
             getReactionsSample();
         }
-    }, [user, clipsCost, customTTSCost, clipsSample, customTTSSample, streamer]);
+    }, [user, clipsSample, customTTSSample, streamer]);
 
     const openMediaSelector = (mediaType) => {
         if (mediaType !== MEMES) {
