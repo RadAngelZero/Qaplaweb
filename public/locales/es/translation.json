@@ -25,5 +25,12 @@
         "sendTip": "Agregar Extra Tip",
         "other": "Otra",
         "sendReaction": "Enviar Reacción"
+    },
+    "PurchaseQoinsDialog": {
+        "moreQoins": "25% más Qoins",
+        "qoinsPrice": "${{price}} MXN",
+        "boostYourReaction": "Mejora tus reacciones",
+        "sendFreeReactions": "Envia reacciones sin puntos de canal",
+        "sendExtraTip": "Envia Extra Tips (el 100% va para el streamer)"
     }
 }

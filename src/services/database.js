@@ -1,4 +1,17 @@
-import { child, DataSnapshot, equalTo, get, orderByChild, push, query, runTransaction, TransactionResult, update, onValue } from 'firebase/database';
+import {
+    child,
+    DataSnapshot,
+    equalTo,
+    get,
+    orderByChild,
+    push,
+    query,
+    runTransaction,
+    ThenableReference,
+    TransactionResult,
+    update,
+    onValue
+} from 'firebase/database';
 
 import { database } from './firebase';
 
@@ -404,7 +417,7 @@ export async function sendPrepaidReaction(uid, userName, twitchUserName, userPho
 }
 
 //////////////////////
-// Reractions Costs
+// Reactions Costs
 //////////////////////
 
 /**
@@ -467,4 +480,50 @@ export async function getQaplaMemesLibrary() {
     const memesLibrary = child(database, `/QaplaInteractions/Memes`);
 
     return await get(query(memesLibrary));
+}
+
+//////////////////////
+// In App Purchases Products
+//////////////////////
+
+/**
+ * Gets the information about Qoins to be bought on this web page
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getQoinsPackages() {
+    const qoinsPackages = child(database, '/inAppPurchasesProducts/web');
+
+    return await get(query(qoinsPackages));
+}
+
+//////////////////////
+// User Reactions Queue
+//////////////////////
+
+/**
+ * Saves a reaction in the user Queue so it can be sent later (after a successful purchase of Qoins for example)
+ * @param {string} uid User identifier
+ * @param {string} streamerUid Streamer identifier
+ * @param {object} reaction Reaction object
+ * @returns {ThenableReference} Combined Promise and Reference; resolves when write is complete, but can be used immediately as the Reference to the child location
+ */
+export function putReactionInQueue(uid, streamerUid, reaction) {
+    const userReactionQueue = child(database, `/UsersReactionsQueue/${uid}/${streamerUid}`);
+
+    return push(userReactionQueue, reaction);
+}
+
+//////////////////////
+// Qreators Codes
+//////////////////////
+
+/**
+ * Returns all the streamer id´s who match the Qreator code (it will be only one streamer id but the query returns an objec of objects)
+ * @param {string} qreatorCode Desired Streamer Qreator code
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getStreamerUidWithQreatorCode(qreatorCode) {
+    const qreatorCodeRef = child(database, `/QreatorsCodes`);
+
+    return await get(query(qreatorCodeRef, orderByChild('codeLowerCase'), equalTo(qreatorCode.toLowerCase())));
 }

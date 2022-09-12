@@ -18,7 +18,8 @@ import EmojiSelector from './EmojiSelector';
 import MediaSelector from './MediaSelector';
 import MemeMediaSelector from './MemeMediaSelector';
 import { GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from '../utils/constants';
-import { getReactionTypeCost, sendPrepaidReaction } from '../services/database';
+import { getReactionTypeCost, putReactionInQueue, sendPrepaidReaction } from '../services/database';
+import PurchaseQoinsDialog from '../components/PurchaseQoinsDialog/PurchaseQoinsDialog';
 
 const gf = new GiphyFetch('Kb3qFoEloWmqsI3ViTJKGkQZjxICJ3bi');
 
@@ -166,6 +167,8 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
     const [extraTip, setExtraTip] = useState(0);
     const [lockSendReactionButton, setLockSendReactionButton] = useState(false);
     const [localMediaType, setLocalMediaType] = useState(GIPHY_GIFS);
+    const [openPurchaseQoinsDialog, setOpenPurchaseQoinsDialog] = useState(false);
+    const [reactionId, setReactionId] = useState('');
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const { t } = useTranslation();
@@ -255,6 +258,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                 () => alert('Error')
             );
         } else {
+            openPurchaseDialogAndSaveDonation();
             setLockSendReactionButton(false);
         }
     }
@@ -284,6 +288,34 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
         }
     }
 
+    const openPurchaseDialogAndSaveDonation = () => {
+        const reactionRef = putReactionInQueue(user.id, streamer.uid, {
+            amountQoins: donationCost + extraTip,
+            message,
+            timestamp: (new Date()).getTime(),
+            uid: user.id,
+            read: false,
+            twitchUserName: user.twitchUsername,
+            emojiRain: {
+                emojis: emoji ? [emoji] : []
+            },
+            media: media ? {
+                id: media.id ? media.id : null,
+                type: mediaType,
+                ...media.images.original
+            } : null,
+            messageExtraData: {
+                giphyText,
+                ...botVoice
+            },
+            userName: user.userName,
+            photoURL: user.photoUrl
+        });
+
+        setReactionId(reactionRef.key);
+        setOpenPurchaseQoinsDialog(true);
+    }
+
     return (
         <CheckoutContainer>
             <PreviewContainer>
@@ -307,7 +339,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                         ...botVoice
                     },
                     userName: user.userName,
-                    photoURL: ''
+                    photoURL: user.photoUrl
                 }} />
             </PreviewContainer>
             <Grid container>
@@ -461,6 +493,11 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                     </Grid>
                 </Grid>
             </Grid>
+            <PurchaseQoinsDialog open={openPurchaseQoinsDialog}
+                reactionId={reactionId}
+                uid={user.id}
+                email={user.email}
+                streamerUid={streamer.uid} />
             <EmojiSelector open={openEmojiSelector}
                 onEmojiSelected={onEmojiSelected}
                 onClose={() => setOpenEmojiSelector(false)} />

@@ -2,11 +2,16 @@ import { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { getReactionsCosts, getStreamerPublicData, listenToUserProfile, listenUserReactionsWithStreamer } from './services/database';
+import {
+    getReactionsCosts,
+    getStreamerPublicData,
+    getStreamerUidWithQreatorCode,
+    listenToUserProfile,
+    listenUserReactionsWithStreamer
+} from './services/database';
 import { listenToAuthState } from './services/auth';
 
 import HeaderBar from './components/HeaderBar';
-// import ChatBot from './screens/ChatBot';
 import Layout from './screens/Layout';
 import SignIn from './screens/SignIn';
 import Checkout from './screens/Checkout';
@@ -44,6 +49,19 @@ function App() {
     const query = useQuery();
 
     useEffect(() => {
+        async function getStreamerUid(qreatorCode) {
+            const streamers = await getStreamerUidWithQreatorCode(qreatorCode);
+            if (streamers.exists()) {
+                streamers.forEach((streamer) => {
+                    localStorage.setItem('streamerUid', streamer.key);
+                    getStreamer(streamer.key);
+                });
+            } else {
+                setStreamer(null);
+                alert('Invalid link');
+            }
+        }
+
         async function getStreamer(uid) {
             const streamer = await getStreamerPublicData(uid);
             if (streamer.exists()) {
@@ -89,15 +107,20 @@ function App() {
             });
         }
 
-        const streamerUidQuery = query.get('streamerUid');
+        const qreatorCodeQuery = query.get('qreatorCode');
 
-        if (streamerUidQuery) {
-            // If we found a streamerUid in the url we save it on the local storage
-            localStorage.setItem('streamerUid', streamerUidQuery);
+        if (qreatorCodeQuery) {
+            // If we found a qreatorQode in the url we look for their streamer id
+            getStreamerUid(qreatorCodeQuery);
         }
 
-        if (!streamer && localStorage.getItem('streamerUid')) {
+        if (!streamer && localStorage.getItem('streamerUid') && !qreatorCodeQuery) {
             getStreamer(localStorage.getItem('streamerUid'));
+        }
+
+        const reactionSent = query.get('reactionSent');
+        if (reactionSent === 'true') {
+            // reaction sent from backend after a successful purchase
         }
     }, [user, query, streamer]);
 

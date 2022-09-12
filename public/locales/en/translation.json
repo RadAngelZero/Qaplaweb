@@ -25,5 +25,12 @@
         "sendTip": "Send Extra Tip",
         "other": "Other",
         "sendReaction": "Send Reaction"
+    },
+    "PurchaseQoinsDialog": {
+        "moreQoins": "25% more Qoins",
+        "qoinsPrice": "${{price}} USD",
+        "boostYourReaction": "Boost your reactions",
+        "sendFreeReactions": "Send reactions with out channel points",
+        "sendExtraTip": "Send Extra Tips (100% goes to the creator)"
     }
 }
