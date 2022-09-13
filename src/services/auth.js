@@ -31,7 +31,7 @@ export async function signTwitchUser(twitchUserData) {
     const qaplaCustomAuthToken = await generateAuthTokenForTwitchSignIn(
         userProfile.id ? userProfile.id : twitchUserData.id,
         twitchUserData.display_name,
-        twitchUserData.email
+        twitchUserData.email || null
     );
 
     if (qaplaCustomAuthToken.data && qaplaCustomAuthToken.data.token) {

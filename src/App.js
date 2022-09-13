@@ -193,7 +193,7 @@ function App() {
             <>
             {/* User is null if no authenticated */}
             {user === null ?
-                <SignIn />
+                <SignIn user={user} />
                 :
                 <>
                 <MainContainer itemType='div'>

@@ -93,7 +93,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
     }
 
     return (
-        <div style={{ maxWidth: '835px', width: '100%' }}>
+        <div style={{ maxWidth: '834px', width: '100%' }}>
             {numberOfReactions !== undefined &&
                 <>
                 <Title>
@@ -126,7 +126,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                         <p style={{ fontWeight: "500", fontSize: "16px", color: '#FFF' }}>({numberOfReactions}) Reactions </p>
                     </div>
                 }
-                <Grid container columnSpacing={2} rowSpacing={2}>
+                <Grid container columnSpacing={-5} rowSpacing={2}>
                     <Grid item md={3} alignContent='center'>
                         <DeQButton onClick={() => openMediaSelector(GIPHY_GIFS)}
                             title={'Gifs'}

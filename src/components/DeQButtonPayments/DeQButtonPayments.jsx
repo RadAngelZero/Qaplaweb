@@ -10,8 +10,8 @@ import { ReactComponent as QoinIcon } from "../../assets/icons/Qoin.svg";
 
 const DeQContainerPaymentsButton = styled(Button)({
   borderRadius: "20px",
-  maxWidth: "341px",
-  minWidth: "341px",
+  maxWidth: "348px",
+  minWidth: "348px",
   height: "190px",
   display: "flex",
   justifyContent: "center",
@@ -19,11 +19,7 @@ const DeQContainerPaymentsButton = styled(Button)({
   padding: "24px",
 })
 
-
-
-
 const QoinsCostContainer = styled(Box)({
-
   background: "#141833",
   width: "92px",
   height: "37px",
@@ -34,20 +30,15 @@ const QoinsCostContainer = styled(Box)({
   boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.35)'
 })
 
-
 export const Title = styled(Typography)({
-  fontWeight: "600",
-   fontSize: "22px", 
-   textAlign: "start",
+    fontWeight: "600",
+    fontSize: "22px", 
+    textAlign: "start",
     color: '#FFF',
     display: 'block',
     lineHeight:'26px',
     marginBlockEnd: '0.67em',
-
 })
-
-
- 
 
   
     const DeQButtonPayments = ({ backgroundImageUrl, backgroundColor = 'transparent', Qoins, title, onClick }) => {
