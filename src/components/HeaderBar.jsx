@@ -66,6 +66,7 @@ const Icons = styled('img')({
 })
 
 const HeaderBar = (props) => {
+
     return (<>
         <MainAppBar>
             <div style={{ display:'flex', flexDirection:'row', alignItems: 'center'}}> 

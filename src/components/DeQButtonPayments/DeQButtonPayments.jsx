@@ -17,6 +17,7 @@ const DeQContainerPaymentsButton = styled(Button)({
   justifyContent: "center",
   alignItems: "end",
   padding: "24px",
+  marginRight:'10px'
 })
 
 const QoinsCostContainer = styled(Box)({
