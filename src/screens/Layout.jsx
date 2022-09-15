@@ -123,7 +123,9 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                         src={iconEstrella}
                         alt="icon"
                         />
-                        <p style={{ fontWeight: "500", fontSize: "16px", color: '#FFF' }}>({numberOfReactions}) Reactions </p>
+                        <p style={{ fontWeight: "500", fontSize: "16px", color: '#FFF' }}>
+                            ({numberOfReactions}) {t('Layout.reaction')}
+                        </p>
                     </div>
                 }
                 <Grid container columnSpacing={-5} rowSpacing={2}>

@@ -5,6 +5,7 @@
         "loading": "Cargando..."
     },
     "Layout": {
+        "reaction": "Reacciones",
         "customReaction": "Reacción",
         "customTTS": "TTS personalizado"
     },
