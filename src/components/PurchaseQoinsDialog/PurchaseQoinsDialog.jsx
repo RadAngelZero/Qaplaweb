@@ -118,7 +118,7 @@ const PurchaseQoinsDialog = ({ open, onClose, uid, email, streamerUid, reactionI
             maxWidth='sm'>
             <PoweredByStripe style={{ transform: 'scale(1.5)', marginTop: 32, marginBottom: 34 }} />
             {qoinsPackages && qoinsPackages['2kQoins'] &&
-                <form action='http://localhost:5001/qapplaapp/us-central1/userCheckoutIntent' method='post'>
+                <form action='https://us-central1-qapplaapp.cloudfunctions.net/userCheckoutIntent' method='post'>
                     <input type='hidden' name='lookupKey' value={'2kQoins'} />
                     <input type='hidden' name='uid' value={uid} />
                     <input type='hidden' name='streamerUid' value={streamerUid} />
@@ -135,7 +135,7 @@ const PurchaseQoinsDialog = ({ open, onClose, uid, email, streamerUid, reactionI
                 </form>
             }
             {qoinsPackages && qoinsPackages['4kQoinsPlus'] &&
-                <form action='http://localhost:5001/qapplaapp/us-central1/userCheckoutIntent' method='post'>
+                <form action='https://us-central1-qapplaapp.cloudfunctions.net/userCheckoutIntent' method='post'>
                     <input type='hidden' name='lookupKey' value={'4kQoinsPlus'} />
                     <input type='hidden' name='uid' value={uid} />
                     <input type='hidden' name='streamerUid' value={streamerUid} />

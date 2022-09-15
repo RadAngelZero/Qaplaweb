@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AccordionSummary, Box, Button, Dialog, Grid, IconButton, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
 import styled from '@emotion/styled';
-import { GiphyFetch } from '@giphy/js-fetch-api';
 import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as GifIcon } from './../assets/icons/IconGIF.svg';
@@ -20,8 +19,6 @@ import MemeMediaSelector from './MemeMediaSelector';
 import { GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from '../utils/constants';
 import { getReactionTypeCost, putReactionInQueue, sendPrepaidReaction } from '../services/database';
 import PurchaseQoinsDialog from '../components/PurchaseQoinsDialog/PurchaseQoinsDialog';
-
-const gf = new GiphyFetch('Kb3qFoEloWmqsI3ViTJKGkQZjxICJ3bi');
 
 const PreviewContainer = styled(Paper)({
     backgroundColor: 'transparent',
