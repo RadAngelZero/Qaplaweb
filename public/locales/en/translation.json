@@ -50,5 +50,6 @@
         "description": "You can track your Qoins balance from the mobile app",
         "download": "Download the app",
         "imGood": "I'm good"
-    }
+    },
+    "noQreatorCode": "You need a valid link to continue, ask your streamer for their link"
 }

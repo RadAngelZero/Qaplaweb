@@ -50,5 +50,6 @@
         "description": "Puedes revisar tu balance de Qoins desde la app",
         "download": "Descargar el app",
         "imGood": "Estoy bien"
-    }
+    },
+    "noQreatorCode": "Necesitas un link valido continuar\npregunta a tu streamer por su link"
 }

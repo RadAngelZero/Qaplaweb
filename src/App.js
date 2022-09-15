@@ -218,6 +218,11 @@ function App() {
                             streamerImage={streamer.photoUrl} />
                     }
                     {renderSection()}
+                    {!streamer &&
+                        <h2 style={{ color: '#FFF' }}>
+                            {t('noQreatorCode')}
+                        </h2>
+                    }
                 </MainContainer>
                 </>
             }
