@@ -1,6 +1,7 @@
 import React from 'react';
-import { AppBar, Avatar, Typography, Box } from '@mui/material';
+import { Avatar, Typography, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
 import icon from '../assets/icons/Qoin.svg'
 
@@ -66,10 +67,11 @@ const Icons = styled('img')({
 })
 
 const HeaderBar = (props) => {
+    const { t } = useTranslation();
 
     return (<>
         <MainAppBar>
-            <div style={{ display:'flex', flexDirection:'row', alignItems: 'center'}}> 
+            <div style={{ display:'flex', flexDirection:'row', alignItems: 'center'}}>
                 <StreamerImage src={props.streamerImage} />
                     <StreamerName>
                         {props.streamerName}
@@ -77,9 +79,13 @@ const HeaderBar = (props) => {
                 <LiveIcon itemType='div' />
             </div>
            <MyQoins >
-                <Text>🏦 My Qoins</Text>
+                <Text>
+                    {t('HeaderBar.myQoins')}
+                </Text>
                 <Icons src={icon} alt='icon' />
-                <Qoins>4,500</Qoins>
+                <Qoins>
+                    {props.user.credits}
+                </Qoins>
            </MyQoins>
         </MainAppBar>
     </>)

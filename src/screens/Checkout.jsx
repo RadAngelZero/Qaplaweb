@@ -494,6 +494,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                 </Grid>
             </Grid>
             <PurchaseQoinsDialog open={openPurchaseQoinsDialog}
+                onClose={() => setOpenPurchaseQoinsDialog(false)}
                 reactionId={reactionId}
                 uid={user.id}
                 email={user.email}

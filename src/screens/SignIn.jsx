@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Button, Box, styled, Typography} from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { getTwitchUserData, signInWithTwitch } from '../services/twitch';
 import { getUserToken } from '../services/functions';
@@ -90,6 +91,7 @@ const Gifs = styled('img')({
 const SignIn = ({ user }) => {
     const [isLoadingAuth, setIsLoadingAuth] = useState(false);
     const query = useQuery();
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function checkIfUsersIsSigningIn() {
@@ -120,9 +122,11 @@ const SignIn = ({ user }) => {
     }, [user, isLoadingAuth, query]);
 
     const signIn = () => {
-        setIsLoadingAuth(true);
-        signInWithTwitch();
-        setIsLoadingAuth(false);
+        if (!isLoadingAuth) {
+            setIsLoadingAuth(true);
+            signInWithTwitch();
+            setIsLoadingAuth(false);
+        }
     }
 
     return (
@@ -131,10 +135,16 @@ const SignIn = ({ user }) => {
             <BottonContainer itemType='div'>
                 <ContentItem itemType='div'>
                     <img src={logoQapla } alt="icon"/>
-                    <Text>Link your Twich to react on stream</Text>
+                    <Text>
+                        {t('SignIn.title')}
+                    </Text>
                     <ButtonTwitch onClick={signIn}>
                         <IconTwich style={{ padding:'5px'}}/>
-                            Continue with Twich
+                            {isLoadingAuth ?
+                                t('SignIn.loading')
+                                :
+                                t('SignIn.continueWithTwitch')
+                            }
                     </ButtonTwitch>
                 </ContentItem>
             </BottonContainer>

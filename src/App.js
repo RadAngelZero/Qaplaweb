@@ -17,6 +17,7 @@ import SignIn from './screens/SignIn';
 import Checkout from './screens/Checkout';
 import { GIPHY_CLIPS } from './utils/constants';
 import ChatBot from './screens/ChatBot';
+import ReactionsDialog from './components/ReactionsDialog/ReactionsDialog';
 
 function useQuery() {
     const { search } = window.location;
@@ -46,6 +47,7 @@ function App() {
     const [cost, setCost] = useState(0);
     const [reactionsCosts, setreactionsCosts] = useState({});
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
+    const [openReactionDialog, setOpenReactionDialog] = useState(false);
     const query = useQuery();
 
     useEffect(() => {
@@ -121,6 +123,11 @@ function App() {
         const reactionSent = query.get('reactionSent');
         if (reactionSent === 'true') {
             // reaction sent from backend after a successful purchase
+            const dialogWasOpened = sessionStorage.getItem('reactionSent');
+            if (!dialogWasOpened) {
+                sessionStorage.setItem('reactionSent', 'true');
+                setOpenReactionDialog(true);
+            }
         }
     }, [user, query, streamer]);
 
@@ -198,7 +205,7 @@ function App() {
                 <>
                 <MainContainer itemType='div'>
                     {streamer &&
-                        <HeaderBar
+                        <HeaderBar user={user}
                             streamerName={streamer.displayName}
                             streamerImage={streamer.photoUrl} />
                     }
@@ -206,6 +213,8 @@ function App() {
                 </MainContainer>
                 </>
             }
+            <ReactionsDialog open={openReactionDialog}
+                onClose={() => setOpenReactionDialog(false)} />
             </>
         );
     }
