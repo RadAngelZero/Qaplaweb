@@ -1,4 +1,7 @@
 {
+    "Helmet": {
+        "title": "Qapla Reaction"
+    },
     "SignIn": {
         "title": "Link your Twich to react on stream",
         "continueWithTwitch": "Continue with Twitch",

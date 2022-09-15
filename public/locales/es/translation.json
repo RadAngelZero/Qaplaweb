@@ -1,4 +1,7 @@
 {
+    "Helmet": {
+        "title": "Reaccón Qapla"
+    },
     "SignIn": {
         "title": "Vincula tu Twitch para reaccionar en stream",
         "continueWithTwitch": "Continuar con Twitch",

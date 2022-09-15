@@ -10,6 +10,8 @@ import {
     listenUserReactionsWithStreamer
 } from './services/database';
 import { listenToAuthState } from './services/auth';
+import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet';
 
 import HeaderBar from './components/HeaderBar';
 import Layout from './screens/Layout';
@@ -49,6 +51,7 @@ function App() {
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
     const [openReactionDialog, setOpenReactionDialog] = useState(false);
     const query = useQuery();
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getStreamerUid(qreatorCode) {
@@ -198,6 +201,11 @@ function App() {
     if (user !== undefined) {
         return (
             <>
+            <Helmet>
+                <title>
+                    {t('Helmet.title')}
+                </title>
+            </Helmet>
             {/* User is null if no authenticated */}
             {user === null ?
                 <SignIn user={user} />
