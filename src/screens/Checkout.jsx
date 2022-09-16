@@ -19,6 +19,7 @@ import MemeMediaSelector from './MemeMediaSelector';
 import { GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from '../utils/constants';
 import { getReactionTypeCost, putReactionInQueue, sendPrepaidReaction } from '../services/database';
 import PurchaseQoinsDialog from '../components/PurchaseQoinsDialog/PurchaseQoinsDialog';
+import ReactionsDialog from '../components/ReactionsDialog/ReactionsDialog';
 
 const PreviewContainer = styled(Paper)({
     backgroundColor: 'transparent',
@@ -166,6 +167,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
     const [localMediaType, setLocalMediaType] = useState(GIPHY_GIFS);
     const [openPurchaseQoinsDialog, setOpenPurchaseQoinsDialog] = useState(false);
     const [reactionId, setReactionId] = useState('');
+    const [reactionSent, setReactionSent] = useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const { t } = useTranslation();
@@ -251,7 +253,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                 },
                 emoji ? [emoji] : [],
                 totalDonationCost,
-                () => { onSuccess(); alert('success'); setLockSendReactionButton(false); },
+                () => { setReactionSent(true); },
                 () => alert('Error')
             );
         } else {
@@ -523,6 +525,8 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                 maxWidth='sm'>
                 <MemeMediaSelector onMediaSelected={onMediaSelected} />
             </Dialog>
+            <ReactionsDialog open={reactionSent}
+                onClose={() => { setReactionSent(false); onSuccess(); setLockSendReactionButton(false); }} />
         </CheckoutContainer>
     );
 }
