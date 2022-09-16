@@ -57,13 +57,17 @@ const GridContainer = styled(Container)({
     padding: '0px !important',
 });
 
-const MediaSelector = ({ mediaType, onMediaSelected, setMessage }) => {
+const MediaSelector = ({ mediaType, onMediaSelected, setMessage, preMadeMessage }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [giphyText, setGiphyText] = useState([]);
     const searchInput = useRef(null);
     useEffect(() => {
+        if (preMadeMessage && !searchTerm) {
+            setSearchTerm(preMadeMessage);
+        }
+
         focusSearch();
-    }, []);
+    }, [preMadeMessage]);
 
     const fetchSearch = (offset) => gf.search(searchTerm, { offset, limit: 50, type: mediaType, rating: 'pg-13' });
     const fetchTrending = (offset) => gf.trending({ offset, type: mediaType, limit: 20, rating: 'pg-13' });
@@ -85,7 +89,6 @@ const MediaSelector = ({ mediaType, onMediaSelected, setMessage }) => {
     }
 
     const onGiphyTextSelected = (giphyText) => {
-        console.log(giphyText);
         onMediaSelected(giphyText);
         setMessage(searchTerm);
     }

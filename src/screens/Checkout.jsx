@@ -511,7 +511,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                 fullWidth
                 fullScreen={fullScreen}
                 maxWidth='sm'>
-                <MediaSelector onMediaSelected={onMediaSelected} mediaType={localMediaType} setMessage={setMessage} />
+                <MediaSelector preMadeMessage={message} onMediaSelected={onMediaSelected} mediaType={localMediaType} setMessage={setMessage} />
             </Dialog>
             <Dialog open={openMemeMediaDialog}
                 PaperProps={{
