@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "target": "qaplaweb",
     "public": "build",
     "ignore": [
       "firebase.json",
