@@ -240,7 +240,8 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
     const onVoiceSelected = (voice) => {
         setSelectedVoice(voice);
         if (mediaSelected) {
-            setCost(voice.cost + costs['tts']);
+            const ttsCost = numberOfReactions <= 0 ? costs['tts'] : 0;
+            setCost(voice.cost + ttsCost);
             sendTTS(null, voice);
         } else {
             setCost(voice.cost);
