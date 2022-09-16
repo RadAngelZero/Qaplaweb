@@ -64,6 +64,7 @@ const MediaSelector = ({ mediaType, onMediaSelected, setMessage, preMadeMessage 
     useEffect(() => {
         if (preMadeMessage && !searchTerm) {
             setSearchTerm(preMadeMessage);
+            loadGiphyText(preMadeMessage);
         }
 
         focusSearch();
@@ -75,11 +76,11 @@ const MediaSelector = ({ mediaType, onMediaSelected, setMessage, preMadeMessage 
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
         if (mediaType === GIPHY_TEXT) {
-            loadGIphyText(e.target.value);
+            loadGiphyText(e.target.value);
         }
     }
 
-    const loadGIphyText = async (text) => {
+    const loadGiphyText = async (text) => {
         const giphyText = await gf.animate(text, { limit: 50, type: mediaType });
         setGiphyText(giphyText.data);
     }
