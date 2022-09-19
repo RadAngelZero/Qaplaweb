@@ -10,7 +10,8 @@ import {
     ThenableReference,
     TransactionResult,
     update,
-    onValue
+    onValue,
+    set
 } from 'firebase/database';
 
 import { database } from './firebase';
@@ -379,7 +380,7 @@ export async function sendPrepaidReaction(uid, userName, twitchUserName, userPho
             }
 
             const donationsAdministrativeChild = child(database, `/StreamersDonationAdministrative/${donationRef.key}`);
-            await push(donationsAdministrativeChild, {
+            await set(donationsAdministrativeChild, {
                 amountQoins: qoinsToRemove,
                 message,
                 timestamp,
