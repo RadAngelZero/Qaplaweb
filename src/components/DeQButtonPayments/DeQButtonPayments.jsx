@@ -17,7 +17,6 @@ const DeQContainerPaymentsButton = styled(Button)({
   justifyContent: "center",
   alignItems: "end",
   padding: "24px",
-  marginRight:'10px'
 })
 
 const QoinsCostContainer = styled(Box)({
@@ -54,6 +53,7 @@ export const Title = styled(Typography)({
           backgroundColor,
           backgroundImage: `url("${backgroundImageUrl}")`,
           backgroundImagePosition: "center",
+          backgroundSize:'contain',
         }}
       >
         <QoinsCostContainer>

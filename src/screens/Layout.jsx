@@ -93,7 +93,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
     }
 
     return (
-        <div style={{ maxWidth: '834px', width: '100%' }}>
+        <div style={{ maxWidth: '834px', width: '100%', height:'100vh' }}>
             {numberOfReactions !== undefined &&
                 <>
                 <Title>
@@ -114,7 +114,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                         justifyContent: "start",
                         alignItems: "center",
                         padding: "10px",
-                        marginBottom: "24px",
+                        marginBottom: "44px",
                         borderRadius: "10px",
                         }}
                     >
@@ -126,8 +126,8 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                         <p style={{ fontWeight: "500", fontSize: "16px", color: '#FFF' }}>({numberOfReactions}) Reactions </p>
                     </div>
                 }
-                <Grid container columnSpacing={-5} rowSpacing={2}>
-                    <Grid item md={3} alignContent='center'>
+                <Grid container gap={2} rowSpacing={2}>
+                    <Grid  alignContent='center'>
                         <DeQButton onClick={() => openMediaSelector(GIPHY_GIFS)}
                             title={'Gifs'}
                             Icon={GifIcon}
@@ -135,7 +135,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                             showCost={numberOfReactions <= 0}
                             cost={costs[GIPHY_GIFS]} />
                     </Grid>
-                    <Grid item md={3}>
+                    <Grid >
                         <DeQButton onClick={onTTSSelected}
                             title={'Text-To-Speech'}
                             Icon={TTSIcon}
@@ -143,7 +143,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                             showCost={numberOfReactions <= 0}
                             cost={costs['tts']} />
                     </Grid>
-                    <Grid item md={3}>
+                    <Grid >
                         <DeQButton onClick={() => openMediaSelector(GIPHY_STICKERS)}
                             title={'Stickers'}
                             Icon={StickerIcon}
@@ -151,7 +151,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                             showCost={numberOfReactions <= 0}
                             cost={costs[GIPHY_STICKERS]} />
                     </Grid>
-                    <Grid item md={3}>
+                    <Grid >
                         <DeQButton onClick={() => openMediaSelector(MEMES)}
                             title={'Memes'}
                             Icon={MemesIcon}
@@ -160,9 +160,9 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                             cost={costs[MEMES]} />
                     </Grid>
                 </Grid>
-                <Grid container style={{ marginTop: 24 }}>
+                <Grid container style={{ marginTop: 24 }} gap={2}>
                     {clipsSample &&
-                        <Grid item md={6}>
+                        <Grid >
                             <DeQButtonPayments onClick={() => openMediaSelector(GIPHY_CLIPS)}
                                 backgroundImageUrl={clipsSample}
                                 Qoins={costs[GIPHY_CLIPS]}
@@ -171,7 +171,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                         </Grid>
                     }
                     {customTTSSample &&
-                        <Grid item md={6}>
+                        <Grid >
                             <DeQButtonPayments onClick={() => openMediaSelector(GIPHY_TEXT)}
                                 backgroundColor={customTTSSample.background}
                                 backgroundImageUrl={customTTSSample.url}

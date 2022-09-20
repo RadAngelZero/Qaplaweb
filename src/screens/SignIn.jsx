@@ -70,7 +70,7 @@ const Text = styled(Typography)({
 const ButtonTwitch = styled(Button)({
     background:'#000000',
     color: '#FFFFFF',
-    width:'260px',
+    maxWidth:'260px',
     height:'74px',
     borderRadius: '100px',
     fontWeight:'600',

@@ -12,7 +12,6 @@ const DeQContainer = styled(Button)({
   minWidth:"165px",
   height: "165px",
   borderRadius: "20px",
-  marginRight:'10px'
 });
 
 const Title = styled(Typography)({

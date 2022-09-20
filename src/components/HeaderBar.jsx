@@ -77,7 +77,7 @@ const HeaderBar = (props) => {
                 <LiveIcon itemType='div' />
             </div>
            <MyQoins >
-                <Text>🏦 My Qoins</Text>
+                <Text>💰 My Qoins</Text>
                 <Icons src={icon} alt='icon' />
                 <Qoins>4,500</Qoins>
            </MyQoins>
