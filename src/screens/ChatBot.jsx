@@ -240,7 +240,8 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
     const onVoiceSelected = (voice) => {
         setSelectedVoice(voice);
         if (mediaSelected) {
-            setCost(voice.cost + costs['tts']);
+            const ttsCost = numberOfReactions <= 0 ? costs['tts'] : 0;
+            setCost(voice.cost + ttsCost);
             sendTTS(null, voice);
         } else {
             setCost(voice.cost);
@@ -337,30 +338,36 @@ const ChatBot = ({ message, setMessage, setBotVoice, mediaSelected, setMediaSele
                                 <ChatBubbleText>
                                     {t('ChatBot.addMediaToMyTTS', { mediaType: 'GIF' })}
                                 </ChatBubbleText>
-                                <QoinsCost>
-                                    <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
-                                    {costs[GIPHY_GIFS]}
-                                </QoinsCost>
+                                {numberOfReactions <= 0 &&
+                                    <QoinsCost>
+                                        <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
+                                        {costs[GIPHY_GIFS]}
+                                    </QoinsCost>
+                                }
                             </OptionButton>
                             <OptionButton onClick={() => openMediaSelector(GIPHY_STICKERS)}>
                                 <StickerIcon width={24} height={24} style={{ marginRight: 16 }} />
                                 <ChatBubbleText>
                                     {t('ChatBot.addMediaToMyTTS', { mediaType: 'Sticker' })}
                                 </ChatBubbleText>
-                                <QoinsCost>
-                                    <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
-                                    {costs[GIPHY_STICKERS]}
-                                </QoinsCost>
+                                {numberOfReactions <= 0 &&
+                                    <QoinsCost>
+                                        <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
+                                        {costs[GIPHY_STICKERS]}
+                                    </QoinsCost>
+                                }
                             </OptionButton>
                             <OptionButton onClick={() => openMediaSelector(MEMES)}>
                                 <MemesIcon width={24} height={24} style={{ marginRight: 16 }} />
                                 <ChatBubbleText>
                                     {t('ChatBot.addMediaToMyTTS', { mediaType: 'Meme' })}
                                 </ChatBubbleText>
-                                <QoinsCost>
-                                    <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
-                                    {costs[MEMES]}
-                                </QoinsCost>
+                                {numberOfReactions <= 0 &&
+                                    <QoinsCost>
+                                        <QoinIcon style={{ marginRight: 4, alignSelf: 'center' }} />
+                                        {costs[MEMES]}
+                                    </QoinsCost>
+                                }
                             </OptionButton>
                             <ConfirmationButton onClick={sendTTS}>
                                 {t('ChatBot.onlySendTTS')}

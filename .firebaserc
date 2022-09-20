@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "qapplaapp"
+  },
+  "targets": {
+    "qapplaapp": {
+      "hosting": {
+        "qaplaweb": [
+          "qaplaweb"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

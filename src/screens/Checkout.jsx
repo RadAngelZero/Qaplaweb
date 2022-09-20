@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AccordionSummary, Box, Button, Dialog, Grid, IconButton, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
 import styled from '@emotion/styled';
-import { GiphyFetch } from '@giphy/js-fetch-api';
 import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as GifIcon } from './../assets/icons/IconGIF.svg';
@@ -20,8 +19,7 @@ import MemeMediaSelector from './MemeMediaSelector';
 import { GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from '../utils/constants';
 import { getReactionTypeCost, putReactionInQueue, sendPrepaidReaction } from '../services/database';
 import PurchaseQoinsDialog from '../components/PurchaseQoinsDialog/PurchaseQoinsDialog';
-
-const gf = new GiphyFetch('Kb3qFoEloWmqsI3ViTJKGkQZjxICJ3bi');
+import ReactionsDialog from '../components/ReactionsDialog/ReactionsDialog';
 
 const PreviewContainer = styled(Paper)({
     backgroundColor: 'transparent',
@@ -169,6 +167,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
     const [localMediaType, setLocalMediaType] = useState(GIPHY_GIFS);
     const [openPurchaseQoinsDialog, setOpenPurchaseQoinsDialog] = useState(false);
     const [reactionId, setReactionId] = useState('');
+    const [reactionSent, setReactionSent] = useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const { t } = useTranslation();
@@ -254,7 +253,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                 },
                 emoji ? [emoji] : [],
                 totalDonationCost,
-                () => { onSuccess(); alert('success'); setLockSendReactionButton(false); },
+                () => { setReactionSent(true); },
                 () => alert('Error')
             );
         } else {
@@ -494,6 +493,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                 </Grid>
             </Grid>
             <PurchaseQoinsDialog open={openPurchaseQoinsDialog}
+                onClose={() => setOpenPurchaseQoinsDialog(false)}
                 reactionId={reactionId}
                 uid={user.id}
                 email={user.email}
@@ -511,7 +511,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                 fullWidth
                 fullScreen={fullScreen}
                 maxWidth='sm'>
-                <MediaSelector onMediaSelected={onMediaSelected} mediaType={localMediaType} setMessage={setMessage} />
+                <MediaSelector preMadeMessage={message} onMediaSelected={onMediaSelected} mediaType={localMediaType} setMessage={setMessage} />
             </Dialog>
             <Dialog open={openMemeMediaDialog}
                 PaperProps={{
@@ -525,6 +525,8 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                 maxWidth='sm'>
                 <MemeMediaSelector onMediaSelected={onMediaSelected} />
             </Dialog>
+            <ReactionsDialog open={reactionSent}
+                onClose={() => { setReactionSent(false); onSuccess(); setLockSendReactionButton(false); }} />
         </CheckoutContainer>
     );
 }

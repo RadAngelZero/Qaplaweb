@@ -57,13 +57,18 @@ const GridContainer = styled(Container)({
     padding: '0px !important',
 });
 
-const MediaSelector = ({ mediaType, onMediaSelected, setMessage }) => {
+const MediaSelector = ({ mediaType, onMediaSelected, setMessage, preMadeMessage }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [giphyText, setGiphyText] = useState([]);
     const searchInput = useRef(null);
     useEffect(() => {
+        if (preMadeMessage && !searchTerm) {
+            setSearchTerm(preMadeMessage);
+            loadGiphyText(preMadeMessage);
+        }
+
         focusSearch();
-    }, []);
+    }, [preMadeMessage]);
 
     const fetchSearch = (offset) => gf.search(searchTerm, { offset, limit: 50, type: mediaType, rating: 'pg-13' });
     const fetchTrending = (offset) => gf.trending({ offset, type: mediaType, limit: 20, rating: 'pg-13' });
@@ -71,11 +76,11 @@ const MediaSelector = ({ mediaType, onMediaSelected, setMessage }) => {
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
         if (mediaType === GIPHY_TEXT) {
-            loadGIphyText(e.target.value);
+            loadGiphyText(e.target.value);
         }
     }
 
-    const loadGIphyText = async (text) => {
+    const loadGiphyText = async (text) => {
         const giphyText = await gf.animate(text, { limit: 50, type: mediaType });
         setGiphyText(giphyText.data);
     }
@@ -85,7 +90,6 @@ const MediaSelector = ({ mediaType, onMediaSelected, setMessage }) => {
     }
 
     const onGiphyTextSelected = (giphyText) => {
-        console.log(giphyText);
         onMediaSelected(giphyText);
         setMessage(searchTerm);
     }

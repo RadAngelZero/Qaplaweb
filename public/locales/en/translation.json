@@ -1,5 +1,14 @@
 {
+    "Helmet": {
+        "title": "Qapla Reaction"
+    },
+    "SignIn": {
+        "title": "Link your Twich to react on stream",
+        "continueWithTwitch": "Continue with Twitch",
+        "loading": "Loading..."
+    },
     "Layout": {
+        "reaction": "Reactions",
         "customReaction": "Custom Reaction",
         "customTTS": "Custom TTS"
     },
@@ -32,5 +41,15 @@
         "boostYourReaction": "Boost your reactions",
         "sendFreeReactions": "Send reactions with out channel points",
         "sendExtraTip": "Send Extra Tips (100% goes to the creator)"
-    }
+    },
+    "HeaderBar": {
+        "myQoins": "🏦 My Qoins"
+    },
+    "ReactionsDialog": {
+        "sent": "Reaction sent!",
+        "description": "You can track your Qoins balance from the mobile app",
+        "download": "Download the app",
+        "imGood": "I'm good"
+    },
+    "noQreatorCode": "You need a valid link to continue, ask your streamer for their link"
 }

@@ -5,11 +5,12 @@ import { styled } from '@mui/material/styles';
 import {
     getReactionsCosts,
     getStreamerPublicData,
-    getStreamerUidWithQreatorCode,
     listenToUserProfile,
     listenUserReactionsWithStreamer
 } from './services/database';
 import { listenToAuthState } from './services/auth';
+import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet';
 
 import HeaderBar from './components/HeaderBar';
 import Layout from './screens/Layout';
@@ -17,6 +18,8 @@ import SignIn from './screens/SignIn';
 import Checkout from './screens/Checkout';
 import { GIPHY_CLIPS } from './utils/constants';
 import ChatBot from './screens/ChatBot';
+import ReactionsDialog from './components/ReactionsDialog/ReactionsDialog';
+import { auth } from './services/firebase';
 
 function useQuery() {
     const { search } = window.location;
@@ -46,19 +49,20 @@ function App() {
     const [cost, setCost] = useState(0);
     const [reactionsCosts, setreactionsCosts] = useState({});
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
+    const [openReactionDialog, setOpenReactionDialog] = useState(false);
     const query = useQuery();
+    const { t } = useTranslation();
 
     useEffect(() => {
-        async function getStreamerUid(qreatorCode) {
-            const streamers = await getStreamerUidWithQreatorCode(qreatorCode);
-            if (streamers.exists()) {
-                streamers.forEach((streamer) => {
-                    localStorage.setItem('streamerUid', streamer.key);
-                    getStreamer(streamer.key);
-                });
-            } else {
-                setStreamer(null);
-                alert('Invalid link');
+        async function getDeepLinkInfo(url) {
+            const urlDecoded = decodeURI(url);
+            const urlResponse = await fetch(`https://api2.branch.io/v1/url?url=${urlDecoded}&branch_key=key_live_bg6p6DgKXOhIDT1ShRTQijhcxslLZvQ2`);
+            if (urlResponse.status === 200) {
+                const { data } = await urlResponse.json();
+                if (data && data.streamerId) {
+                    localStorage.setItem('streamerUid', data.streamerId);
+                    getStreamer(data.streamerId);
+                }
             }
         }
 
@@ -107,20 +111,23 @@ function App() {
             });
         }
 
-        const qreatorCodeQuery = query.get('qreatorCode');
-
-        if (qreatorCodeQuery) {
-            // If we found a qreatorQode in the url we look for their streamer id
-            getStreamerUid(qreatorCodeQuery);
+        const url = query.get('url');
+        if (url && !streamer) {
+            getDeepLinkInfo(url);
         }
 
-        if (!streamer && localStorage.getItem('streamerUid') && !qreatorCodeQuery) {
+        if (!streamer && localStorage.getItem('streamerUid') && !url) {
             getStreamer(localStorage.getItem('streamerUid'));
         }
 
         const reactionSent = query.get('reactionSent');
         if (reactionSent === 'true') {
             // reaction sent from backend after a successful purchase
+            const dialogWasOpened = sessionStorage.getItem('reactionSent');
+            if (!dialogWasOpened) {
+                sessionStorage.setItem('reactionSent', 'true');
+                setOpenReactionDialog(true);
+            }
         }
     }, [user, query, streamer]);
 
@@ -191,6 +198,11 @@ function App() {
     if (user !== undefined) {
         return (
             <>
+            <Helmet>
+                <title>
+                    {t('Helmet.title')}
+                </title>
+            </Helmet>
             {/* User is null if no authenticated */}
             {user === null ?
                 <SignIn user={user} />
@@ -198,14 +210,21 @@ function App() {
                 <>
                 <MainContainer itemType='div'>
                     {streamer &&
-                        <HeaderBar
+                        <HeaderBar user={user}
                             streamerName={streamer.displayName}
                             streamerImage={streamer.photoUrl} />
                     }
                     {renderSection()}
+                    {!streamer &&
+                        <h2 style={{ color: '#FFF' }}>
+                            {t('noQreatorCode')}
+                        </h2>
+                    }
                 </MainContainer>
                 </>
             }
+            <ReactionsDialog open={openReactionDialog}
+                onClose={() => setOpenReactionDialog(false)} />
             </>
         );
     }
