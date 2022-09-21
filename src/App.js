@@ -204,7 +204,7 @@ function App() {
                 </title>
             </Helmet>
             {/* User is null if no authenticated */}
-            {user === null ?
+            {user !== null ?
                 <SignIn user={user} />
                 :
                 <>

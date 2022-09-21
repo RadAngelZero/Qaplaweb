@@ -41,7 +41,7 @@ export const Title = styled(Typography)({
 })
 
   
-    const DeQButtonPayments = ({ backgroundImageUrl, backgroundColor = 'transparent', Qoins, title, onClick }) => {
+    const DeQButtonPayments = ({ backgroundImageUrl, backgroundColor = 'transparent', Qoins, title, onClick, backgroundSize }) => {
 
   return (
     <div>
@@ -53,7 +53,7 @@ export const Title = styled(Typography)({
           backgroundColor,
           backgroundImage: `url("${backgroundImageUrl}")`,
           backgroundImagePosition: "center",
-          backgroundSize:'contain',
+          backgroundSize:backgroundSize,
         }}
       >
         <QoinsCostContainer>

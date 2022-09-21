@@ -40,7 +40,7 @@ const LiveIcon = styled(Box)({
 });
 
 const MyQoins = styled('div')({
-  marginRight:'78px',
+  marginRight:'130px',
   display: 'flex',
   alignItems: 'center',
 })
@@ -80,7 +80,7 @@ const HeaderBar = (props) => {
             </div>
            <MyQoins >
                 <Text>
-                💰 {t('HeaderBar.myQoins')}
+                     {t('HeaderBar.myQoins')}
                 </Text>
 
                 <Icons src={icon} alt='icon' />

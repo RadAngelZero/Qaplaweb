@@ -58,29 +58,23 @@ const ContentItem = styled(Box)({
     marginBottom: '40px'
 });
 
-const Text = styled(Typography)({
-    fontStyle: 'normal',
-    fontWeight: '700',
-    fontSize: '40px',
-    lineHeight: '48px',
-    color: '#FFFFFF',
-    marginBottom: '70px',
-    marginTop: '50px'
-});
+
 
 const ButtonTwitch = styled(Button)({
     background:'#000000',
     color: '#FFFFFF',
-    maxWidth:'260px',
+    Width:'260px',
     height:'74px',
     borderRadius: '100px',
     fontWeight:'600',
-    lineHeight: '19.09',
+    Size:'16px',
+    lineHeight:'19.09px',
+    alignItems: 'center',
     '&:hover':{
         backgroundColor: '#000000',
         opacity: '0.8'
-    }
-
+    },
+    padding:'20px'
 });
 
 const Gifs = styled('img')({
@@ -135,11 +129,11 @@ const SignIn = ({ user }) => {
             <BottonContainer itemType='div'>
                 <ContentItem itemType='div'>
                     <img src={logoQapla } alt="icon"/>
-                    <Text>
+                    <h1 style={{fontStyle: 'normal',fontWeight: '700',fontSize: '40px',lineHeight: '48px',color: '#FFFFFF',marginBottom: '70px',marginTop: '50px'}}>
                         {t('SignIn.title')}
-                    </Text>
+                    </h1>
                     <ButtonTwitch onClick={signIn}>
-                        <IconTwich style={{ padding:'5px'}}/>
+                        <IconTwich style={{ padding:'10px'}}/>
                             {isLoadingAuth ?
                                 t('SignIn.loading')
                                 :
