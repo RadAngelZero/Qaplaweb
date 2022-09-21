@@ -17,6 +17,7 @@ const DeQContainer = styled(Button)({
 const Title = styled(Typography)({
   color:'#FFFFFF',
   fontWeight:'600',
+  textTransform: 'none'
 });
 
 const QoinsCostContainer = styled(Box)({
