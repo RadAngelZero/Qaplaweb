@@ -11,6 +11,7 @@ import {ReactComponent as IconTwich} from '../assets/twitch-glitch-dark.svg'
 import gifs from "../assets/giphy.gif"
 
 
+
 function useQuery() {
     const { search } = window.location;
 
@@ -87,6 +88,7 @@ const SignIn = ({ user }) => {
     const query = useQuery();
     const { t } = useTranslation();
 
+    
     useEffect(() => {
         async function checkIfUsersIsSigningIn() {
             const twitchClientCode = query.get('code');
@@ -122,6 +124,7 @@ const SignIn = ({ user }) => {
             setIsLoadingAuth(false);
         }
     }
+    
 
     return (
         <SigninContainer itemType='div'>

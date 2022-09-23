@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
 import icon from '../assets/icons/Qoin.svg'
+import iconsBeta from '../assets/icons/PillBeta.svg'
 
 const MainAppBar = styled(Box)({
     backgroundColor: '#0D1021',
@@ -66,6 +67,10 @@ const Icons = styled('img')({
   marginRight:'5px'
 })
 
+const IconsBeta = styled('img')({
+    marginLeft:'20px'
+})
+
 const HeaderBar = (props) => {
     const { t } = useTranslation();
 
@@ -77,6 +82,7 @@ const HeaderBar = (props) => {
                         {props.streamerName}
                 </StreamerName>
                 <LiveIcon itemType='div' />
+                <IconsBeta  src={iconsBeta} alt='icons'/>
             </div>
            <MyQoins >
                 <Text>

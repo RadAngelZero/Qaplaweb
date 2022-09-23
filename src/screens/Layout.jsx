@@ -94,7 +94,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
 
     return (
         <div style={{ maxWidth: '834px', width: '100%', height:'100vh' }}>
-            {!numberOfReactions !== undefined &&
+            {numberOfReactions !== undefined &&
                 <>
                 <Title>
                     {t('Layout.customReaction')}
@@ -104,7 +104,7 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                     alt="icon"
                     /> */}
                 </Title>
-                {!numberOfReactions &&
+                {numberOfReactions &&
                     <div
                         style={{
                         maxWidth: "138px",
