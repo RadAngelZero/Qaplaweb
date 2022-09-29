@@ -19,7 +19,7 @@ import Checkout from './screens/Checkout';
 import { GIPHY_CLIPS } from './utils/constants';
 import ChatBot from './screens/ChatBot';
 import ReactionsDialog from './components/ReactionsDialog/ReactionsDialog';
-import { auth } from './services/firebase';
+
 
 function useQuery() {
     const { search } = window.location;

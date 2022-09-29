@@ -12,6 +12,7 @@ import gifs from "../assets/giphy.gif"
 
 
 
+
 function useQuery() {
     const { search } = window.location;
 
@@ -92,7 +93,7 @@ const SignIn = ({ user }) => {
     useEffect(() => {
         async function checkIfUsersIsSigningIn() {
             const twitchClientCode = query.get('code');
-
+           
             if (!isLoadingAuth && !user && twitchClientCode) {
                 setIsLoadingAuth(true);
                 const tokenData = await getUserToken(twitchClientCode);
@@ -125,7 +126,7 @@ const SignIn = ({ user }) => {
         }
     }
     
-
+   
     return (
         <SigninContainer itemType='div'>
             <Gifs src={gifs} alt='Gifs'/>
