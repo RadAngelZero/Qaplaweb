@@ -61,7 +61,8 @@ const EmojiSelector = ({ onEmojiSelected, open, onClose, emotes, onEmoteSelected
                 paddingTop: '32px',
                 paddingLeft: '16px',
                 paddingRight: '16px',
-                paddingBottom: '16px'
+                paddingBottom: '16px',
+                borderRadius: '40px'
             }
         }}>
             <Tabs indicatorColor='' centered value={selectedTab} onChange={(e, newValue) => setSelectedTab(newValue)}>
@@ -120,7 +121,7 @@ const EmojiSelector = ({ onEmojiSelected, open, onClose, emotes, onEmoteSelected
                         }
                     })
                 }
-                {selectedTab === 0 && !emotes &&
+                {selectedTab === 0 && (!emotes || !userStreamerRelation) &&
                     <LoaderContainer>
                         <CircularProgress sx={{
                             color: '#00FFDD'
