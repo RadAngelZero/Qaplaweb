@@ -15,3 +15,6 @@ export const GIPHY_GIFS = 'gifs';
 export const GIPHY_STICKERS = 'stickers';
 export const GIPHY_CLIPS = 'videos';
 export const GIPHY_TEXT = 'text';
+
+export const EMOJI = 'emoji';
+export const EMOTE = 'emote';
