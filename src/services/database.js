@@ -326,12 +326,14 @@ export async function sendQoinsReaction(uid, amountQoins, streamerUid, media, me
  * @param {string} messageExtraData.voiceAPIName Google Text to speech API voice for the voice bot
  * @param {boolean} messageExtraData.isGiphyText True if contains giphy Text
  * @param {Object | undefined} messageExtraData.giphyText Giphy text object
- * @param {Array<string>} emojis Emojis for emoji rain
+ * @param {Object} emojiRain Emoji/Emote data for rain
+ * @param {("emoji" | "emote")} emojiRain.type Type of rain (emoji or emote)
+ * @param {Array<string>} emojiRain.emojis Array of strings with emojis (as text) or emotes (as urls)
  * @param {number} qoinsToRemove Amount of donated Qoins
  * @param {function} onSuccess Function to call once the cheer is sent
  * @param {function} onError Function to call on any possible error
  */
-export async function sendPrepaidReaction(uid, userName, twitchUserName, userPhotoURL, streamerUid, streamerName, media, message, messageExtraData, emojis, qoinsToRemove, onSuccess, onError) {
+export async function sendPrepaidReaction(uid, userName, twitchUserName, userPhotoURL, streamerUid, streamerName, media, message, messageExtraData, emojiRain, qoinsToRemove, removePrepaidDonation, onSuccess, onError) {
     let qoinsTaken = qoinsToRemove ? false : true;
 
     if (qoinsToRemove) {
@@ -345,23 +347,23 @@ export async function sendPrepaidReaction(uid, userName, twitchUserName, userPho
     if (qoinsTaken) {
         const reactionsCountChild = child(database, `/UsersReactionsCount/${uid}/${streamerUid}`);
 
-        const reactionTaken = await runTransaction(reactionsCountChild, (reactionsCount) => {
-            return reactionsCount - 1;
-        });
+        let reactionTaken = {};
+        if (removePrepaidDonation) {
+            reactionTaken = await runTransaction(reactionsCountChild, (reactionsCount) => {
+                return reactionsCount - 1;
+            });
+        }
 
-        if (reactionTaken.committed) {
+        if (!removePrepaidDonation || reactionTaken.committed) {
             const streamerDonationsChild = child(database, `/StreamersDonations/${streamerUid}`);
             const timestamp = (new Date()).getTime();
 
-            console.log(media);
             const donationRef = push(streamerDonationsChild, {
                 amountQoins: qoinsToRemove,
                 media,
                 message,
                 messageExtraData,
-                emojiRain: {
-                    emojis,
-                },
+                emojiRain,
                 timestamp,
                 uid,
                 read: false,
