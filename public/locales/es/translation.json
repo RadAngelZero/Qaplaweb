@@ -51,5 +51,15 @@
         "download": "Descargar el app",
         "imGood": "Estoy bien"
     },
+    "EmojiSelector": {
+        "emotesCategories": {
+            "follower": "Seguidor",
+            "bits": "Bits",
+            "subTier1": "Sub Nivel 1",
+            "subTier2": "Sub Nivel 2",
+            "subTier3": "Sub Nivel 3",
+            "global": "Twitch Emotes"
+        }
+    },
     "noQreatorCode": "Necesitas un link valido continuar\npregunta a tu streamer por su link"
 }
