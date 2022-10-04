@@ -119,7 +119,6 @@ const TotalAccordion = styled(Box)({
     backgroundColor: '#141539',
     maxWidth:'350px',
     marginRight:'40px'
-    
 });
 
 const TotalText = styled(Typography)({
@@ -161,7 +160,7 @@ const DeleteIconButton = styled(IconButton)({
     top: 8
 });
 
-const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botVoice, mediaType, message, donationCost, setCost, editMessage, streamer, setMessage, onSuccess, userStreamerRelation }) => {
+const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botVoice, mediaType, message, donationCost, setCost, editMessage, streamer, setMessage, onSuccess, userStreamerRelation, numberOfReactions }) => {
     const [openEmojiSelector, setOpenEmojiSelector] = useState(false);
     const [openMediaDialog, setOpenMediaDialog] = useState(false);
     const [openMemeMediaDialog, setOpenMemeMediaDialog] = useState(false);
@@ -301,7 +300,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                     emojis: emojiArray
                 },
                 totalDonationCost,
-                ((message && (!giphyText || (giphyText && giphyTextSelectedHere))) || (media && mediaType !== GIPHY_CLIPS) || (!giphyText && mediaType !== GIPHY_CLIPS)),
+                numberOfReactions > 0 && ((message && (!giphyText || (giphyText && giphyTextSelectedHere))) || (media && mediaType !== GIPHY_CLIPS) || (!giphyText && mediaType !== GIPHY_CLIPS)),
                 () => { setReactionSent(true); },
                 () => alert('Error')
             );
