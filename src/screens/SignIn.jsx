@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Button, Box, styled, Typography} from '@mui/material';
+import { Button, Box, styled} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { getTwitchUserData, signInWithTwitch } from '../services/twitch';
@@ -7,10 +7,8 @@ import { getUserToken } from '../services/functions';
 import { signTwitchUser } from '../services/auth';
 import { createUserProfile, updateUserProfile } from '../services/database';
 import logoQapla from "../assets/QaplaExtruded.png"
-import {ReactComponent as IconTwich} from '../assets/twitch-glitch-dark.svg'
-import gifs from "../assets/giphy.gif"
-
-
+import { ReactComponent as IconTwich } from '../assets/twitch-glitch-dark.svg';
+import gifs from "../assets/giphy.gif";
 
 function useQuery() {
     const { search } = window.location;
@@ -59,8 +57,6 @@ const ContentItem = styled(Box)({
     marginBottom: '40px'
 });
 
-
-
 const ButtonTwitch = styled(Button)({
     background:'#000000',
     color: '#FFFFFF',
@@ -88,11 +84,9 @@ const SignIn = ({ user }) => {
     const query = useQuery();
     const { t } = useTranslation();
 
-    
     useEffect(() => {
         async function checkIfUsersIsSigningIn() {
             const twitchClientCode = query.get('code');
-
             if (!isLoadingAuth && !user && twitchClientCode) {
                 setIsLoadingAuth(true);
                 const tokenData = await getUserToken(twitchClientCode);
@@ -124,7 +118,6 @@ const SignIn = ({ user }) => {
             setIsLoadingAuth(false);
         }
     }
-    
 
     return (
         <SigninContainer itemType='div'>

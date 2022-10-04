@@ -202,6 +202,7 @@ function App() {
                         onSuccess={onDonationSent}
                         streamer={streamer}
                         setMessage={setMessage}
+                        numberOfReactions={numberOfReactions}
                         userStreamerRelation={userStreamerRelation} />
                 );
             default:
