@@ -20,6 +20,12 @@ import { GIPHY_CLIPS } from './utils/constants';
 import ChatBot from './screens/ChatBot';
 import ReactionsDialog from './components/ReactionsDialog/ReactionsDialog';
 import StreamerCards  from './components/StreamerCards/StreamerCards';
+import ButtonCards from './components/ButtonCards/ButtonCards'
+import iconsTwitch from './assets/twitch-glitch-dark.svg'
+import iconsTwitter from './assets/Twitter.svg'
+import iconsInstagram from './assets/Instagram.svg'
+import iconsDiscord from './assets/Logo Mark White.svg'
+import iconsTiktok from './assets/TikTok.svg'
 
 
 function useQuery() {
@@ -53,23 +59,6 @@ function App() {
     const [openReactionDialog, setOpenReactionDialog] = useState(false);
     const query = useQuery();
     const { t } = useTranslation();
-    
-  
-        return <>
-            <StreamerCards
-             backgroundImage={'https://media.discordapp.net/attachments/971926751154405407/971926832570056714/7Minecraft_Figma.jpg'}
-                titleCad={'Extensible viendo los Juegos del Calamar 👀'}
-                streamDay={'Viernes'} 
-                day={'14'}
-                streamHou={'7:00 p.m.'}/>
-            <StreamerCards
-                backgroundImage={'https://cdn.discordapp.com/attachments/971479002235674704/971479040735191160/1Fall_Guys_Figma.jpg'}
-                titleCad={'Manqueando con subs ⭐️'} 
-                streamDay={'Viernes'}
-                day={'14'}
-                streamHou={'7:00 p.m.'}/>
-           
-        </>
     
 
     useEffect(() => {
