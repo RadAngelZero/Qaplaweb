@@ -9,6 +9,7 @@ import { ReactComponent as MemesIcon } from './../assets/icons/Memes.svg';
 import { ReactComponent as TTSIcon } from './../assets/icons/TTSIcon.svg';
 import { ReactComponent as QoinIcon } from '../assets/icons/Qoin.svg';
 import { ReactComponent as DeleteIcon } from '../assets/icons/Delete.svg';
+import CoolCat from '../assets/images/CoolCat.png';
 import MakeItPop from '../assets/gifs/makeItPop.gif';
 import GradientChat from '../assets/GradientChat.png';
 import GradientLOL from '../assets/GradientLOL.png';
@@ -16,10 +17,11 @@ import CheerPreview from '../components/CheerPreview/CheerPreview';
 import EmojiSelector from './EmojiSelector';
 import MediaSelector from './MediaSelector';
 import MemeMediaSelector from './MemeMediaSelector';
-import { GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from '../utils/constants';
+import { EMOJI, EMOTE, GIPHY_CLIPS, GIPHY_GIFS, GIPHY_STICKERS, GIPHY_TEXT, MEMES } from '../utils/constants';
 import { getReactionTypeCost, putReactionInQueue, sendPrepaidReaction } from '../services/database';
 import PurchaseQoinsDialog from '../components/PurchaseQoinsDialog/PurchaseQoinsDialog';
 import ReactionsDialog from '../components/ReactionsDialog/ReactionsDialog';
+import { getEmotes } from '../services/functions';
 
 const PreviewContainer = styled(Paper)({
     backgroundColor: 'transparent',
@@ -117,7 +119,6 @@ const TotalAccordion = styled(Box)({
     backgroundColor: '#141539',
     maxWidth:'350px',
     marginRight:'40px'
-    
 });
 
 const TotalText = styled(Typography)({
@@ -159,11 +160,12 @@ const DeleteIconButton = styled(IconButton)({
     top: 8
 });
 
-const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botVoice, mediaType, message, donationCost, setCost, editMessage, streamer, setMessage, onSuccess }) => {
+const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botVoice, mediaType, message, donationCost, setCost, editMessage, streamer, setMessage, onSuccess, userStreamerRelation, numberOfReactions }) => {
     const [openEmojiSelector, setOpenEmojiSelector] = useState(false);
     const [openMediaDialog, setOpenMediaDialog] = useState(false);
     const [openMemeMediaDialog, setOpenMemeMediaDialog] = useState(false);
     const [emoji, setEmoji] = useState('');
+    const [emoteUrl, setEmoteUrl] = useState('');
     const [emojiRaidCost, setEmojiRaidCost] = useState(0);
     const [giphyTextCost, setGiphyTextCost] = useState(0);
     const [extraTip, setExtraTip] = useState(0);
@@ -172,6 +174,8 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
     const [openPurchaseQoinsDialog, setOpenPurchaseQoinsDialog] = useState(false);
     const [reactionId, setReactionId] = useState('');
     const [reactionSent, setReactionSent] = useState(false);
+    const [streamerEmotes, setStreamerEmotes] = useState(null);
+    const [giphyTextSelectedHere, setGiphyTextSelectedHere] = useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const { t } = useTranslation();
@@ -189,17 +193,39 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
             }
         }
 
+        async function getStreamerEmotes() {
+            const emotes = await getEmotes(streamer.uid);
+            if (emotes && emotes.data) {
+                setStreamerEmotes(emotes.data);
+            }
+        }
+
         if (!emojiRaidCost && !giphyTextCost) {
             getCosts();
         }
-    }, [emojiRaidCost, giphyTextCost]);
+
+        if (!streamerEmotes) {
+            getStreamerEmotes();
+        }
+    }, [emojiRaidCost, giphyTextCost, streamerEmotes]);
 
     const onEmojiSelected = (selectedEmoji) => {
         // Only add to cost the first time an emoji is selected
-        if (!emoji) {
+        if (!emoji && !emoteUrl) {
             setCost(emojiRaidCost);
         }
+        setEmoteUrl('');
         setEmoji(selectedEmoji.native);
+        setOpenEmojiSelector(false);
+    }
+
+    const onEmoteSelected = (selectedEmoteUrl) => {
+        // Only add to cost the first time an emoji is selected
+        if (!emoji && !emoteUrl) {
+            setCost(emojiRaidCost);
+        }
+        setEmoji('');
+        setEmoteUrl(selectedEmoteUrl);
         setOpenEmojiSelector(false);
     }
 
@@ -217,6 +243,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
             if (!giphyText) {
                 setCost(giphyTextCost);
             }
+            setGiphyTextSelectedHere(true);
             setGiphyText(media);
         } else {
             setMediaSelected(media);
@@ -238,6 +265,19 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
         setLockSendReactionButton(true);
         const totalDonationCost = donationCost + extraTip;
         if (user.credits >= totalDonationCost) {
+            /**
+             * As today the user can only choose either emoji or emote, this can change
+             * later that´s why we have an if instead of an else if here
+             */
+            const emojiArray = [];
+            if (emoji) {
+                emojiArray.push(emoji);
+            }
+
+            if (emoteUrl) {
+                emojiArray.push(emoteUrl);
+            }
+
             sendPrepaidReaction(
                 user.id,
                 user.userName,
@@ -255,8 +295,12 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                     giphyText,
                     ...botVoice
                 },
-                emoji ? [emoji] : [],
+                {
+                    type: emoji ? EMOJI : (emoteUrl ? EMOTE : null),
+                    emojis: emojiArray
+                },
                 totalDonationCost,
+                numberOfReactions > 0 && ((message && (!giphyText || (giphyText && giphyTextSelectedHere))) || (media && mediaType !== GIPHY_CLIPS) || (!giphyText && mediaType !== GIPHY_CLIPS)),
                 () => { setReactionSent(true); },
                 () => alert('Error')
             );
@@ -269,6 +313,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
     const removeEmojiRaid = (e) => {
         e.stopPropagation();
         setEmoji('');
+        setEmoteUrl('');
         setCost(-1 * emojiRaidCost);
     }
 
@@ -346,7 +391,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                 }} />
             </PreviewContainer>
             <Grid container>
-                {((media && mediaType !== GIPHY_CLIPS) || (!giphyText && mediaType !== GIPHY_CLIPS)) &&
+                {((message && (!giphyText || (giphyText && giphyTextSelectedHere))) || (media && mediaType !== GIPHY_CLIPS) || (!giphyText && mediaType !== GIPHY_CLIPS)) &&
                     <>
                     <Grid item xs={12}>
                         <SectionTitle>
@@ -354,21 +399,28 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                         </SectionTitle>
                     </Grid>
                     <Grid item xs={12}>
-                        <Grid  style={{ display: 'flex', }} gap={3} > 
+                        <Grid  style={{ display: 'flex', }} gap={3} >
                             {emojiRaidCost &&
                                 <Grid style={{margin:'2px'}} >
-                                    <AddOnButton style={{ background: !emoji ? `url(${GradientChat})` : 'linear-gradient(121.21deg, #2D07FA 0%, #A716EE 100%), #141539' }}
+                                    <AddOnButton style={{ background: (!emoji && !emoteUrl) ? `url(${GradientChat})` : 'linear-gradient(121.21deg, #2D07FA 0%, #A716EE 100%), #141539' }}
                                         onClick={() => setOpenEmojiSelector(true)}>
-                                        {emoji !== '' &&
+                                        {(emoji || emoteUrl) &&
                                             <DeleteIconButton onClick={removeEmojiRaid}>
                                                 <DeleteIcon width={16} height={16} />
                                             </DeleteIconButton>
                                         }
-                                        <div style={{ width: 150, height: 50, justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
-                                            {emoji || '🤡'}
-                                        </div>
-                                        <AddOnText style={{ color: !emoji ? '#0D1021' : '#FFF' }}>
-                                            Emoji Raid
+                                        {emoteUrl ?
+                                            <img style={{ width: '56px', height: '56px' }} src={emoteUrl} />
+                                            :
+                                            emoji ?
+                                                <div style={{ width: 150, height: 50, justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
+                                                    {emoji}
+                                                </div>
+                                            :
+                                            <img style={{ width: '56px', height: '56px' }} src={CoolCat} />
+                                        }
+                                        <AddOnText style={{ color:  (!emoji && !emoteUrl) ? '#0D1021' : '#FFF' }}>
+                                            Emote Raid
                                         </AddOnText>
                                         <QoinsCostContainer>
                                             <div style={{ display: 'flex', marginLeft: 14, alignSelf: 'center' }}>
@@ -504,6 +556,9 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                 streamerUid={streamer.uid} />
             <EmojiSelector open={openEmojiSelector}
                 onEmojiSelected={onEmojiSelected}
+                onEmoteSelected={onEmoteSelected}
+                emotes={streamerEmotes}
+                userStreamerRelation={userStreamerRelation}
                 onClose={() => setOpenEmojiSelector(false)} />
             <Dialog open={openMediaDialog}
                 PaperProps={{

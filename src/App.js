@@ -19,14 +19,7 @@ import Checkout from './screens/Checkout';
 import { GIPHY_CLIPS } from './utils/constants';
 import ChatBot from './screens/ChatBot';
 import ReactionsDialog from './components/ReactionsDialog/ReactionsDialog';
-import StreamerCards  from './components/StreamerCards/StreamerCards';
-import ButtonCards from './components/ButtonCards/ButtonCards'
-import iconsTwitch from './assets/twitch-glitch-dark.svg'
-import iconsTwitter from './assets/Twitter.svg'
-import iconsInstagram from './assets/Instagram.svg'
-import iconsDiscord from './assets/Logo Mark White.svg'
-import iconsTiktok from './assets/TikTok.svg'
-
+import { getUserToStreamerRelation } from './services/functions';
 
 function useQuery() {
     const { search } = window.location;
@@ -57,6 +50,7 @@ function App() {
     const [reactionsCosts, setreactionsCosts] = useState({});
     const [numberOfReactions, setNumberOfReactions] = useState(undefined);
     const [openReactionDialog, setOpenReactionDialog] = useState(false);
+    const [userStreamerRelation, setUserStreamerRelation] = useState(null);
     const query = useQuery();
     const { t } = useTranslation();
     
@@ -95,6 +89,15 @@ function App() {
             });
         }
 
+        async function getUserToStreamerRelations() {
+            const relationData = await getUserToStreamerRelation(user.twitchId, streamer.uid);
+            if (relationData.data) {
+                setUserStreamerRelation(relationData.data);
+            } else {
+                setUserStreamerRelation({ isFollower: false, isSubscribed: false, subscriptionTier: null });
+            }
+        }
+
         if (numberOfReactions === undefined && user && user.id && streamer) {
             getReactionsCount();
         }
@@ -126,6 +129,10 @@ function App() {
 
         if (!streamer && localStorage.getItem('streamerUid') && !url) {
             getStreamer(localStorage.getItem('streamerUid'));
+        }
+
+        if (user && streamer && !userStreamerRelation) {
+            getUserToStreamerRelations();
         }
 
         const reactionSent = query.get('reactionSent');
@@ -195,7 +202,9 @@ function App() {
                         editMessage={() => setCurrentStep('chatbot')}
                         onSuccess={onDonationSent}
                         streamer={streamer}
-                        setMessage={setMessage} />
+                        setMessage={setMessage}
+                        numberOfReactions={numberOfReactions}
+                        userStreamerRelation={userStreamerRelation} />
                 );
             default:
                 break;
