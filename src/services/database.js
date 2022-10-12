@@ -530,3 +530,18 @@ export async function getStreamerUidWithQreatorCode(qreatorCode) {
 
     return await get(query(qreatorCodeRef, orderByChild('codeLowerCase'), equalTo(qreatorCode.toLowerCase())));
 }
+
+//////////////////////
+// Gifs
+//////////////////////
+
+/**
+ * Returns the Gifs library
+ * @returns {Array<Object>} Resulting Objects of the query
+ */
+
+export async function getReactionModuleGifs() {
+    const gifsRef = child(database, '/Gifs/ReactionModule');
+
+    return await get(query(gifsRef));
+}
