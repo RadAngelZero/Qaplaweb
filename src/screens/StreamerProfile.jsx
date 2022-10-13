@@ -251,11 +251,29 @@ const StreamerProfile = () => {
                             Icon={<TwitchIcon />}
                             name={'Twitch'}
                             boxShadowColor={'#9146FF'}
-                        />
+                            grow
+                            link={'https://www.twitch.tv/agentemaxo'}
+                            // openLinkOnSecondClick
+                        >
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                            }}>
+                                <iframe
+                                    title='twitch stream'
+                                    src="https://player.twitch.tv/?channel=agentemaxo&parent=localhost&muted=true"
+                                    height="192"
+                                    width="342"
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+
+                        </SocialButton>
                         <SocialButton
                             Icon={<YouTube />}
                             name={'YouTube'}
                             boxShadowColor={'#FF0000'}
+                            link={'https://www.youtube.com/'}
                         />
                         <SocialButton
                             Icon={<Twitter />}

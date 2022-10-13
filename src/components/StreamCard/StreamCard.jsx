@@ -41,7 +41,7 @@ const Text = styled(Typography)({
     fontSize: '14px',
     display: 'flex',
     alignItems: 'center',
-    color: '#FFFFFF'
+    color: '#FFFFFF',
 })
 
 const StreamCard = ({backgroundImage, title , wDay, day, hour, hourSuffix }) =>{
