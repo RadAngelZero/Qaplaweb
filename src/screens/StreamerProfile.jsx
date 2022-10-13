@@ -253,7 +253,7 @@ const StreamerProfile = () => {
                             boxShadowColor={'#9146FF'}
                             grow
                             link={'https://www.twitch.tv/agentemaxo'}
-                            // openLinkOnSecondClick
+                            openLinkOnSecondClick
                         >
                             <div style={{
                                 display: 'flex',
@@ -267,7 +267,6 @@ const StreamerProfile = () => {
                                     allowfullscreen>
                                 </iframe>
                             </div>
-
                         </SocialButton>
                         <SocialButton
                             Icon={<YouTube />}

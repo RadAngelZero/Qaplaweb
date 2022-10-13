@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { styled, Box, Typography, Button, Backdrop, Collapse } from '@mui/material';
 
 import { ReactComponent as ShowArrow } from '../../assets/ShowArrow.svg';
-import { ReactComponent as ShareArrow } from '../../assets/ShareArrow.svg';
+import { ReactComponent as ExternalLink } from '../../assets/ExternalLink.svg';
 
 const ButtonContainer = styled(Button)({
     width: '100%',
@@ -88,20 +88,25 @@ const SocialButton = ({ Icon, name, boxShadowColor, children, link, grow, openLi
                     <div style={{ alignItems: 'center', justifyContent: 'center' }}>
                         <Text>{name}</Text>
                     </div>
-                    <div style={{ justifySelf: 'flex-end', display: 'flex', width: '32px', }}>
-                        {grow &&
-                            <ShowArrow style={{
-                                transform: open ? 'rotate(180deg)' : 'rotate(0deg)'
-                            }} />
+                    <div style={{ justifySelf: 'flex-end', display: 'flex', width: '32px', placeContent: 'center' }}>
+                        {openLinkOnSecondClick && open ?
+                            <ExternalLink />
+                            :
+                            <>
+                                {grow &&
+                                    <ShowArrow style={{
+                                        transform: open ? 'rotate(180deg)' : 'rotate(0deg)'
+                                    }} />
+                                }
+                            </>
                         }
-                        {}
                     </div>
                 </ButtonAlwaysContent>
             </ButtonContainer>
             <ChildrenContainer>
                 {children}
             </ChildrenContainer>
-        </CollapseContainer>
+        </CollapseContainer >
     )
 }
 
