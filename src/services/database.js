@@ -170,6 +170,17 @@ export async function addQoinsToStreamer(streamerUid, qoinsToAdd) {
     });
 }
 
+/**
+ * Returns the number of followers of the given streamer public profile
+ * @param {string} streamerUid Streamer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getStreamerFollowersNumber(streamerUid) {
+    const userStreamerChild = child(database, `/UserStreamer/${streamerUid}/followers`);
+
+    return await get(query(userStreamerChild));
+}
+
 //////////////////////
 // Streamer Public Data
 //////////////////////
@@ -183,6 +194,47 @@ export async function getStreamerPublicData(streamerUid) {
     const streamerPublicDataChild = child(database, `/UserStreamerPublicData/${streamerUid}`);
 
     return await get(query(streamerPublicDataChild));
+}
+
+/**
+ * Returns only the isStreaming of the given streamer
+ * @param {string} streamerUid Streamer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
+ */
+export async function getStreamerIsStreaming(streamerUid) {
+    const streamerIsStreamingChild = child(database, `/UserStreamerPublicData/${streamerUid}/isStreaming`);
+
+    return await get(query(streamerIsStreamingChild));
+}
+
+//////////////////////
+// Streamer Public Profile
+//////////////////////
+
+/**
+ * Returns the public profile of the given streamer
+ * @param {string} streamerUid Streamer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
+ */
+export async function getStreamerPublicProfile(streamerUid) {
+    const streamerProfileChild = child(database, `/StreamersPublicProfiles/${streamerUid}`);
+
+    return await get(query(streamerProfileChild));
+}
+
+//////////////////////
+// Streamer Links
+//////////////////////
+
+/**
+ * Returns all the (social) links of the given streamer
+ * @param {string} streamerUid Streamer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
+ */
+export async function getStreamerLinks(streamerUid) {
+    const streamerLinksChild = child(database, `/StreamerLinks/${streamerUid}`);
+
+    return await get(query(streamerLinksChild));
 }
 
 //////////////////////
@@ -529,6 +581,21 @@ export async function getStreamerUidWithQreatorCode(qreatorCode) {
     const qreatorCodeRef = child(database, `/QreatorsCodes`);
 
     return await get(query(qreatorCodeRef, orderByChild('codeLowerCase'), equalTo(qreatorCode.toLowerCase())));
+}
+
+//////////////////////
+// Streams
+//////////////////////
+
+/**
+ * Returns all the published streams of the given streamer
+ * @param {string} streamerUid Streamer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
+ */
+export async function getStreamerStreams(streamerUid) {
+    const streamerStreams = child(database, `/eventosEspeciales/eventsData`);
+
+    return await get(query(streamerStreams, orderByChild('idStreamer'), equalTo(streamerUid)));
 }
 
 //////////////////////

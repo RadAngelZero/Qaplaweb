@@ -62,12 +62,12 @@ const ChildrenContainer = styled(Box)({
     // marginTop: '-16px'
 });
 
-const SocialButton = ({ Icon, name, boxShadowColor, children, link, grow, openLinkOnSecondClick }) => {
+const SocialButton = ({ Icon = () => {}, name, boxShadowColor, children, link, grow, openLinkOnSecondClick }) => {
     const [open, setOpen] = useState(false);
 
-    const HandlePress = () => {
+    const handlePress = () => {
         if (link && (!grow || (grow && (open && openLinkOnSecondClick)))) {
-            window.open(link, '_blank', 'noopener,noreferrer');
+            window.open(link, '_blank');
             return;
         }
         if (grow) {
@@ -77,13 +77,10 @@ const SocialButton = ({ Icon, name, boxShadowColor, children, link, grow, openLi
 
     return (
         <CollapseContainer style={{ boxShadow: `-10px 10px 0px ${boxShadowColor}` }} collapsedSize={92} in={open} >
-            <ButtonContainer disableRipple onClick={() => {
-                HandlePress();
-            }}>
+            <ButtonContainer disableRipple onClick={handlePress}>
                 <ButtonAlwaysContent>
                     <div style={{ display: 'flex' }}>
-                        {/* <img src={icon} alt='icons' /> */}
-                        {Icon}
+                        <Icon />
                     </div>
                     <div style={{ alignItems: 'center', justifyContent: 'center' }}>
                         <Text>{name}</Text>

@@ -4,17 +4,46 @@ import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as ShareArrow } from '../assets/ShareArrow.svg';
 import { ReactComponent as TwitchIcon } from '../assets/TwitchLight.svg';
-import { ReactComponent as YouTube } from '../assets/YouTube.svg';
-import { ReactComponent as Twitter } from '../assets/Twitter.svg';
-import { ReactComponent as TikTok } from '../assets/TikTok.svg';
-import { ReactComponent as Instagram } from '../assets/Instagram.svg';
-import { ReactComponent as Discord } from '../assets/Discord.svg';
+import { ReactComponent as YouTubeIcon } from '../assets/YouTube.svg';
+import { ReactComponent as TwitterIcon } from '../assets/Twitter.svg';
+import { ReactComponent as TikTokIcon } from '../assets/TikTok.svg';
+import { ReactComponent as InstagramIcon } from '../assets/Instagram.svg';
+import { ReactComponent as DiscordIcon } from '../assets/Discord.svg';
 
 
 import TagChip from '../components/TagChip/TagChip';
 import SendReaction from '../components/SendReaction/SendReaction';
 import StreamCard from '../components/StreamCard/StreamCard';
 import SocialButton from '../components/SocialButton/SocialButton';
+import { getStreamerFollowersNumber, getStreamerIsStreaming, getStreamerLinks, getStreamerPublicProfile, getStreamerStreams } from '../services/database';
+import { getCurrentLanguage } from '../utils/i18n';
+
+const linksData = {
+    Twitch: {
+        Icon: TwitchIcon,
+        boxShadowColor: '#9146FF'
+    },
+    Youtube: {
+        Icon: YouTubeIcon,
+        boxShadowColor: '#FF0000'
+    },
+    Twitter: {
+        Icon: TwitterIcon,
+        boxShadowColor: '#1DA1F2'
+    },
+    TikTok: {
+        Icon: TikTokIcon,
+        boxShadowColor: '#EE1D52'
+    },
+    Instagram: {
+        Icon: InstagramIcon,
+        boxShadowColor: '#E700AB'
+    },
+    Discord: {
+        Icon: DiscordIcon,
+        boxShadowColor: '#5865F2'
+    }
+};
 
 const Container = styled(Box)({
     display: 'flex',
@@ -193,145 +222,199 @@ const EventsCardsContainer = styled(Box)({
     marginTop: '24px',
 });
 
-const StreamerProfile = () => {
-    const [coverImage, setCoverImage] = useState('https://i.pinimg.com/736x/74/20/22/742022ecfce4172ce0e81beb64ce434d.jpg');
-    const [streamerImg, setStreamerImg] = useState('https://static-cdn.jtvnw.net/jtv_user_pictures/b93a50c9-ce51-462b-89d2-765979b3087f-profile_image-70x70.png')
-    const [streamerName, setStreamerName] = useState('Streamer');
+const StreamerProfile = ({ streamerUid }) => {
+    const [coverImage, setCoverImage] = useState('');
+    const [streamerImg, setStreamerImg] = useState('')
+    const [streamerName, setStreamerName] = useState('');
     const [followers, setFollowers] = useState(0);
-    const [bio, setBio] = useState('Soy Lunna, Scream Queen por excelencia, tarotista, fan del terror y los Sims. Streamer de CDMX y comunity manager de ExitLag');
-    const [tags, setTags] = useState(['Terror', 'Shooter', 'Tarot', 'Just Dance', 'Just Chatting']);
+    const [bio, setBio] = useState('');
+    const [tags, setTags] = useState([]);
+    const [links, setLinks] = useState([]);
+    const [isStreaming, setIsStreaming] = useState(false);
+    const [upcomingStreams, setUpcomingStreams] = useState(null);
+    const [dataFetched, setDataFetched] = useState(false);
+    const { t } = useTranslation();
 
-    return (<Container>
-        <ProfileCover style={{
-            backgroundImage: `url('${coverImage}')`,
-        }} />
-        <MainContainer>
-            <StremerInfoContainer>
-                <ProfilePic style={{
-                    backgroundImage: `url('${streamerImg}')`,
-                }} />
-                <StreamerInfoTopContiner>
-                    <NameContiner>
-                        <NameText>
-                            {streamerName}
-                        </NameText>
-                        <FollowersContainer>
-                            <FollowersHighlightText>
-                                {followers}
-                            </FollowersHighlightText>
-                            <FollowersText>
-                                Followers
-                            </FollowersText>
-                        </FollowersContainer>
-                    </NameContiner>
-                    <QuickButtonsContainer>
-                        <ShareButton>
-                            Share
-                            <ShareArrow style={{ marginLeft: '8px' }} />
-                        </ShareButton>
-                        <FollowButton>
-                            Follow
-                        </FollowButton>
-                    </QuickButtonsContainer>
-                </StreamerInfoTopContiner>
-                <BioText>
-                    {bio}
-                </BioText>
-                <TagsContainer>
-                    {tags.map(tag => {
-                        return (<TagChip label={tag} />)
-                    })}
-                </TagsContainer>
-                <ContentContainer>
-                    <SectionHeader>
-                        My content
-                    </SectionHeader>
-                    <SocialButtonContainer>
-                        <SocialButton
-                            Icon={<TwitchIcon />}
-                            name={'Twitch'}
-                            boxShadowColor={'#9146FF'}
-                            grow
-                            link={'https://www.twitch.tv/agentemaxo'}
-                            openLinkOnSecondClick
-                        >
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                            }}>
-                                <iframe
-                                    title='twitch stream'
-                                    src="https://player.twitch.tv/?channel=agentemaxo&parent=localhost&muted=true"
-                                    height="192"
-                                    width="342"
-                                    allowfullscreen>
-                                </iframe>
-                            </div>
-                        </SocialButton>
-                        <SocialButton
-                            Icon={<YouTube />}
-                            name={'YouTube'}
-                            boxShadowColor={'#FF0000'}
-                            link={'https://www.youtube.com/'}
-                        />
-                        <SocialButton
-                            Icon={<Twitter />}
-                            name={'Twitter'}
-                            boxShadowColor={'#1DA1F2'}
-                        />
-                        <SocialButton
-                            Icon={<TikTok />}
-                            name={'TikTok'}
-                            boxShadowColor={'#EE1D52'}
-                        />
-                        <SocialButton
-                            Icon={<Instagram />}
-                            name={'Instagram'}
-                            boxShadowColor={'#E700AB'}
-                        />
-                        <SocialButton
-                            Icon={<Discord />}
-                            name={'Discord'}
-                            boxShadowColor={'#5865F2'}
-                        />
-                    </SocialButtonContainer>
-                </ContentContainer>
-            </StremerInfoContainer>
-            <InteractionsEventsContainer>
-                <InteractionContainer>
-                    <SectionHeader>
-                        Custom alerts on stream
-                    </SectionHeader>
-                    <SendReactionContainer>
-                        <SendReaction />
-                    </SendReactionContainer>
-                </InteractionContainer>
-                <EventsContainer>
-                    <SectionHeader>
-                        Upcoming streams
-                    </SectionHeader>
-                    <EventsCardsContainer>
-                        <StreamCard
-                            backgroundImage={'https://cdn.discordapp.com/attachments/971988981027835966/971989033599258654/3DBD_Figma.jpg '}
-                            title={'Asesinando gente, en el dbd para probar texto con salto de lineaa'}
-                            wDay={'Friday'}
-                            day={'13'}
-                            hour={'11:11'}
-                            hourSuffix={'p.m.'}
-                        />
-                        <StreamCard
-                            backgroundImage={'https://media.discordapp.net/attachments/973315961266503750/973316072293928970/6Tarot_Figma.jpg '}
-                            title={'Leyendo tu fortuna'}
-                            wDay={'Sunday'}
-                            day={'15'}
-                            hour={'11:11'}
-                            hourSuffix={'p.m.'}
-                        />
-                    </EventsCardsContainer>
-                </EventsContainer>
-            </InteractionsEventsContainer>
-        </MainContainer>
-    </Container>)
+    useEffect(() => {
+        async function loadStreamerData() {
+            const profile = await getStreamerPublicProfile(streamerUid);
+            setCoverImage(profile.val().backgroundUrl);
+            setStreamerImg(profile.val().photoUrl);
+            setStreamerName(profile.val().displayName);
+            setBio(profile.val().bio);
+            setTags(profile.val().tags);
+            setDataFetched(true);
+
+            const followers = await getStreamerFollowersNumber(streamerUid);
+            setFollowers(followers.val() ?? 0);
+
+            const isStreaming = await getStreamerIsStreaming(streamerUid);
+            setIsStreaming(isStreaming.val());
+
+            const links = await getStreamerLinks(streamerUid);
+            setLinks(links.val() ?? []);
+
+            const upcomingStreams = await getStreamerStreams(streamerUid);
+            setUpcomingStreams(upcomingStreams.val());
+        }
+
+        if (!dataFetched) {
+            loadStreamerData();
+        }
+    }, []);
+
+    const getStreamDateData = (timestamp) => {
+        const date = new Date(timestamp);
+
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const wDay = days[date.getDay()];
+        let hour = date.getHours() % 12;
+        hour = hour ? hour : 12;
+        let minute = date.getMinutes() > 9 ? date.getMinutes() : `0${date.getMinutes()}`;
+        const streamHour = `${hour}:${minute}`;
+        const hourSuffix = date.getHours() >= 12 ? 'p.m.' : 'a.m.';
+
+        return {
+            wDay,
+            day: date.getDate(),
+            hour: streamHour,
+            hourSuffix
+        };
+    }
+
+    const userLanguage = getCurrentLanguage();
+    return (
+        <Container>
+            <ProfileCover style={{
+                backgroundImage: `url('${coverImage}')`,
+            }} />
+            <MainContainer>
+                <StremerInfoContainer>
+                    <ProfilePic style={{
+                        backgroundImage: `url('${streamerImg}')`,
+                    }} />
+                    <StreamerInfoTopContiner>
+                        <NameContiner>
+                            <NameText>
+                                {streamerName}
+                            </NameText>
+                            <FollowersContainer>
+                                <FollowersHighlightText>
+                                    {followers}
+                                </FollowersHighlightText>
+                                <FollowersText>
+                                    Followers
+                                </FollowersText>
+                            </FollowersContainer>
+                        </NameContiner>
+                        <QuickButtonsContainer>
+                            <ShareButton>
+                                Share
+                                <ShareArrow style={{ marginLeft: '8px' }} />
+                            </ShareButton>
+                            <FollowButton>
+                                Follow
+                            </FollowButton>
+                        </QuickButtonsContainer>
+                    </StreamerInfoTopContiner>
+                    <BioText>
+                        {bio}
+                    </BioText>
+                    <TagsContainer>
+                        {tags.map(tag => {
+                            return (<TagChip label={tag} />)
+                        })}
+                    </TagsContainer>
+                    <ContentContainer>
+                        <SectionHeader>
+                            My content
+                        </SectionHeader>
+                        <SocialButtonContainer>
+                            {links.length <= 0 &&
+                                <SocialButton
+                                    Icon={linksData.Twitch.Icon}
+                                    name={'Twitch'}
+                                    boxShadowColor={linksData.Twitch.boxShadowColor}
+                                    grow={isStreaming}
+                                    link={`https://twitch.tv/${streamerName.toLowerCase()}`}
+                                    openLinkOnSecondClick={isStreaming}>
+                                        {isStreaming ?
+                                            <div style={{
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                            }}>
+                                                <iframe
+                                                    title='twitch stream'
+                                                    src={`https://player.twitch.tv/?channel=${streamerName.toLowerCase()}&parent=localhost&muted=true`}
+                                                    height="192"
+                                                    width="342"
+                                                    allowfullscreen>
+                                                </iframe>
+                                            </div>
+                                        :
+                                            null
+                                        }
+                                </SocialButton>
+                            }
+                            {links.map((link) => (
+                                link.value ?
+                                    <SocialButton
+                                        Icon={linksData[link.socialPage].Icon}
+                                        name={link.socialPage}
+                                        boxShadowColor={linksData[link.socialPage].boxShadowColor}
+                                        grow={link.socialPage === 'Twitch' && isStreaming}
+                                        link={link.value}
+                                        openLinkOnSecondClick={isStreaming}>
+                                        {link.socialPage === 'Twitch' &&
+                                            <div style={{
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                            }}>
+                                                <iframe
+                                                    title='twitch stream'
+                                                    src={`https://player.twitch.tv/?channel=${streamerName.toLowerCase()}&parent=localhost&muted=true`}
+                                                    height="192"
+                                                    width="342"
+                                                    allowfullscreen>
+                                                </iframe>
+                                            </div>
+                                        }
+                                    </SocialButton>
+                                :
+                                    null
+                                )
+                            )}
+                        </SocialButtonContainer>
+                    </ContentContainer>
+                </StremerInfoContainer>
+                <InteractionsEventsContainer>
+                    <InteractionContainer>
+                        <SectionHeader>
+                            Custom alerts on stream
+                        </SectionHeader>
+                        <SendReactionContainer>
+                            <SendReaction />
+                        </SendReactionContainer>
+                    </InteractionContainer>
+                    {upcomingStreams &&
+                        <EventsContainer>
+                            <SectionHeader>
+                                Upcoming streams
+                            </SectionHeader>
+                            <EventsCardsContainer>
+                                {Object.keys(upcomingStreams).slice(0, 2).map((streamId) => (
+                                    <StreamCard
+                                        backgroundImage={upcomingStreams[streamId].backgroundImage}
+                                        title={upcomingStreams[streamId].title[userLanguage]}
+                                        {...(getStreamDateData(upcomingStreams[streamId].timestamp))} />
+                                ))}
+                            </EventsCardsContainer>
+                        </EventsContainer>
+                    }
+                </InteractionsEventsContainer>
+            </MainContainer>
+        </Container>
+    );
 
 }
 
