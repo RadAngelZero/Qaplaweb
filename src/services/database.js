@@ -11,7 +11,8 @@ import {
     TransactionResult,
     update,
     onValue,
-    set
+    set,
+    orderByValue
 } from 'firebase/database';
 
 import { database } from './firebase';
@@ -611,4 +612,20 @@ export async function getReactionModuleGifs() {
     const gifsRef = child(database, '/Gifs/ReactionModule');
 
     return await get(query(gifsRef));
+}
+
+//////////////////////
+// Streamers Deep Links
+//////////////////////
+
+/**
+ * Find a streamer by using their branch deep link alias
+ * (Branch alias are unique so this query will return always 0 or 1 result at most)
+ * @param {string} linkAlias Branch deep link alias
+ * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
+ */
+export async function getStreamerUidWithDeepLinkAlias(linkAlias) {
+    const streamersDeepLinksRef = child(database, '/StreamersDeepLinks');
+
+    return await get(query(streamersDeepLinksRef, orderByValue(), equalTo(`https://myqap.la/${linkAlias}`)));
 }

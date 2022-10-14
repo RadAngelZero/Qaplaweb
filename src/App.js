@@ -53,7 +53,6 @@ function App() {
     const [userStreamerRelation, setUserStreamerRelation] = useState(null);
     const query = useQuery();
     const { t } = useTranslation();
-    
 
     useEffect(() => {
         async function getDeepLinkInfo(url) {
