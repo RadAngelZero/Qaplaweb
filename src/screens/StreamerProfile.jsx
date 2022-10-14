@@ -273,6 +273,7 @@ export async function loader({ params }) {
 const StreamerProfile = () => {
     const {
         streamerUid,
+        backgroundGradient,
         backgroundUrl,
         photoUrl,
         displayName,
