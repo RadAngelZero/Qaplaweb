@@ -629,3 +629,36 @@ export async function getStreamerUidWithDeepLinkAlias(linkAlias) {
 
     return await get(query(streamersDeepLinksRef, orderByValue(), equalTo(`https://myqap.la/${linkAlias}`)));
 }
+
+//////////////////////
+// User To Streamer Subscriptions
+//////////////////////
+
+/**
+ * Subscribes a user to the given streamer
+ * @param {string} uid User identifier
+ * @param {string} streamerUid Stramer identifier
+ * @returns {Promise<void>} Resulting DataSnaphsot of the query
+ */
+export async function followStreamer(uid, streamerUid) {
+    const streamerFollower = child(database, `/UserToStreamerSubscriptions/${uid}/${streamerUid}`);
+
+    return await set(streamerFollower, {
+        cancelations: true,
+        changes: true,
+        customMessages: true,
+        reminders: true
+    });
+}
+
+/**
+ * Listen for the user to streamer subscription (to know if a user is following a streamer)
+ * @param {string} uid User identifier
+ * @param {string} streamerUid Stramer identifier
+ * @param {DataSnapshot} callback Handler for the database results
+ */
+export async function listenToFollowingStreamer(uid, streamerUid, callback) {
+    const streamerFollower = child(database, `/UserToStreamerSubscriptions/${uid}/${streamerUid}`);
+
+    return onValue(query(streamerFollower), callback);
+}

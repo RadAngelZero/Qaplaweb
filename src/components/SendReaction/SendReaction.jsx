@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useTheme } from '@mui/material/styles';
-import { Button, Checkbox, Dialog, FormControlLabel, FormGroup, Typography, useMediaQuery, Box } from '@mui/material';
+import { Button, Typography, Box } from '@mui/material';
 import styled from '@emotion/styled';
-import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import SendReactionBackground from '../../assets/SendReactionBackground.png'
 import { getReactionModuleGifs } from '../../services/database';
@@ -68,9 +67,9 @@ const SubTitle = styled(Typography)({
 const SendButton = styled(Button)({
     backgroundColor: '#00FEDF',
     borderRadius: '100px',
-    fontSize: '14px',
-    fontWeight: '500',
-    lineHeight: '17px',
+    fontSize: '16px',
+    fontWeight: '600',
+    lineHeight: '22px',
     letterSpacing: '0px',
     color: '#0D1021',
     textTransform: 'none',
@@ -92,9 +91,10 @@ const GifRender = styled(Box)({
     backgroundPosition: 'center',
 })
 
-const SendReaction = ({ open, onClose, uid, email, streamerUid, reactionId }) => {
-    const [textRotator, setTextRotator] = useState('Meme');
+const SendReaction = ({ streamerUid }) => {
+    const [textRotator, setTextRotator] = useState('Memes');
     const [gif, setGif] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function getGifs() {
@@ -112,26 +112,33 @@ const SendReaction = ({ open, onClose, uid, email, streamerUid, reactionId }) =>
         }
     }, [gif]);
 
-    return (<Container >
-        <LeftContainer>
-            <TitleContainer>
-                <Title>Send</Title>
-                <AccentColorTitle>{`${textRotator}`}</AccentColorTitle>
-            </TitleContainer>
-            <SubTitle>
-                on stream using your
-                channel points
-            </SubTitle>
-            <SendButton>
-                Send Reaction
-            </SendButton>
-        </LeftContainer>
-        <RightContainer>
-            <GifRender style={{
-                backgroundImage: `url('${gif}')`,
-            }} />
-        </RightContainer>
-    </Container>)
+    const navigateToSendReaction = () => {
+        localStorage.setItem('streamerUid', streamerUid);
+        navigate('/react');
+    }
+
+    return (
+        <Container>
+            <LeftContainer>
+                <TitleContainer>
+                    <Title>Send</Title>
+                    <AccentColorTitle>{`${textRotator}`}</AccentColorTitle>
+                </TitleContainer>
+                <SubTitle>
+                    on stream using your
+                    channel points
+                </SubTitle>
+                <SendButton onClick={navigateToSendReaction}>
+                    Send Reaction
+                </SendButton>
+            </LeftContainer>
+            <RightContainer>
+                <GifRender style={{
+                    backgroundImage: `url('${gif}')`,
+                }} />
+            </RightContainer>
+        </Container>
+    );
 }
 
 export default SendReaction;

@@ -1,6 +1,8 @@
-import { Button, Box, styled, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Button, Box, styled, Typography, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLoaderData } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 import { ReactComponent as ShareArrow } from '../assets/ShareArrow.svg';
 import { ReactComponent as TwitchIcon } from '../assets/TwitchLight.svg';
@@ -15,14 +17,17 @@ import SendReaction from '../components/SendReaction/SendReaction';
 import StreamCard from '../components/StreamCard/StreamCard';
 import SocialButton from '../components/SocialButton/SocialButton';
 import {
+    followStreamer,
     getStreamerFollowersNumber,
     getStreamerIsStreaming,
     getStreamerLinks,
     getStreamerPublicProfile,
     getStreamerStreams,
-    getStreamerUidWithDeepLinkAlias
+    getStreamerUidWithDeepLinkAlias,
+    listenToFollowingStreamer
 } from '../services/database';
 import { getCurrentLanguage } from '../utils/i18n';
+import { auth } from '../services/firebase';
 
 const linksData = {
     Twitch: {
@@ -126,6 +131,7 @@ const QuickButtonsContainer = styled(Box)({
 });
 
 const ShareButton = styled(Button)({
+    marginRight: '8px',
     width: '105px',
     height: '40px',
     borderRadius: '20px',
@@ -232,8 +238,10 @@ export async function loader({ params }) {
     const streamerUidSnap = await getStreamerUidWithDeepLinkAlias(params.streamerAlias);
 
     let streamerUid = '';
+    let profileDeepLink = '';
     streamerUidSnap.forEach((streamer) => {
         streamerUid = streamer.key;
+        profileDeepLink = streamer.val();
     });
 
     if (!streamerUid) {
@@ -252,16 +260,19 @@ export async function loader({ params }) {
     const upcomingStreams = await getStreamerStreams(streamerUid);
 
     return {
+        streamerUid,
         ...profile.val(),
         followers: followers.val() ?? 0,
         isStreaming: isStreaming.val(),
         links: links.val() ?? [],
-        upcomingStreams: upcomingStreams.val()
+        upcomingStreams: upcomingStreams.val(),
+        profileDeepLink
     };
 }
 
 const StreamerProfile = () => {
     const {
+        streamerUid,
         backgroundUrl,
         photoUrl,
         displayName,
@@ -270,9 +281,18 @@ const StreamerProfile = () => {
         tags,
         links,
         isStreaming,
-        upcomingStreams
+        upcomingStreams,
+        profileDeepLink
     } = useLoaderData();
+    const [openShareTooltip, setOpenShareTooltip] = useState(false);
+    const [followingStreamer, setFollowingStreamer] = useState(false);
     const { t } = useTranslation();
+
+    useEffect(() => {
+        listenToFollowingStreamer(auth.currentUser.uid, streamerUid, (following) => {
+            setFollowingStreamer(following.exists());
+        });
+    }, [followingStreamer]);
 
     const getStreamDateData = (timestamp) => {
         const date = new Date(timestamp);
@@ -293,9 +313,26 @@ const StreamerProfile = () => {
         };
     }
 
+    const shareProfileDeepLink = () => {
+        navigator.clipboard.writeText(profileDeepLink);
+        setOpenShareTooltip(true);
+    }
+
+    const startFollowing = async () => {
+        await followStreamer(auth.currentUser.uid, streamerUid);
+
+        // We can also do this by using the actions of react navigation
+        setFollowingStreamer(true);
+    }
+
     const userLanguage = getCurrentLanguage();
     return (
         <Container>
+            <Helmet>
+                <title>
+                    {displayName} | Creator Profile
+                </title>
+            </Helmet>
             <ProfileCover style={{
                 backgroundImage: `url('${backgroundUrl}')`,
             }} />
@@ -319,13 +356,22 @@ const StreamerProfile = () => {
                             </FollowersContainer>
                         </NameContiner>
                         <QuickButtonsContainer>
-                            <ShareButton>
-                                Share
-                                <ShareArrow style={{ marginLeft: '8px' }} />
-                            </ShareButton>
-                            <FollowButton>
-                                Follow
-                            </FollowButton>
+                            <Tooltip open={openShareTooltip} title='Link Copied' onClose={() => setOpenShareTooltip(false)}>
+                                <ShareButton onClick={shareProfileDeepLink}>
+                                    Share
+                                    <ShareArrow style={{ marginLeft: '8px' }} />
+                                </ShareButton>
+                            </Tooltip>
+                            {followingStreamer ?
+                                /* Change for Following Button */
+                                <FollowButton>
+                                    Following
+                                </FollowButton>
+                                :
+                                <FollowButton onClick={startFollowing}>
+                                    Follow
+                                </FollowButton>
+                            }
                         </QuickButtonsContainer>
                     </StreamerInfoTopContiner>
                     <BioText>
@@ -404,7 +450,7 @@ const StreamerProfile = () => {
                             Custom alerts on stream
                         </SectionHeader>
                         <SendReactionContainer>
-                            <SendReaction />
+                            <SendReaction streamerUid={streamerUid} />
                         </SendReactionContainer>
                     </InteractionContainer>
                     {upcomingStreams &&
