@@ -28,6 +28,7 @@ import {
 } from '../services/database';
 import { getCurrentLanguage } from '../utils/i18n';
 import { auth } from '../services/firebase';
+import { async } from '@firebase/util';
 
 const linksData = {
     Twitch: {
@@ -163,6 +164,26 @@ const FollowButton = styled(Button)({
     },
 });
 
+const UnfollowButton = styled(Button)({
+    width: '105px',
+    height: '40px',
+    backgroundColor: '#0000',
+    borderRadius: '20px',
+    color: '#fff',
+    fontSize: '16px',
+    fontWeight: '500',
+    lineHeight: '21px',
+    letterSpacing: '-0.3199999928474426px',
+    textAlign: 'center',
+    verticalAlign: 'center',
+    textTransform: 'none',
+    border: '1px solid #3B4BF9',
+    '&:hover': {
+        backgroundColor: '#F33',
+        border: '1px solid #F00',
+    },
+});
+
 const ProfilePic = styled(Box)({
     width: '106px',
     height: '105px',
@@ -287,6 +308,7 @@ const StreamerProfile = () => {
     } = useLoaderData();
     const [openShareTooltip, setOpenShareTooltip] = useState(false);
     const [followingStreamer, setFollowingStreamer] = useState(false);
+    const [hoverUnfollow, setHoverUnfollow] = useState(false);
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -326,6 +348,18 @@ const StreamerProfile = () => {
         setFollowingStreamer(true);
     }
 
+    const handleUnfollow = async => {
+        console.log('unfollow');
+    }
+
+    const handleHoverEnterUnfollow = () => {
+        setHoverUnfollow(true);
+    }
+
+    const handleHoverLeaveUnfollow = () => {
+        setHoverUnfollow(false);
+    }
+
     const userLanguage = getCurrentLanguage();
     return (
         <Container>
@@ -334,9 +368,12 @@ const StreamerProfile = () => {
                     {displayName} | Creator Profile
                 </title>
             </Helmet>
-            <ProfileCover style={{
+            <ProfileCover style={backgroundUrl ? {
                 backgroundImage: `url('${backgroundUrl}')`,
-            }} />
+            } :
+                {
+                    background: 'linear-gradient(149deg, rgba(45,7,250,1) 0%, rgba(167,22,238,1) 100%)',
+                }} />
             <MainContainer>
                 <StremerInfoContainer>
                     <ProfilePic style={{
@@ -365,9 +402,12 @@ const StreamerProfile = () => {
                             </Tooltip>
                             {followingStreamer ?
                                 /* Change for Following Button */
-                                <FollowButton>
-                                    Following
-                                </FollowButton>
+                                <UnfollowButton onMouseEnter={handleHoverEnterUnfollow} onMouseLeave={handleHoverLeaveUnfollow} onClick={handleUnfollow}>
+                                    {hoverUnfollow ?
+                                    `Unfollow`
+                                    :
+                                    `Following`}
+                                </UnfollowButton>
                                 :
                                 <FollowButton onClick={startFollowing}>
                                     Follow
@@ -396,22 +436,22 @@ const StreamerProfile = () => {
                                     grow={isStreaming}
                                     link={`https://twitch.tv/${displayName.toLowerCase()}`}
                                     openLinkOnSecondClick={isStreaming}>
-                                        {isStreaming ?
-                                            <div style={{
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                            }}>
-                                                <iframe
-                                                    title='twitch stream'
-                                                    src={`https://player.twitch.tv/?channel=${displayName.toLowerCase()}&parent=localhost&muted=true`}
-                                                    height="192"
-                                                    width="342"
-                                                    allowfullscreen>
-                                                </iframe>
-                                            </div>
+                                    {isStreaming ?
+                                        <div style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                        }}>
+                                            <iframe
+                                                title='twitch stream'
+                                                src={`https://player.twitch.tv/?channel=${displayName.toLowerCase()}&parent=localhost&muted=true`}
+                                                height="192"
+                                                width="342"
+                                                allowfullscreen>
+                                            </iframe>
+                                        </div>
                                         :
-                                            null
-                                        }
+                                        null
+                                    }
                                 </SocialButton>
                             }
                             {links.map((link) => (
@@ -438,9 +478,9 @@ const StreamerProfile = () => {
                                             </div>
                                         }
                                     </SocialButton>
-                                :
+                                    :
                                     null
-                                )
+                            )
                             )}
                         </SocialButtonContainer>
                     </ContentContainer>
