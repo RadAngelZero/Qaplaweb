@@ -1,4 +1,16 @@
 {
+    "days": {
+        "monday": "Lunes",
+        "tuesday": "Martes",
+        "wednesday": "Miércoles",
+        "thursday": "Jueves",
+        "friday": "Viernes",
+        "saturday": "Sábado",
+        "sunday": "Domingo",
+        "today": "Hoy",
+        "tomorrow": "Mañana",
+        "yesterday": "Ayer"
+    },
     "Helmet": {
         "title": "Reaccón Qapla"
     },

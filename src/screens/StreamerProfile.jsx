@@ -323,7 +323,7 @@ const StreamerProfile = () => {
         const date = new Date(timestamp);
 
         const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        const wDay = days[date.getDay()];
+        const wDay = t(`days.${days[date.getDay()]}`);
         let hour = date.getHours() % 12;
         hour = hour ? hour : 12;
         let minute = date.getMinutes() > 9 ? date.getMinutes() : `0${date.getMinutes()}`;
