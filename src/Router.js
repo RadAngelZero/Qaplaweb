@@ -1,6 +1,8 @@
 import { createBrowserRouter, createRoutesFromElements, Route, useRouteError } from 'react-router-dom';
 
-import App from './App';
+import SignIn from './screens/SignIn';
+import Reaction from './screens/Reaction';
+import ProtectedRoute from './components/ProtectedRoute';
 import Root from './screens/Root';
 import StreamerProfile, { loader as streamerProfileLoader } from './screens/StreamerProfile';
 
@@ -12,8 +14,17 @@ export default createBrowserRouter(
     createRoutesFromElements(
         <Route path='/'
             element={<Root />}>
-            <Route index element={<App />} />
-            <Route path='/react' element={<App />} />
+            <Route index element={
+                <ProtectedRoute>
+                    <Reaction />
+                </ProtectedRoute>
+            } />
+            <Route path='/signin' element={<SignIn />} />
+            <Route path='/react' element={
+                <ProtectedRoute>
+                    <Reaction />
+                </ProtectedRoute>
+            } />
             <Route path='/profile/:streamerAlias'
                 element={<StreamerProfile />}
                 errorElement={<ErrorPage />}

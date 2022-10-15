@@ -9,6 +9,8 @@ import { createUserProfile, updateUserProfile } from '../services/database';
 import logoQapla from "../assets/QaplaExtruded.png"
 import { ReactComponent as IconTwich } from '../assets/twitch-glitch-dark.svg';
 import gifs from "../assets/giphy.gif";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthProvider';
 
 function useQuery() {
     const { search } = window.location;
@@ -79,10 +81,12 @@ const Gifs = styled('img')({
     maxWidth:'834px',
 });
 
-const SignIn = ({ user }) => {
+const SignIn = () => {
+    const user = useAuth();
     const [isLoadingAuth, setIsLoadingAuth] = useState(false);
     const query = useQuery();
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function checkIfUsersIsSigningIn() {
@@ -104,11 +108,17 @@ const SignIn = ({ user }) => {
                             photoUrl: user.photoURL
                         });
                     }
+
+                    navigate('/react');
                 }
             }
         }
 
-        checkIfUsersIsSigningIn();
+        if (user) {
+            navigate('/react');
+        } else {
+            checkIfUsersIsSigningIn();
+        }
     }, [user, isLoadingAuth, query]);
 
     const signIn = () => {
@@ -117,6 +127,14 @@ const SignIn = ({ user }) => {
             signInWithTwitch();
             setIsLoadingAuth(false);
         }
+    }
+
+    /**
+     * User is undefined while we check if the user is logged or not, if it is then it becomes an object
+     * if not then it becomes null
+     */
+    if (user === undefined) {
+        return null;
     }
 
     return (

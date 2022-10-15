@@ -15,6 +15,37 @@ import { TWITCH_CLIENT_ID, TWITCH_REDIRECT_URI } from '../utils/constants';
     return window.location.href = uri;
 }
 
+export function signInWithTwitchPopUp() {
+    const uri =
+        `https://id.twitch.tv/oauth2/authorize?` +
+        `client_id=${TWITCH_CLIENT_ID}&` +
+        `redirect_uri=${TWITCH_REDIRECT_URI}&` +
+        `response_type=code&` +
+        `scope=user:read:email%20user:read:subscriptions%20user:read:follows%20user:read:broadcast`;
+
+    return new Promise((resolve, reject) => {
+        const authWindow = window.open(
+                uri,
+                "_blank",
+                "toolbar=yes,scrollbars=yes,resizable=yes,width=500,height=500"
+        );
+        let url;
+        setInterval(async () => {
+            try {
+                url = authWindow && authWindow.location && authWindow.location.search;
+            } catch (e) {}
+            if (url) {
+                const urlBueno = `https://algo.com${url}`;
+                let url2 = new URL(urlBueno);
+                const code = url2.searchParams.get('code');
+                authWindow.close();
+                resolve(code);
+            }
+        }, 500);
+    });
+
+}
+
 /**
  * Get the info of the given twitch user
  * @param {string} accessToken Twitch user access token

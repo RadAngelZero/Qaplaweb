@@ -28,7 +28,7 @@ import {
     unfollowStreamer
 } from '../services/database';
 import { getCurrentLanguage } from '../utils/i18n';
-import { auth } from '../services/firebase';
+import { useAuth } from '../AuthProvider';
 
 const linksData = {
     Twitch: {
@@ -309,15 +309,16 @@ const StreamerProfile = () => {
     const [openShareTooltip, setOpenShareTooltip] = useState(false);
     const [followingStreamer, setFollowingStreamer] = useState(false);
     const [hoverUnfollow, setHoverUnfollow] = useState(false);
+    const user = useAuth();
     const { t } = useTranslation();
 
     useEffect(() => {
-        if (auth.currentUser && auth.currentUser.uid) {
-            listenToFollowingStreamer(auth.currentUser.uid, streamerUid, (following) => {
+        if (user && user.id) {
+            listenToFollowingStreamer(user.id, streamerUid, (following) => {
                 setFollowingStreamer(following.exists());
             });
         }
-    }, [followingStreamer]);
+    }, [followingStreamer, streamerUid]);
 
     const getStreamDateData = (timestamp) => {
         const date = new Date(timestamp);
@@ -344,14 +345,14 @@ const StreamerProfile = () => {
     }
 
     const startFollowing = async () => {
-        if (auth.currentUser && auth.currentUser.uid) {
-            await followStreamer(auth.currentUser.uid, streamerUid);
+        if (user && user.id) {
+            await followStreamer(user.id, streamerUid);
         }
     }
 
     const handleUnfollow = async () => {
-        if (auth.currentUser && auth.currentUser.uid) {
-            await unfollowStreamer(auth.currentUser.uid, streamerUid);
+        if (user && user.id) {
+            await unfollowStreamer(user.id, streamerUid);
         }
     }
 
