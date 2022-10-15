@@ -312,9 +312,11 @@ const StreamerProfile = () => {
     const { t } = useTranslation();
 
     useEffect(() => {
-        listenToFollowingStreamer(auth.currentUser.uid, streamerUid, (following) => {
-            setFollowingStreamer(following.exists());
-        });
+        if (auth.currentUser && auth.currentUser.uid) {
+            listenToFollowingStreamer(auth.currentUser.uid, streamerUid, (following) => {
+                setFollowingStreamer(following.exists());
+            });
+        }
     }, [followingStreamer]);
 
     const getStreamDateData = (timestamp) => {
@@ -342,11 +344,15 @@ const StreamerProfile = () => {
     }
 
     const startFollowing = async () => {
-        await followStreamer(auth.currentUser.uid, streamerUid);
+        if (auth.currentUser && auth.currentUser.uid) {
+            await followStreamer(auth.currentUser.uid, streamerUid);
+        }
     }
 
     const handleUnfollow = async () => {
-        await unfollowStreamer(auth.currentUser.uid, streamerUid);
+        if (auth.currentUser && auth.currentUser.uid) {
+            await unfollowStreamer(auth.currentUser.uid, streamerUid);
+        }
     }
 
     const handleHoverEnterUnfollow = () => {
@@ -447,7 +453,7 @@ const StreamerProfile = () => {
                                         }}>
                                             <iframe
                                                 title='twitch stream'
-                                                src={`https://player.twitch.tv/?channel=${displayName.toLowerCase()}&parent=localhost&muted=true`}
+                                                src={`https://player.twitch.tv/?channel=${displayName.toLowerCase()}&parent=web.qapla.gg&muted=true`}
                                                 height="192"
                                                 width="342"
                                                 allowfullscreen>
@@ -474,7 +480,7 @@ const StreamerProfile = () => {
                                             }}>
                                                 <iframe
                                                     title='twitch stream'
-                                                    src={`https://player.twitch.tv/?channel=${displayName.toLowerCase()}&parent=localhost&muted=true`}
+                                                    src={`https://player.twitch.tv/?channel=${displayName.toLowerCase()}&parent=web.qapla.gg&muted=true`}
                                                     height="192"
                                                     width="342"
                                                     allowfullscreen>
