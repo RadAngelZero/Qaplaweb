@@ -35,6 +35,22 @@
         "other": "Other",
         "sendReaction": "Send Reaction"
     },
+    "StreamerProfile": {
+        "followers": "Followers",
+        "share": "Share",
+        "linkCopied": "Link Copied",
+        "follow": "Follow",
+        "following": "Following",
+        "unfollow": "Unfollow",
+        "myContent": "My content",
+        "customAlerts": "Custom alerts on stream",
+        "upcomingStreams": "Upcoming streams"
+    },
+    "SendReaction": {
+        "send": "Send",
+        "sendDescription": "on stream using your\nchannel points",
+        "sendReaction": "Send Reaction"
+    },
     "PurchaseQoinsDialog": {
         "moreQoins": "25% more Qoins",
         "qoinsPrice": "${{price}} USD",

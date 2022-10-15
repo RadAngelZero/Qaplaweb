@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button, Typography, Box } from '@mui/material';
 import styled from '@emotion/styled';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import SendReactionBackground from '../../assets/SendReactionBackground.png'
@@ -94,6 +95,7 @@ const GifRender = styled(Box)({
 const SendReaction = ({ streamerUid }) => {
     const [textRotator, setTextRotator] = useState('Memes');
     const [gif, setGif] = useState(null);
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -121,15 +123,16 @@ const SendReaction = ({ streamerUid }) => {
         <Container>
             <LeftContainer>
                 <TitleContainer>
-                    <Title>Send</Title>
+                    <Title>
+                        {t('SendReaction.send')}
+                    </Title>
                     <AccentColorTitle>{`${textRotator}`}</AccentColorTitle>
                 </TitleContainer>
                 <SubTitle>
-                    on stream using your
-                    channel points
+                    {t('SendReaction.sendDescription')}
                 </SubTitle>
                 <SendButton onClick={navigateToSendReaction}>
-                    Send Reaction
+                    {t('SendReaction.sendReaction')}
                 </SendButton>
             </LeftContainer>
             <RightContainer>

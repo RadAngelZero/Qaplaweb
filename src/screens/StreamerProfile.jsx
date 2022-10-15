@@ -29,7 +29,6 @@ import {
 } from '../services/database';
 import { getCurrentLanguage } from '../utils/i18n';
 import { auth } from '../services/firebase';
-import { async } from '@firebase/util';
 
 const linksData = {
     Twitch: {
@@ -394,28 +393,28 @@ const StreamerProfile = () => {
                                     {followers}
                                 </FollowersHighlightText>
                                 <FollowersText>
-                                    Followers
+                                    {t('StreamerProfile.followers')}
                                 </FollowersText>
                             </FollowersContainer>
                         </NameContiner>
                         <QuickButtonsContainer>
-                            <Tooltip open={openShareTooltip} title='Link Copied' onClose={() => setOpenShareTooltip(false)}>
+                            <Tooltip open={openShareTooltip} title={t('StreamerProfile.linkCopied')} onClose={() => setOpenShareTooltip(false)}>
                                 <ShareButton onClick={shareProfileDeepLink}>
-                                    Share
+                                    {t('StreamerProfile.share')}
                                     <ShareArrow style={{ marginLeft: '8px' }} />
                                 </ShareButton>
                             </Tooltip>
                             {followingStreamer ?
-                                /* Change for Following Button */
                                 <UnfollowButton onMouseEnter={handleHoverEnterUnfollow} onMouseLeave={handleHoverLeaveUnfollow} onClick={handleUnfollow}>
                                     {hoverUnfollow ?
-                                    `Unfollow`
-                                    :
-                                    `Following`}
+                                        t('StreamerProfile.unfollow')
+                                        :
+                                        t('StreamerProfile.following')
+                                    }
                                 </UnfollowButton>
                                 :
                                 <FollowButton onClick={startFollowing}>
-                                    Follow
+                                    {t('StreamerProfile.follow')}
                                 </FollowButton>
                             }
                         </QuickButtonsContainer>
@@ -430,7 +429,7 @@ const StreamerProfile = () => {
                     </TagsContainer>
                     <ContentContainer>
                         <SectionHeader>
-                            My content
+                            {t('StreamerProfile.myContent')}
                         </SectionHeader>
                         <SocialButtonContainer>
                             {links.length <= 0 &&
@@ -493,7 +492,7 @@ const StreamerProfile = () => {
                 <InteractionsEventsContainer>
                     <InteractionContainer>
                         <SectionHeader>
-                            Custom alerts on stream
+                            {t('StreamerProfile.customAlerts')}
                         </SectionHeader>
                         <SendReactionContainer>
                             <SendReaction streamerUid={streamerUid} />
@@ -502,7 +501,7 @@ const StreamerProfile = () => {
                     {upcomingStreams &&
                         <EventsContainer>
                             <SectionHeader>
-                                Upcoming streams
+                                {t('StreamerProfile.upcomingStreams')}
                             </SectionHeader>
                             <EventsCardsContainer>
                                 {Object.keys(upcomingStreams).slice(0, 2).map((streamId) => (

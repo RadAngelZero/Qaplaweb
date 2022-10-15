@@ -35,6 +35,22 @@
         "other": "Otra",
         "sendReaction": "Enviar Reacción"
     },
+    "StreamerProfile": {
+        "followers": "Seguidores",
+        "share": "Compartir",
+        "linkCopied": "Link Copiado",
+        "follow": "Seguir",
+        "following": "Siguiendo",
+        "unfollow": "Dejar de Seguir",
+        "myContent": "Mi contenido",
+        "customAlerts": "Alertas personalizadas",
+        "upcomingStreams": "Streams proximos"
+    },
+    "SendReaction": {
+        "send": "Envia",
+        "sendDescription": "en stream usando tus\npuntos de canal",
+        "sendReaction": "Enviar Reacción"
+    },
     "PurchaseQoinsDialog": {
         "moreQoins": "25% más Qoins",
         "qoinsPrice": "${{price}} MXN",
