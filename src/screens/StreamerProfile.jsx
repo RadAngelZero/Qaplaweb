@@ -24,7 +24,8 @@ import {
     getStreamerPublicProfile,
     getStreamerStreams,
     getStreamerUidWithDeepLinkAlias,
-    listenToFollowingStreamer
+    listenToFollowingStreamer,
+    unfollowStreamer
 } from '../services/database';
 import { getCurrentLanguage } from '../utils/i18n';
 import { auth } from '../services/firebase';
@@ -343,13 +344,10 @@ const StreamerProfile = () => {
 
     const startFollowing = async () => {
         await followStreamer(auth.currentUser.uid, streamerUid);
-
-        // We can also do this by using the actions of react navigation
-        setFollowingStreamer(true);
     }
 
-    const handleUnfollow = async => {
-        console.log('unfollow');
+    const handleUnfollow = async () => {
+        await unfollowStreamer(auth.currentUser.uid, streamerUid);
     }
 
     const handleHoverEnterUnfollow = () => {
@@ -370,10 +368,17 @@ const StreamerProfile = () => {
             </Helmet>
             <ProfileCover style={backgroundUrl ? {
                 backgroundImage: `url('${backgroundUrl}')`,
-            } :
+                }
+                :
+                backgroundGradient ?
                 {
-                    background: 'linear-gradient(149deg, rgba(45,7,250,1) 0%, rgba(167,22,238,1) 100%)',
-                }} />
+                    background: `linear-gradient(${backgroundGradient.angle}deg, ${backgroundGradient.colors[0]} 0%, ${backgroundGradient.colors[1]} 100%)`,
+                }
+                :
+                {
+                    background: `linear-gradient(149deg, rgb(45, 7, 250) 0%, rgb(167, 22, 238) 100%)`,
+                }
+            } />
             <MainContainer>
                 <StremerInfoContainer>
                     <ProfilePic style={{

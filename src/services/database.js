@@ -12,7 +12,8 @@ import {
     update,
     onValue,
     set,
-    orderByValue
+    orderByValue,
+    remove
 } from 'firebase/database';
 
 import { database } from './firebase';
@@ -649,6 +650,18 @@ export async function followStreamer(uid, streamerUid) {
         customMessages: true,
         reminders: true
     });
+}
+
+/**
+ * Unubscribes a user from the given streamer
+ * @param {string} uid User identifier
+ * @param {string} streamerUid Stramer identifier
+ * @returns {Promise<void>} Resulting DataSnaphsot of the query
+ */
+export async function unfollowStreamer(uid, streamerUid) {
+    const streamerFollower = child(database, `/UserToStreamerSubscriptions/${uid}/${streamerUid}`);
+
+    return await remove(streamerFollower);
 }
 
 /**
