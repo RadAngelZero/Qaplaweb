@@ -1,8 +1,9 @@
 import { onAuthStateChanged, signInWithCustomToken, User, UserCredential, NextOrObserver } from 'firebase/auth';
 
-import { getUserProfileWithTwitchId } from './database';
+import { createUserProfile, getUserProfileWithTwitchId, updateUserProfile } from './database';
 import { auth } from './firebase';
-import { generateAuthTokenForTwitchSignIn } from './functions';
+import { generateAuthTokenForTwitchSignIn, getUserToken } from './functions';
+import { getTwitchUserData } from './twitch';
 
 /**
  * Listen to changes on the firebase auth state
@@ -39,5 +40,26 @@ export async function signTwitchUser(twitchUserData) {
 
         // Overwrite of isNewUser and photoURL is necessary
         return { ...user.user, isNewUser: !userProfileSnapshot.exists(), photoURL: twitchUserData.profile_image_url };
+    }
+}
+
+export async function authWithTwitch(twitchClientCode, onSuccess) {
+    const tokenData = await getUserToken(twitchClientCode);
+    if (tokenData && tokenData.data && tokenData.data.access_token) {
+        const userData = await getTwitchUserData(tokenData.data.access_token);
+        const user = await signTwitchUser(userData, tokenData.data);
+
+        if (user.isNewUser) {
+            // For a new user their uid and userName are the same than their twitch id and twitch display name
+            await createUserProfile(user.uid, user.email, user.displayName, user.photoURL, user.uid, user.displayName);
+        } else {
+            await updateUserProfile(user.uid, {
+                email: user.email,
+                userName: user.displayName,
+                photoUrl: user.photoURL
+            });
+        }
+
+        onSuccess(user);
     }
 }

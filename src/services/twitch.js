@@ -30,7 +30,7 @@ export function signInWithTwitchPopUp() {
                 "toolbar=yes,scrollbars=yes,resizable=yes,width=500,height=500"
         );
         let url;
-        setInterval(async () => {
+        setInterval(() => {
             try {
                 url = authWindow && authWindow.location && authWindow.location.search;
             } catch (e) {}

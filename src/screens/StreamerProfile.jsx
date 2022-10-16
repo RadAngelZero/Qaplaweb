@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Box, styled, Typography, Tooltip } from '@mui/material';
+import { Button, Box, styled, Typography, Tooltip, Dialog, DialogContent } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLoaderData } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -29,6 +29,9 @@ import {
 } from '../services/database';
 import { getCurrentLanguage } from '../utils/i18n';
 import { useAuth } from '../AuthProvider';
+import { signInWithTwitchPopUp } from '../services/twitch';
+import { authWithTwitch } from '../services/auth';
+import { auth } from '../services/firebase';
 
 const linksData = {
     Twitch: {
@@ -249,11 +252,18 @@ const EventsContainer = styled(Box)({
     marginTop: '38px',
 
 });
+
 const EventsCardsContainer = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
     marginTop: '24px',
 });
+
+const AuthDialog = styled(Dialog)({
+    backgroundColor: '#0D1021'
+});
+
+const AuthDialogContent = styled(DialogContent)({});
 
 export async function loader({ params }) {
     const streamerUidSnap = await getStreamerUidWithDeepLinkAlias(params.streamerAlias);
@@ -309,6 +319,7 @@ const StreamerProfile = () => {
     const [openShareTooltip, setOpenShareTooltip] = useState(false);
     const [followingStreamer, setFollowingStreamer] = useState(false);
     const [hoverUnfollow, setHoverUnfollow] = useState(false);
+    const [openAuthDialog, setOpenAuthDialog] = useState(false);
     const user = useAuth();
     const { t } = useTranslation();
 
@@ -318,7 +329,7 @@ const StreamerProfile = () => {
                 setFollowingStreamer(following.exists());
             });
         }
-    }, [followingStreamer, streamerUid]);
+    }, [user, streamerUid]);
 
     const getStreamDateData = (timestamp) => {
         const date = new Date(timestamp);
@@ -344,9 +355,11 @@ const StreamerProfile = () => {
         setOpenShareTooltip(true);
     }
 
-    const startFollowing = async () => {
-        if (user && user.id) {
-            await followStreamer(user.id, streamerUid);
+    const startFollowing = async (uid) => {
+        if (uid || (user && user.id)) {
+            await followStreamer(uid ? uid : user.id, streamerUid);
+        } else {
+            setOpenAuthDialog(true);
         }
     }
 
@@ -362,6 +375,15 @@ const StreamerProfile = () => {
 
     const handleHoverLeaveUnfollow = () => {
         setHoverUnfollow(false);
+    }
+
+    const signInToFollow = async () => {
+        const twitchClientCode = await signInWithTwitchPopUp();
+        if (twitchClientCode) {
+            // Firebase auth listener might not be that fast, so we send the uid as parameter to the startFollowing function
+            await authWithTwitch(twitchClientCode, (user) => startFollowing(user.uid));
+            setOpenAuthDialog(false);
+        }
     }
 
     const userLanguage = getCurrentLanguage();
@@ -420,7 +442,8 @@ const StreamerProfile = () => {
                                     }
                                 </UnfollowButton>
                                 :
-                                <FollowButton onClick={startFollowing}>
+                                /* (e) => startFollowing() to prevent e to be send as uid paramater for startFollowing */
+                                <FollowButton onClick={(e) => startFollowing()}>
                                     {t('StreamerProfile.follow')}
                                 </FollowButton>
                             }
@@ -522,6 +545,15 @@ const StreamerProfile = () => {
                     }
                 </InteractionsEventsContainer>
             </MainContainer>
+            <AuthDialog open={openAuthDialog}
+                onClose={() => setOpenAuthDialog(false)}
+                maxWidth='sm'>
+                <AuthDialogContent>
+                    <Button onClick={signInToFollow}>
+                        Sign in wit Twitch
+                    </Button>
+                </AuthDialogContent>
+            </AuthDialog>
         </Container>
     );
 

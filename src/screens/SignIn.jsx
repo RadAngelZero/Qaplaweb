@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getTwitchUserData, signInWithTwitch } from '../services/twitch';
 import { getUserToken } from '../services/functions';
-import { signTwitchUser } from '../services/auth';
+import { authWithTwitch, signTwitchUser } from '../services/auth';
 import { createUserProfile, updateUserProfile } from '../services/database';
 import logoQapla from "../assets/QaplaExtruded.png"
 import { ReactComponent as IconTwich } from '../assets/twitch-glitch-dark.svg';
@@ -93,24 +93,7 @@ const SignIn = () => {
             const twitchClientCode = query.get('code');
             if (!isLoadingAuth && !user && twitchClientCode) {
                 setIsLoadingAuth(true);
-                const tokenData = await getUserToken(twitchClientCode);
-                if (tokenData && tokenData.data && tokenData.data.access_token) {
-                    const userData = await getTwitchUserData(tokenData.data.access_token);
-                    const user = await signTwitchUser(userData, tokenData.data);
-
-                    if (user.isNewUser) {
-                        // For a new user their uid and userName are the same than their twitch id and twitch display name
-                        await createUserProfile(user.uid, user.email, user.displayName, user.photoURL, user.uid, user.displayName);
-                    } else {
-                        await updateUserProfile(user.uid, {
-                            email: user.email,
-                            userName: user.displayName,
-                            photoUrl: user.photoURL
-                        });
-                    }
-
-                    navigate('/react');
-                }
+                authWithTwitch(twitchClientCode, () => navigate('/react'));
             }
         }
 
