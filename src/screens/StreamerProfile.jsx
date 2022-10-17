@@ -32,6 +32,8 @@ import { useAuth } from '../AuthProvider';
 import { signInWithTwitchPopUp } from '../services/twitch';
 import { authWithTwitch } from '../services/auth';
 import { auth } from '../services/firebase';
+import LinkAccountDialog from '../components/LinkAccountDialog/LinkAccountDialog';
+import FollowingStreamerDialog from '../components/FollowingStreamerDialog/FollowingStreamerDialog';
 
 const linksData = {
     Twitch: {
@@ -259,12 +261,6 @@ const EventsCardsContainer = styled(Box)({
     marginTop: '24px',
 });
 
-const AuthDialog = styled(Dialog)({
-    backgroundColor: '#0D1021'
-});
-
-const AuthDialogContent = styled(DialogContent)({});
-
 export async function loader({ params }) {
     const streamerUidSnap = await getStreamerUidWithDeepLinkAlias(params.streamerAlias);
 
@@ -320,6 +316,7 @@ const StreamerProfile = () => {
     const [followingStreamer, setFollowingStreamer] = useState(false);
     const [hoverUnfollow, setHoverUnfollow] = useState(false);
     const [openAuthDialog, setOpenAuthDialog] = useState(false);
+    const [openFollowingDialog, setOpenFollowingDialog] = useState(false);
     const user = useAuth();
     const { t } = useTranslation();
 
@@ -377,13 +374,10 @@ const StreamerProfile = () => {
         setHoverUnfollow(false);
     }
 
-    const signInToFollow = async () => {
-        const twitchClientCode = await signInWithTwitchPopUp();
-        if (twitchClientCode) {
-            // Firebase auth listener might not be that fast, so we send the uid as parameter to the startFollowing function
-            await authWithTwitch(twitchClientCode, (user) => startFollowing(user.uid));
-            setOpenAuthDialog(false);
-        }
+    const onTwitchAccountLinked = async (user) => {
+        setOpenAuthDialog(false);
+        await startFollowing(user.uid);
+        setOpenFollowingDialog(true);
     }
 
     const userLanguage = getCurrentLanguage();
@@ -545,15 +539,13 @@ const StreamerProfile = () => {
                     }
                 </InteractionsEventsContainer>
             </MainContainer>
-            <AuthDialog open={openAuthDialog}
+            <LinkAccountDialog open={openAuthDialog}
                 onClose={() => setOpenAuthDialog(false)}
-                maxWidth='sm'>
-                <AuthDialogContent>
-                    <Button onClick={signInToFollow}>
-                        Sign in wit Twitch
-                    </Button>
-                </AuthDialogContent>
-            </AuthDialog>
+                streamerName={displayName}
+                onSuccessfulSignIn={onTwitchAccountLinked} />
+            <FollowingStreamerDialog open={openFollowingDialog}
+                onClose={() => setOpenFollowingDialog(false)}
+                streamerName={displayName} />
         </Container>
     );
 

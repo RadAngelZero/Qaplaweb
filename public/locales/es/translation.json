@@ -89,5 +89,16 @@
             "global": "Twitch Emotes"
         }
     },
-    "noQreatorCode": "Necesitas un link valido continuar\npregunta a tu streamer por su link"
+    "noQreatorCode": "Necesitas un link valido continuar\npregunta a tu streamer por su link",
+    "LinkAccountDialog": {
+        "linkToFollow": "Vincula tu cuenta de Twitch para seguir a ",
+        "continueWithTwitch": "Continuar con Twitch"
+    },
+    "FollowingStreamerDialog": {
+        "following": "¡Siguiendo!",
+        "getUpdatesP1": "Obtén actualizaciones sobre los streams de ",
+        "streamer": " {{streamerName}} ",
+        "getUpdatesP2": "en tu teléfono",
+        "downloadApp": "Descarga el app"
+    }
 }
