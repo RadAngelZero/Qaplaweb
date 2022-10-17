@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Box, styled, Typography, Tooltip, Dialog, DialogContent } from '@mui/material';
+import { Button, Box, styled, Typography, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLoaderData } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -29,9 +29,6 @@ import {
 } from '../services/database';
 import { getCurrentLanguage } from '../utils/i18n';
 import { useAuth } from '../AuthProvider';
-import { signInWithTwitchPopUp } from '../services/twitch';
-import { authWithTwitch } from '../services/auth';
-import { auth } from '../services/firebase';
 import LinkAccountDialog from '../components/LinkAccountDialog/LinkAccountDialog';
 import FollowingStreamerDialog from '../components/FollowingStreamerDialog/FollowingStreamerDialog';
 

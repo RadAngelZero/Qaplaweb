@@ -81,7 +81,7 @@ const FollowingStreamerDialog = ({ open, onClose, streamerName }) => {
                 }
             }}>
             <Content>
-                <img src={Following} width={170} height={96} />
+                <img src={Following} width={170} height={96} alt='Following' />
                 <DialogTitle>
                     {t('FollowingStreamerDialog.following')}
                 </DialogTitle>

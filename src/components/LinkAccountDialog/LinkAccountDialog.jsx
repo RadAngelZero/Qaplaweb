@@ -80,7 +80,7 @@ const LinkAccountDialog = ({ open, onClose, streamerName, onSuccessfulSignIn }) 
                 }
             }}>
             <Content>
-                <img src={Dialing} width={180} height={90} />
+                <img src={Dialing} width={180} height={90} alt='Link account' />
                 <DialogText>
                     {t('LinkAccountDialog.linkToFollow')} <span style={{ color: '#00FFDD' }}>{streamerName}</span>
                 </DialogText>
