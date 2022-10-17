@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next';
 
 import { getTwitchUserData, signInWithTwitch } from '../services/twitch';
 import { getUserToken } from '../services/functions';
-import { signTwitchUser } from '../services/auth';
+import { authWithTwitch, signTwitchUser } from '../services/auth';
 import { createUserProfile, updateUserProfile } from '../services/database';
 import logoQapla from "../assets/QaplaExtruded.png"
 import { ReactComponent as IconTwich } from '../assets/twitch-glitch-dark.svg';
 import gifs from "../assets/giphy.gif";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthProvider';
 
 function useQuery() {
     const { search } = window.location;
@@ -79,36 +81,27 @@ const Gifs = styled('img')({
     maxWidth:'834px',
 });
 
-const SignIn = ({ user }) => {
+const SignIn = () => {
+    const user = useAuth();
     const [isLoadingAuth, setIsLoadingAuth] = useState(false);
     const query = useQuery();
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function checkIfUsersIsSigningIn() {
             const twitchClientCode = query.get('code');
             if (!isLoadingAuth && !user && twitchClientCode) {
                 setIsLoadingAuth(true);
-                const tokenData = await getUserToken(twitchClientCode);
-                if (tokenData && tokenData.data && tokenData.data.access_token) {
-                    const userData = await getTwitchUserData(tokenData.data.access_token);
-                    const user = await signTwitchUser(userData, tokenData.data);
-
-                    if (user.isNewUser) {
-                        // For a new user their uid and userName are the same than their twitch id and twitch display name
-                        await createUserProfile(user.uid, user.email, user.displayName, user.photoURL, user.uid, user.displayName);
-                    } else {
-                        await updateUserProfile(user.uid, {
-                            email: user.email,
-                            userName: user.displayName,
-                            photoUrl: user.photoURL
-                        });
-                    }
-                }
+                authWithTwitch(twitchClientCode, () => navigate('/react'));
             }
         }
 
-        checkIfUsersIsSigningIn();
+        if (user) {
+            navigate('/react');
+        } else {
+            checkIfUsersIsSigningIn();
+        }
     }, [user, isLoadingAuth, query]);
 
     const signIn = () => {
@@ -117,6 +110,14 @@ const SignIn = ({ user }) => {
             signInWithTwitch();
             setIsLoadingAuth(false);
         }
+    }
+
+    /**
+     * User is undefined while we check if the user is logged or not, if it is then it becomes an object
+     * if not then it becomes null
+     */
+    if (user === undefined) {
+        return null;
     }
 
     return (
