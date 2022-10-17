@@ -117,12 +117,14 @@ const TotalAccordion = styled(Box)({
     marginTop: 73,
     height: 80,
     backgroundColor: '#141539',
+    maxWidth:'350px',
+    marginRight:'40px'
 });
 
 const TotalText = styled(Typography)({
     fontSize: 18,
     fontWeight: '800',
-    width: '50%',
+    width:'50%',
     background: 'linear-gradient(227.05deg, #FFD3DB 9.95%, #F5FFCB 48.86%, #9FFFDD 90.28%), linear-gradient(222.55deg, #FFF394 35.86%, #A46CFF 85.37%), linear-gradient(0deg, #E3E3E3, #E3E3E3), #940DFF',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
@@ -136,7 +138,8 @@ const SendButton = styled(Button)({
     borderRadius: 16,
     background: '#00FFDD',
     boxShadow: '0px 20px 40px -10px rgba(0, 255, 221, 0.35)',
-    width: '100%',
+    maxWidth: '343px',
+    minWidth: '343px',
     '&:hover': {
         background: "#00FFDD",
         opacity: 0.9
@@ -157,7 +160,7 @@ const DeleteIconButton = styled(IconButton)({
     top: 8
 });
 
-const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botVoice, mediaType, message, donationCost, setCost, editMessage, streamer, setMessage, onSuccess, userStreamerRelation }) => {
+const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botVoice, mediaType, message, donationCost, setCost, editMessage, streamer, setMessage, onSuccess, userStreamerRelation, numberOfReactions }) => {
     const [openEmojiSelector, setOpenEmojiSelector] = useState(false);
     const [openMediaDialog, setOpenMediaDialog] = useState(false);
     const [openMemeMediaDialog, setOpenMemeMediaDialog] = useState(false);
@@ -297,7 +300,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                     emojis: emojiArray
                 },
                 totalDonationCost,
-                ((message && (!giphyText || (giphyText && giphyTextSelectedHere))) || (media && mediaType !== GIPHY_CLIPS) || (!giphyText && mediaType !== GIPHY_CLIPS)),
+                numberOfReactions > 0 && ((message && (!giphyText || (giphyText && giphyTextSelectedHere))) || (media && mediaType !== GIPHY_CLIPS) || (!giphyText && mediaType !== GIPHY_CLIPS)),
                 () => { setReactionSent(true); },
                 () => alert('Error')
             );
@@ -396,9 +399,9 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                         </SectionTitle>
                     </Grid>
                     <Grid item xs={12}>
-                        <Grid container rowSpacing={2}>
+                        <Grid  style={{ display: 'flex', }} gap={3} >
                             {emojiRaidCost &&
-                                <Grid item md={3}>
+                                <Grid style={{margin:'2px'}} >
                                     <AddOnButton style={{ background: (!emoji && !emoteUrl) ? `url(${GradientChat})` : 'linear-gradient(121.21deg, #2D07FA 0%, #A716EE 100%), #141539' }}
                                         onClick={() => setOpenEmojiSelector(true)}>
                                         {(emoji || emoteUrl) &&
@@ -430,7 +433,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                                     </AddOnButton>
                                 </Grid>
                             }
-                            <Grid item md={3}>
+                            <Grid  style={{ display: 'flex', flexWrap:'wrap'}} >
                                 <AddOnButton style={{ background: !giphyText ? `url(${GradientLOL})` : 'linear-gradient(121.21deg, #2D07FA 0%, #A716EE 100%), #141539' }}
                                     onClick={() => openMediaSelector(GIPHY_TEXT)}>
                                     {giphyText &&
@@ -455,7 +458,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                                 </AddOnButton>
                             </Grid>
                             {media &&
-                                <Grid item md={3}>
+                                <Grid style={{ display: 'flex',flexWrap:'wrap', marginLeft: '10px' }}>
                                     <EditButton onClick={() => openMediaSelector(mediaType)}>
                                         <div>
                                             {renderMediaIcon()}
@@ -467,7 +470,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                                 </Grid>
                             }
                             {message !== '' &&
-                                <Grid item md={3}>
+                                <Grid >
                                     <EditButton onClick={editMessage}>
                                         <div>
                                             <TTSIcon />
@@ -482,7 +485,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                     </Grid>
                     </>
                 }
-                <Grid item sm={8} md={6}>
+                <Grid item sm={8} md={6} >
                     <Grid container style={{ justifyContent: 'space-between' }}>
                     </Grid>
                     <Grid item xs={12}>
@@ -490,7 +493,7 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                             {t('Checkout.sendTip')}
                         </SectionTitle>
                     </Grid>
-                    <Grid item xs={12} style={{ justifyContent: 'space-between' }}>
+                    <Grid item xs={12} style={{ justifyContent: 'space-between', marginRight:'30px' }}>
                         <ExtraTipContainer onClick={() => setExtraTip(200)}
                             style={{ background: extraTip === 200 ? 'linear-gradient(118.67deg, #2D07FA -6.39%, #A716EE 101.45%), #141539' : '#141539' }}>
                             <div style={{ display: 'flex', alignSelf: 'center', marginRight: 6 }}>
@@ -521,9 +524,9 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                         </ExtraTipContainer>
                     </Grid>
                 </Grid>
-                <Grid item sm={8} md={6} style={{ paddingLeft: 20 }}>
+                <Grid item sm={8} md={6}  >
                     <Grid container>
-                        <Grid item xs={12}>
+                        <Grid  item xs={12}>
                             {/* This must be an accordion */}
                             <TotalAccordion>
                                 <AccordionSummary style={{ height: 80, padding: 0, cursor: 'default' }}>

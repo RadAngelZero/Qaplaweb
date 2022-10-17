@@ -98,11 +98,6 @@ const Layout = ({ user, streamer, setMediaSelected, setMediaType, setGiphyText, 
                 <>
                 <Title>
                     {t('Layout.customReaction')}
-                    {/* <img
-                    style={{ width: "20px", height: "20px" }}
-                    src={ellipse}
-                    alt="icon"
-                    /> */}
                 </Title>
                 {numberOfReactions &&
                     <div

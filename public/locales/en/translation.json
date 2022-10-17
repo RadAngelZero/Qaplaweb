@@ -1,4 +1,16 @@
 {
+    "days": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday",
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "yesterday": "Yesterday"
+    },
     "Helmet": {
         "title": "Qapla Reaction"
     },
@@ -35,6 +47,22 @@
         "other": "Other",
         "sendReaction": "Send Reaction"
     },
+    "StreamerProfile": {
+        "followers": "Followers",
+        "share": "Share",
+        "linkCopied": "Link Copied",
+        "follow": "Follow",
+        "following": "Following",
+        "unfollow": "Unfollow",
+        "myContent": "My content",
+        "customAlerts": "Custom alerts on stream",
+        "upcomingStreams": "Upcoming streams"
+    },
+    "SendReaction": {
+        "send": "Send",
+        "sendDescription": "on stream using your\nchannel points",
+        "sendReaction": "Send Reaction"
+    },
     "PurchaseQoinsDialog": {
         "moreQoins": "25% more Qoins",
         "qoinsPrice": "${{price}} USD",
@@ -61,5 +89,16 @@
             "global": "Twitch Emotes"
         }
     },
-    "noQreatorCode": "You need a valid link to continue, ask your streamer for their link"
+    "noQreatorCode": "You need a valid link to continue, ask your streamer for their link",
+    "LinkAccountDialog": {
+        "linkToFollow": "Link your Twitch account to follow ",
+        "continueWithTwitch": "Continue with Twitch"
+    },
+    "FollowingStreamerDialog": {
+        "following": "Following!",
+        "getUpdatesP1": "Get updates about ",
+        "streamer": " {{streamerName}}’s ",
+        "getUpdatesP2": "streams on your phone",
+        "downloadApp": "Download the app"
+    }
 }

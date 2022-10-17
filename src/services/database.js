@@ -11,7 +11,9 @@ import {
     TransactionResult,
     update,
     onValue,
-    set
+    set,
+    orderByValue,
+    remove
 } from 'firebase/database';
 
 import { database } from './firebase';
@@ -170,6 +172,17 @@ export async function addQoinsToStreamer(streamerUid, qoinsToAdd) {
     });
 }
 
+/**
+ * Returns the number of followers of the given streamer public profile
+ * @param {string} streamerUid Streamer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
+ */
+export async function getStreamerFollowersNumber(streamerUid) {
+    const userStreamerChild = child(database, `/UserStreamer/${streamerUid}/followers`);
+
+    return await get(query(userStreamerChild));
+}
+
 //////////////////////
 // Streamer Public Data
 //////////////////////
@@ -183,6 +196,47 @@ export async function getStreamerPublicData(streamerUid) {
     const streamerPublicDataChild = child(database, `/UserStreamerPublicData/${streamerUid}`);
 
     return await get(query(streamerPublicDataChild));
+}
+
+/**
+ * Returns only the isStreaming of the given streamer
+ * @param {string} streamerUid Streamer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
+ */
+export async function getStreamerIsStreaming(streamerUid) {
+    const streamerIsStreamingChild = child(database, `/UserStreamerPublicData/${streamerUid}/isStreaming`);
+
+    return await get(query(streamerIsStreamingChild));
+}
+
+//////////////////////
+// Streamer Public Profile
+//////////////////////
+
+/**
+ * Returns the public profile of the given streamer
+ * @param {string} streamerUid Streamer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
+ */
+export async function getStreamerPublicProfile(streamerUid) {
+    const streamerProfileChild = child(database, `/StreamersPublicProfiles/${streamerUid}`);
+
+    return await get(query(streamerProfileChild));
+}
+
+//////////////////////
+// Streamer Links
+//////////////////////
+
+/**
+ * Returns all the (social) links of the given streamer
+ * @param {string} streamerUid Streamer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
+ */
+export async function getStreamerLinks(streamerUid) {
+    const streamerLinksChild = child(database, `/StreamerLinks/${streamerUid}`);
+
+    return await get(query(streamerLinksChild));
 }
 
 //////////////////////
@@ -529,4 +583,95 @@ export async function getStreamerUidWithQreatorCode(qreatorCode) {
     const qreatorCodeRef = child(database, `/QreatorsCodes`);
 
     return await get(query(qreatorCodeRef, orderByChild('codeLowerCase'), equalTo(qreatorCode.toLowerCase())));
+}
+
+//////////////////////
+// Streams
+//////////////////////
+
+/**
+ * Returns all the published streams of the given streamer
+ * @param {string} streamerUid Streamer identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
+ */
+export async function getStreamerStreams(streamerUid) {
+    const streamerStreams = child(database, `/eventosEspeciales/eventsData`);
+
+    return await get(query(streamerStreams, orderByChild('idStreamer'), equalTo(streamerUid)));
+}
+
+//////////////////////
+// Gifs
+//////////////////////
+
+/**
+ * Returns the Gifs library
+ * @returns {Array<Object>} Resulting Objects of the query
+ */
+
+export async function getReactionModuleGifs() {
+    const gifsRef = child(database, '/Gifs/ReactionModule');
+
+    return await get(query(gifsRef));
+}
+
+//////////////////////
+// Streamers Deep Links
+//////////////////////
+
+/**
+ * Find a streamer by using their branch deep link alias
+ * (Branch alias are unique so this query will return always 0 or 1 result at most)
+ * @param {string} linkAlias Branch deep link alias
+ * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
+ */
+export async function getStreamerUidWithDeepLinkAlias(linkAlias) {
+    const streamersDeepLinksRef = child(database, '/StreamersDeepLinks');
+
+    return await get(query(streamersDeepLinksRef, orderByValue(), equalTo(`https://myqap.la/${linkAlias}`)));
+}
+
+//////////////////////
+// User To Streamer Subscriptions
+//////////////////////
+
+/**
+ * Subscribes a user to the given streamer
+ * @param {string} uid User identifier
+ * @param {string} streamerUid Stramer identifier
+ * @returns {Promise<void>} Resulting DataSnaphsot of the query
+ */
+export async function followStreamer(uid, streamerUid) {
+    const streamerFollower = child(database, `/UserToStreamerSubscriptions/${uid}/${streamerUid}`);
+
+    return await set(streamerFollower, {
+        cancelations: true,
+        changes: true,
+        customMessages: true,
+        reminders: true
+    });
+}
+
+/**
+ * Unubscribes a user from the given streamer
+ * @param {string} uid User identifier
+ * @param {string} streamerUid Stramer identifier
+ * @returns {Promise<void>} Resulting DataSnaphsot of the query
+ */
+export async function unfollowStreamer(uid, streamerUid) {
+    const streamerFollower = child(database, `/UserToStreamerSubscriptions/${uid}/${streamerUid}`);
+
+    return await remove(streamerFollower);
+}
+
+/**
+ * Listen for the user to streamer subscription (to know if a user is following a streamer)
+ * @param {string} uid User identifier
+ * @param {string} streamerUid Stramer identifier
+ * @param {DataSnapshot} callback Handler for the database results
+ */
+export async function listenToFollowingStreamer(uid, streamerUid, callback) {
+    const streamerFollower = child(database, `/UserToStreamerSubscriptions/${uid}/${streamerUid}`);
+
+    return onValue(query(streamerFollower), callback);
 }

@@ -6,7 +6,7 @@ export const TWITCH_CLIENT_ID = '3cwpzmazn716nmz6g1087kh4ciu4sp';
 /**
  * Twitch Utils
  */
-export const TWITCH_REDIRECT_URI = !process.env.NODE_ENV || process.env.NODE_ENV === 'development' ? 'http://localhost:6969' : 'https://web.qapla.gg';
+export const TWITCH_REDIRECT_URI = !process.env.NODE_ENV || process.env.NODE_ENV === 'development' ? 'http://localhost:6969/signin' : 'https://web.qapla.gg/signin';
 
 export const MEMES = 'memes';
 
