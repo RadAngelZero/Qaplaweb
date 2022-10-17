@@ -525,7 +525,7 @@ const StreamerProfile = () => {
                                 {t('StreamerProfile.upcomingStreams')}
                             </SectionHeader>
                             <EventsCardsContainer>
-                                {Object.keys(upcomingStreams).slice(0, 2).map((streamId) => (
+                                {Object.keys(upcomingStreams).slice(0, 2).sort((a, b) => upcomingStreams[a].timestamp - upcomingStreams[b].timestamp).map((streamId) => (
                                     <StreamCard key={streamId}
                                         backgroundImage={upcomingStreams[streamId].backgroundImage}
                                         title={upcomingStreams[streamId].title[userLanguage]}
