@@ -2,6 +2,7 @@ import React from 'react';
 import { Avatar, Typography, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import icon from '../assets/icons/Qoin.svg'
 import iconsBeta from '../assets/icons/PillBeta.svg'
@@ -73,10 +74,11 @@ const IconsBeta = styled('img')({
 
 const HeaderBar = (props) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     return (<>
         <MainAppBar>
-            <div style={{ display:'flex', flexDirection:'row', alignItems: 'center'}}>
+            <div style={{ display:'flex', flexDirection:'row', alignItems: 'center', cursor: 'pointer' }} onClick={() => navigate(-1)}>
                 <StreamerImage src={props.streamerImage} />
                     <StreamerName>
                         {props.streamerName}
