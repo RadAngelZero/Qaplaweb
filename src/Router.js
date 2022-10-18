@@ -5,6 +5,7 @@ import Reaction from './screens/Reaction';
 import ProtectedRoute from './components/ProtectedRoute';
 import Root from './screens/Root';
 import StreamerProfile, { loader as streamerProfileLoader } from './screens/StreamerProfile';
+import ChooseAvatarAnimation, { loader as chooseAvatarAnimationLoader } from './screens/ChooseAvatarAnimation';
 
 const ErrorPage = () => {
     const error = useRouteError(); console.log(error); return <h1>Error</h1>
@@ -29,6 +30,10 @@ export default createBrowserRouter(
                 element={<StreamerProfile />}
                 errorElement={<ErrorPage />}
                 loader={streamerProfileLoader} />
+            <Route path='/avatar/animation/:avatarId/:animationId'
+                element={<ChooseAvatarAnimation />}
+                errorElement={<ErrorPage />}
+                loader={chooseAvatarAnimationLoader} />
         </Route>
     )
 );

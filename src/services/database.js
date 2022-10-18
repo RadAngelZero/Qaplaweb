@@ -675,3 +675,18 @@ export async function listenToFollowingStreamer(uid, streamerUid, callback) {
 
     return onValue(query(streamerFollower), callback);
 }
+
+//////////////////////
+// Avatars Animations
+//////////////////////
+
+/**
+ * Gets the given animation information (camera position, name, etc.)
+ * @param {string} animationId Animation identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
+ */
+export async function getAnimationData(animationId) {
+    const animation = child(database, `/AvatarsAnimations/${animationId}`);
+
+    return get(query(animation));
+}
