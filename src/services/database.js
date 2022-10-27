@@ -122,6 +122,56 @@ export async function removeQoinsFromUser(uid, qoinsToRemove) {
     });
 }
 
+/**
+ * Saves the 3D avatar url of the user
+ * @param {string} uid User identifier
+ * @param {string} avatarUrl Avatar url
+ * @returns {Promise<void>} Resulting DataSnaphsot of the query
+ */
+ export async function saveAvatarUrl(uid, avatarUrl) {
+    const userAvatarUrlChild = child(database, `/Users/${uid}/avatarUrl`);
+
+    return await set(userAvatarUrlChild, avatarUrl);
+}
+
+/**
+ * Saves the ready player me avatar identifier of the user
+ * @param {string} uid User identifier
+ * @param {string} rpmAvatarId Ready player me avatar identifier
+ * @returns {Promise<void>} Resulting DataSnaphsot of the query
+ */
+export async function saveAvatarId(uid, rpmAvatarId) {
+    const userAvataridChild = child(database, `/Users/${uid}/avatarId`);
+
+    return await set(userAvataridChild, rpmAvatarId);
+}
+
+/**
+ * Saves the avatar background
+ * @param {string} uid User identifier
+ * @param {Object} background Object describing gradient background for the avatar image
+ * @param {number} background.angle Avatar gradient angle
+ * @param {Array<string>} background.colors Array of colors for gradient background
+ * @returns {Promise<void>} Resulting DataSnaphsot of the query
+ */
+export async function saveAvatarBackground(uid, background) {
+    const userAvatarBackgroundChild = child(database, `/Users/${uid}/avatarBackground`);
+
+    return await set(userAvatarBackgroundChild, background);
+}
+
+/**
+ * Saves the ready player me user identifier of the user
+ * @param {string} uid User identifier
+ * @param {string} rpmUid Ready player me user identifier
+ * @returns {Promise<void>} Resulting DataSnaphsot of the query
+ */
+ export async function saveReadyPlayerMeUserId(uid, rpmUid) {
+    const userRpmUidChild = child(database, `/Users/${uid}/rpmUid`);
+
+    return await set(userRpmUidChild, rpmUid);
+}
+
 //////////////////////
 // Reactions count
 //////////////////////
@@ -677,8 +727,14 @@ export async function listenToFollowingStreamer(uid, streamerUid, callback) {
 }
 
 //////////////////////
-// Avatars Animations
+// Avatars Animations Overlay
 //////////////////////
+
+export async function getAnimationsData() {
+    const animations = child(database, `/AvatarsAnimationsOverlay`);
+
+    return get(query(animations));
+}
 
 /**
  * Gets the given animation information (camera position, name, etc.)
@@ -686,7 +742,89 @@ export async function listenToFollowingStreamer(uid, streamerUid, callback) {
  * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
  */
 export async function getAnimationData(animationId) {
-    const animation = child(database, `/AvatarsAnimations/${animationId}`);
+    const animation = child(database, `/AvatarsAnimationsOverlay/${animationId}`);
 
     return get(query(animation));
+}
+
+//////////////////////
+// Users Greetings
+//////////////////////
+
+/**
+ * Saves the avatar and animation ids for the user greeting
+ * @param {string} uid User identifier
+ * @param {string} animationId Animation identifier
+ */
+ export async function saveUserGreetingAnimation(uid, animationId) {
+    const userGreeting = child(database, `/UsersGreetings/${uid}/animation`);
+
+    return await update(userGreeting, { animationId });
+}
+
+/**
+ * Saves the TTS information for the greeting
+ * @param {string} uid User identifier
+ * @param {string} message Message to speak
+ */
+export async function saveUserGreetingMessage(uid, message) {
+    const userGreeting = child(database, `/UsersGreetings/${uid}/TTS`);
+
+    return await update(userGreeting, { message });
+}
+
+/**
+ * Returns the animation information of the greeting of the given user
+ * @param {string} uid User identifier
+ */
+export async function getUserGreetingAnimation(uid) {
+    const animation = child(database, `/UsersGreetings/${uid}/animation`);
+
+    return get(query(animation));
+}
+
+/**
+ * Gets all the information about the user greeting of the given user
+ * @param {string} uid User identifier
+ */
+export async function getUserGreetingData(uid) {
+    const greeting = child(database, `/UsersGreetings/${uid}`);
+
+    return get(query(greeting));
+}
+
+export async function getOverlayAnimationData(animationId) {
+    const animation = child(database, `/AvatarsAnimationsOverlay/${animationId}`);
+
+    return get(query(animation));
+}
+
+export async function listenAnimationData(animationId, callback) {
+    const animation = child(database, `/AvatarsAnimationsOverlay/${animationId}`);
+
+    return onValue(query(animation), callback);
+}
+
+export async function saveCamera(animationId, position, rotation) {
+    const animationPosition = child(database, `/AvatarsAnimations/${animationId}/camera/position`);
+    await set(animationPosition, position);
+
+    const animationRotation = child(database, `/AvatarsAnimations/${animationId}/camera/rotation`);
+    await set(animationRotation, {
+        x: rotation.x,
+        y: rotation.y,
+        z: rotation.z
+    });
+}
+
+export async function saveOverlayCamera(animationId, position, rotation) {
+    const animationPosition = child(database, `/AvatarsAnimationsOverlay/${animationId}/camera/position`);
+    await set(animationPosition, position);
+
+    const animationRotation = child(database, `/AvatarsAnimationsOverlay/${animationId}/camera/rotation`);
+    await set(animationRotation, {
+        x: rotation.x,
+        y: rotation.y,
+        z: rotation.z
+    });
 }

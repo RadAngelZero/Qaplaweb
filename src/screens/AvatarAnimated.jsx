@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { useGLTF } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import { useRef } from 'react';
+import { saveOverlayCamera } from '../services/database';
 
 // Rad https://api.readyplayer.me/v1/avatars/633e16c870674b37a2c050a1.glb
 // Fer https://api.readyplayer.me/v1/avatars/633728096024f0a2e7d204d3.glb
@@ -13,6 +14,7 @@ const AvatarAnimated = (props) => {
     const { animations } = useGLTF(props.animationData.url);
     const [avatarMixer] = useState(() => new THREE.AnimationMixer());
     const [cameraReady, setCameraReady] = useState(false);
+    // const { camera } = useThree();
     const avatarRef = useRef();
 
     useEffect(() => {
@@ -21,25 +23,20 @@ const AvatarAnimated = (props) => {
         }
 
         if (props.showAnimation && animations && cameraReady) {
-            setTimeout(() => {
-                const algo = avatarMixer.clipAction(animations[0], group.current);
-                avatarMixer.addEventListener('finished', (e) => {
-                    avatarMixer.removeEventListener('finished');
-                    console.log('Finished');
-                });
+            avatarMixer.stopAllAction();
+            const animation = avatarMixer.clipAction(animations[0], group.current);
 
-                algo.fadeIn(.5).play().setLoop();
-            }, 1000);
+            animation.fadeIn(.5).play().setLoop();
         }
     }, [animations, avatarMixer, avatarMixer, avatarRef, cameraReady, scene, props.showAnimation]);
 
     useFrame((state, delta) => {
         if (props.showAnimation) {
             state.camera.aspect = props.animationData.camera.aspect;
-            state.camera.lookAt(
-                props.animationData.camera.lookAt.x,
-                props.animationData.camera.lookAt.y,
-                props.animationData.camera.lookAt.z
+            state.camera.rotation.set(
+                props.animationData.camera.rotation.x,
+                props.animationData.camera.rotation.y,
+                props.animationData.camera.rotation.z
             );
             state.camera.position.lerp(
                 (new THREE.Vector3(
@@ -61,7 +58,10 @@ const AvatarAnimated = (props) => {
 
     return (
         <group ref={group} {...props} dispose={null}>
-            <primitive object={scene} ref={avatarRef} position={[0, 0, 0]} />
+            <primitive object={scene} ref={avatarRef} />
+            {/* <mesh position={[-1, -1, -1]} onClick={() => {saveOverlayCamera(props.animationId, camera.position, camera.rotation); alert('Guardado Overlay')}}>
+            <boxGeometry args={[1, 1, 1]} />
+            </mesh> */}
         </group>
     );
 }

@@ -31,6 +31,7 @@ import { getCurrentLanguage } from '../utils/i18n';
 import { useAuth } from '../AuthProvider';
 import LinkAccountDialog from '../components/LinkAccountDialog/LinkAccountDialog';
 import FollowingStreamerDialog from '../components/FollowingStreamerDialog/FollowingStreamerDialog';
+import AvatarOnboardingDialog from '../components/AvatarOnboardingDialog';
 
 const linksData = {
     Twitch: {
@@ -314,6 +315,8 @@ const StreamerProfile = () => {
     const [hoverUnfollow, setHoverUnfollow] = useState(false);
     const [openAuthDialog, setOpenAuthDialog] = useState(false);
     const [openFollowingDialog, setOpenFollowingDialog] = useState(false);
+    const [openCreateAvatarDialog, setOpenCreateAvatarDialog] = useState(false);
+    const [isTryingToFollow, setIsTryingToFollow] = useState(false);
     const user = useAuth();
     const { t } = useTranslation();
 
@@ -353,6 +356,7 @@ const StreamerProfile = () => {
         if (uid || (user && user.id)) {
             await followStreamer(uid ? uid : user.id, streamerUid);
         } else {
+            setIsTryingToFollow(true);
             setOpenAuthDialog(true);
         }
     }
@@ -373,8 +377,21 @@ const StreamerProfile = () => {
 
     const onTwitchAccountLinked = async (user) => {
         setOpenAuthDialog(false);
-        await startFollowing(user.uid);
-        setOpenFollowingDialog(true);
+        if (isTryingToFollow) {
+            await startFollowing(user.uid);
+            setOpenFollowingDialog(true);
+        } else {
+            sendGreeting(user.uid);
+        }
+    }
+
+    const sendGreeting = (uid) => {
+        if (uid || (user && user.id)) {
+            setOpenCreateAvatarDialog(true);
+            // await followStreamer(uid ? uid : user.id, streamerUid);
+        } else {
+            setOpenAuthDialog(true);
+        }
     }
 
     const userLanguage = getCurrentLanguage();
@@ -518,6 +535,11 @@ const StreamerProfile = () => {
                         <SendReactionContainer>
                             <SendReaction streamerUid={streamerUid} />
                         </SendReactionContainer>
+                        <SendReactionContainer>
+                            <Button onClick={() => sendGreeting()}>
+                                Avatar
+                            </Button>
+                        </SendReactionContainer>
                     </InteractionContainer>
                     {upcomingStreams &&
                         <EventsContainer>
@@ -543,6 +565,8 @@ const StreamerProfile = () => {
             <FollowingStreamerDialog open={openFollowingDialog}
                 onClose={() => setOpenFollowingDialog(false)}
                 streamerName={displayName} />
+            <AvatarOnboardingDialog open={openCreateAvatarDialog}
+                onClose={() => setOpenCreateAvatarDialog(false)} />
         </Container>
     );
 
