@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { Box, Button, CircularProgress, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 
 import { getRandomAvatarAnimationGif } from '../services/database';
 
@@ -49,15 +49,10 @@ const PopUpButton = styled(Button)({
     '&:hover': {
         opacity: .9,
         background: '#3B4BF9'
-    },
-    '&:disabled': {
-        opacity: .4,
-        background: '#3B4BF9',
-        color: '#FFF',
     }
 });
 
-const SendGreeting = ({ onClick, loadingPopUp }) => {
+const SendGreeting = ({ onClick }) => {
     const [gifUrl, setGifUrl] = useState('');
 
     useEffect(() => {
@@ -77,15 +72,8 @@ const SendGreeting = ({ onClick, loadingPopUp }) => {
             <Description>
                 using your custom animated avi
             </Description>
-            <PopUpButton onClick={onClick}
-                disabled={loadingPopUp}>
-                {loadingPopUp ?
-                    <CircularProgress sx={{
-                        color: '#00FFDD'
-                    }} />
-                :
-                    'Pop up on stream'
-                }
+            <PopUpButton onClick={onClick}>
+                Pop up on stream
             </PopUpButton>
         </Container>
     );

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Box, styled, Typography, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 import { ReactComponent as ShareArrow } from '../assets/ShareArrow.svg';
@@ -44,6 +44,7 @@ import NotASubDialog from '../components/NotASubDialog';
 import StreamerOfflineDialog from '../components/StreamerOfflineDialog';
 import PopUpFromMobileDialog from '../components/PopUpFromMobileDialog';
 import { getUserToStreamerRelation } from '../services/functions';
+import SendAvatarDialog from '../components/SendAvatarDialog';
 
 const linksData = {
     Twitch: {
@@ -337,8 +338,10 @@ const StreamerProfile = () => {
     const [openNotASubDialog, setOpenNotASubDialog] = useState(false);
     const [openStreamerOfflineDialog, setOpenStreamerOfflineDialog] = useState(false);
     const [openPopUpFromMobileDialog, setOpenPopUpFromMobileDialog] = useState(false);
+    const [openSendAvatarDialog, setOpenSendAvatarDialog] = useState(false);
     const user = useAuth();
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (user && user.id) {
@@ -408,7 +411,7 @@ const StreamerProfile = () => {
     const sendGreeting = (uid) => {
         if (uid || (user && user.id)) {
             if (userGreeting && userGreeting.animation && userGreeting.TTS) {
-                popUpNow();
+                setOpenSendAvatarDialog(true);
             } else {
                 setOpenCreateAvatarDialog(true);
             }
@@ -445,6 +448,14 @@ const StreamerProfile = () => {
             setOpenStreamerOfflineDialog(true);
         }
         setLoadingPopUp(false);
+    }
+
+    const sendTOEditGreeting = () => {
+        navigate('/avatar/animation', {
+            state: {
+                streamerUid
+            }
+        });
     }
 
     const userLanguage = getCurrentLanguage();
@@ -594,8 +605,7 @@ const StreamerProfile = () => {
                             Boost your Twitch Sub
                         </SectionHeader>
                         <SendReactionContainer>
-                            <SendGreeting onClick={(e) => sendGreeting()}
-                                loadingPopUp={loadingPopUp} />
+                            <SendGreeting onClick={(e) => sendGreeting()} />
                         </SendReactionContainer>
                     </InteractionContainer>
                     {upcomingStreams &&
@@ -629,16 +639,22 @@ const StreamerProfile = () => {
                 onClose={() => { setOpenPopUpSentDialog(false); setOpenPopUpFromMobileDialog(true); }}
                 streamerName={displayName} />
             <PopUpAlreadySentDialog open={openAlreadySentDialog}
-                onClose={() => setOpenAlreadySentDialog(false)}
+                onClose={() => { setOpenAlreadySentDialog(false); setOpenSendAvatarDialog(false);}}
                 streamerName={displayName} />
             <NotASubDialog open={openNotASubDialog}
                 onClose={() => { setOpenNotASubDialog(false); setOpenPopUpFromMobileDialog(true); }}
                 streamerName={displayName} />
             <StreamerOfflineDialog open={openStreamerOfflineDialog}
-                onClose={() => setOpenStreamerOfflineDialog(false)}
+                onClose={() => { setOpenStreamerOfflineDialog(false); setOpenSendAvatarDialog(false); }}
                 streamerName={displayName} />
             <PopUpFromMobileDialog open={openPopUpFromMobileDialog}
-                onClose={() => setOpenPopUpFromMobileDialog(false)} />
+                onClose={() => { setOpenPopUpFromMobileDialog(false); setOpenSendAvatarDialog(false); }} />
+            <SendAvatarDialog open={openSendAvatarDialog}
+                onClose={() => loadingPopUp ? null : setOpenSendAvatarDialog(false)}
+                streamerName={displayName}
+                loadingPopUp={loadingPopUp}
+                onSendNow={popUpNow}
+                onEditPopUp={sendTOEditGreeting} />
         </Container>
     );
 
