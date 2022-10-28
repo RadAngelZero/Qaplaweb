@@ -24,7 +24,7 @@ const Title = styled(Typography)({
     fontSize: '20px',
     fontWeight: '700',
     color: '#FFF',
-    letterSpacing: '1px',
+    letterSpacing: 0,
     textAlign: 'center'
 });
 
@@ -32,7 +32,7 @@ const Description = styled(Typography)({
     fontSize: '15px',
     fontWeight: '500',
     color: '#FFF',
-    letterSpacing: '1px',
+    letterSpacing: 0,
     lineHeight: '17px',
     textAlign: 'center'
 });
@@ -47,6 +47,7 @@ const PopUpButton = styled(Button)({
     lineHeight: '22px',
     letterSpacing: -.41,
     color: '#FFF',
+    textTransform: 'none',
     '&:hover': {
         opacity: .9,
         background: '#3B4BF9'
