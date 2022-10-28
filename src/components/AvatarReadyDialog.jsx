@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { Box, Button, CircularProgress, Dialog, Typography } from '@mui/material';
 import { Canvas } from '@react-three/fiber';
 import styled from '@emotion/styled';
+import { useTranslation } from 'react-i18next';
 
 import AvatarAnimated from '../screens/AvatarAnimated';
 
@@ -67,6 +68,8 @@ const BackToProfileButton = styled(Button)({
 });
 
 const AvatarReadyDialog = ({ open, onClose, avatarId, animationData, onPopUp, onBack, loading }) => {
+    const { t } = useTranslation();
+
     return (
         <Dialog open={open}
             onClose={onClose}
@@ -106,10 +109,10 @@ const AvatarReadyDialog = ({ open, onClose, avatarId, animationData, onPopUp, on
                 </Canvas>
             </CanvasContainer>
             <Title>
-                Your Avi is ready! 😭
+                {t('AvatarReadyDialog.aviReady')}
             </Title>
             <Description>
-                Say hi whenever you show up on a stream you’re suscribed to
+                {t('AvatarReadyDialog.sayHi')}
             </Description>
             <PopUpButton onClick={onPopUp}
                 disabled={loading}>
@@ -118,12 +121,12 @@ const AvatarReadyDialog = ({ open, onClose, avatarId, animationData, onPopUp, on
                         color: '#0D1021'
                     }} />
                 :
-                    'Pop up now on stream'
+                    t('AvatarReadyDialog.popUpNow')
                 }
             </PopUpButton>
             <BackToProfileButton onClick={onBack}
                 disabled={loading}>
-                Back to creator profile
+                {t('AvatarReadyDialog.backToProfile')}
             </BackToProfileButton>
         </Dialog>
     );

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 import { Avatar, Box, Button, Typography } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { AVATAR_GRADIENTS } from '../utils/colors';
 import { useAuth } from '../AuthProvider';
@@ -96,6 +97,7 @@ const AvatarChooseBackgroundColor = () => {
     const user = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const { t } = useTranslation();
 
     const getLinearGradient = (gradientData) => {
         let colors = '';
@@ -130,14 +132,14 @@ const AvatarChooseBackgroundColor = () => {
                     onLoad={(e) => setImageLoaded(true)} />
                 <InstructionsTitle>
                     {imageLoaded ?
-                        'Pick a background color'
+                        t('AvatarChooseBackgroundColor.pickABackground')
                         :
-                        'We’re cooking... it might take 10 to 15 seconds'
+                        t('AvatarChooseBackgroundColor.loading')
                     }
                 </InstructionsTitle>
                 {imageLoaded &&
                     <InstructionsDescription>
-                        This is how you’ll look in your custom reactions on stream
+                        {t('AvatarChooseBackgroundColor.description')}
                     </InstructionsDescription>
                 }
             </AvatarContainer>
@@ -152,7 +154,7 @@ const AvatarChooseBackgroundColor = () => {
             </ColorPicker>
             <UseBackgroundButton onClick={saveBackgroundColor}
                 disabled={!imageLoaded}>
-                Use background color
+                {t('AvatarChooseBackgroundColor.useBackground')}
             </UseBackgroundButton>
         </Container>
     );

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Box, Button, InputBase, Paper, Typography } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as SendIcon } from '../assets/icons/SendIcon.svg';
 import { getAnimationData, getStreamerAlias, getStreamerIsStreaming, getStreamerPublicDisplayName, getUserGreetingAnimation, saveUserGreetingMessage, writeStreamGreeting } from '../services/database';
@@ -166,6 +167,7 @@ const GreetingTTSScreen = () => {
     const user = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getAnimation() {
@@ -247,7 +249,10 @@ const GreetingTTSScreen = () => {
                 <TTSContainer>
                     <SenderChatBubble>
                         <ChatBubbleTextBot>
-                            <TextAccent>👋 Make an entrance. </TextAccent> Say hi in your own way
+                            <TextAccent>
+                                {t('GreetingTTSScreen.makeAnEntrance')}
+                            </TextAccent>
+                            {t('GreetingTTSScreen.sayHi')}
                         </ChatBubbleTextBot>
                     </SenderChatBubble>
                     {messageSent ?
@@ -259,16 +264,16 @@ const GreetingTTSScreen = () => {
                         </UserChatBubble>
                         <SenderChatBubble>
                             <ChatBubbleTextBot>
-                                🔥 Lit! Ready to save?
+                                {t('GreetingTTSScreen.readyToSave')}
                             </ChatBubbleTextBot>
                         </SenderChatBubble>
                         <OptionButton onClick={() => setMessageSent(false)}>
                             <ChatBubbleTextBot>
-                                Edit Message
+                                {t('GreetingTTSScreen.editMessage')}
                             </ChatBubbleTextBot>
                         </OptionButton>
                         <ConfirmationButton onClick={saveMessage}>
-                            Save
+                            {t('GreetingTTSScreen.ready')}
                         </ConfirmationButton>
                         </>
                         :

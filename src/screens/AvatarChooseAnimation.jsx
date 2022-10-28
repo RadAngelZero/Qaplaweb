@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import styled from '@emotion/styled';
 import { Box, Button, CircularProgress } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { getAnimationsData, saveUserGreetingAnimation } from '../services/database';
 import AvatarAnimated from './AvatarAnimated';
@@ -94,6 +95,7 @@ const AvatarChooseAnimation = () => {
     const user = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getAnimation() {
@@ -162,7 +164,7 @@ const AvatarChooseAnimation = () => {
                 ))}
             </AnimationPicker>
             <UseAnimationButton onClick={saveAnimation}>
-                Use Animation
+                {t('AvatarChooseAnimation.useAnimation')}
             </UseAnimationButton>
         </Container>
     );

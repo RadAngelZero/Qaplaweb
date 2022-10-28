@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Button, Dialog, IconButton, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as CloseIcon } from './../assets/icons/CloseIcon.svg';
 import { getRandomStreamerOfflineGif } from '../services/database';
@@ -59,6 +60,7 @@ const GoToStreamButton = styled(Button)({
 
 const NotASubDialog = ({ open, onClose, streamerName }) => {
     const [gifUrl, setGifUrl] = useState('');
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getGif() {
@@ -91,13 +93,16 @@ const NotASubDialog = ({ open, onClose, streamerName }) => {
             </CloseButton>
             <GifContainer src={gifUrl} alt='Not a sub gif' />
             <Title>
-                You’re not a sub 🫣
+                {t('NotASubDialog.notASub')}
             </Title>
             <Description>
-                Pop ups are available for channel suscribers. <TextAccent>Sucribe to pop up!</TextAccent>
+                {t('NotASubDialog.availability')}
+                <TextAccent>
+                    {t('NotASubDialog.subscribeToPopUp')}
+                </TextAccent>
             </Description>
             <GoToStreamButton onClick={() => window.open(`https://www.twitch.tv/subs/${streamerName.toLowerCase()}`, '_blank')}>
-                Subscribe to channel
+                {t('NotASubDialog.subscribe')}
             </GoToStreamButton>
         </Dialog>
     );

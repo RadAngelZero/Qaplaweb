@@ -2,6 +2,7 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 import { Box, Button, Dialog, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import AvatarReaction from './../assets/images/AvatarReaction.png';
 import AvatarAnimation from './../assets/gifs/Swing.gif';
@@ -97,6 +98,7 @@ const DynamicStep = ({ currentStep, step }) => (
 const AvatarOnboardingDialog = ({ open, onClose, streamerUid }) => {
     const [step, setStep] = useState(0);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const nextStep = () => {
         if (step === 0) {
@@ -134,24 +136,24 @@ const AvatarOnboardingDialog = ({ open, onClose, streamerUid }) => {
                     <SlideTextContainer>
                         <SlideTitle>
                             {step === 0 ?
-                                'React with personality'
+                                t('AvatarOnboardingDialog.react')
                                 :
-                                'Boost your Twitch Sub'
+                                t('AvatarOnboardingDialog.boostYourSub')
                             }
                         </SlideTitle>
                         <SlideDescription>
                             {step === 0 ?
-                                'Your avi appears on any reaction you send on stream'
+                                t('AvatarOnboardingDialog.aviOnReaction')
                                 :
-                                'Use a custom animation when you show up on stream and make an entrance'
+                                t('AvatarOnboardingDialog.aviOnGreeting')
                             }
                         </SlideDescription>
                     </SlideTextContainer>
                     <NextButton onClick={nextStep}>
                         {step === 0 ?
-                            'Next'
+                            t('AvatarOnboardingDialog.next')
                             :
-                            'Create my Avatar'
+                            t('AvatarOnboardingDialog.createAvatar')
                         }
                     </NextButton>
                     <ProgressContainer>

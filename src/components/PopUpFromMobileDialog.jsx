@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Button, Dialog, IconButton, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as CloseIcon } from './../assets/icons/CloseIcon.svg';
-import { getRandomDownloadAppGif, getRandomStreamerOfflineGif } from '../services/database';
+import { getRandomDownloadAppGif } from '../services/database';
 
 const CloseButton = styled(IconButton)({
     position: 'absolute',
@@ -55,6 +56,7 @@ const GoToStreamButton = styled(Button)({
 
 const PopUpFromMobileDialog = ({ open, onClose }) => {
     const [gifUrl, setGifUrl] = useState('');
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getGif() {
@@ -87,13 +89,13 @@ const PopUpFromMobileDialog = ({ open, onClose }) => {
             </CloseButton>
             <GifContainer src={gifUrl} alt='Download app gif' />
             <Title>
-                Pop up from mobile
+                {t('PopUpFromMobileDialog.popFromMobile')}
             </Title>
             <Description>
-                Manage your avi and react on stream from your phone
+                {t('PopUpFromMobileDialog.manage')}
             </Description>
             <GoToStreamButton onClick={() => window.open('https://qapla.app.link/download', '_blank')}>
-                Download app
+                {t('PopUpFromMobileDialog.download')}
             </GoToStreamButton>
         </Dialog>
     );

@@ -600,7 +600,7 @@ const StreamerProfile = () => {
                     </InteractionContainer>
                     <InteractionContainer style={{ marginTop: '32px', marginBottom: '32px' }}>
                         <SectionHeader>
-                            Boost your Twitch Sub
+                            {t('StreamerProfile.boostYourSub')}
                         </SectionHeader>
                         <SendReactionContainer>
                             <SendGreeting onClick={(e) => sendGreeting()} />

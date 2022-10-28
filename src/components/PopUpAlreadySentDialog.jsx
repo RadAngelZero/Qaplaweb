@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { Button, Dialog, IconButton, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as WarningIcon } from './../assets/icons/WarningCircle.svg';
 import { ReactComponent as CloseIcon } from './../assets/icons/CloseIcon.svg';
@@ -51,6 +52,8 @@ const GoToStreamButton = styled(Button)({
 });
 
 const PopUpAlreadySentDialog = ({ open, onClose, streamerName }) => {
+    const { t } = useTranslation();
+
     return (
         <Dialog open={open}
             sx={{
@@ -73,13 +76,16 @@ const PopUpAlreadySentDialog = ({ open, onClose, streamerName }) => {
             </CloseButton>
             <WarningIcon />
             <Title>
-                You already poped up 🫢
+                {t('PopUpAlreadySentDialog.alreadyPoped')}
             </Title>
             <Description>
-                <TextAccent>Pop ups work once per stream.</TextAccent> It’s a way to say hi when you show up
+                <TextAccent>
+                    {t('PopUpAlreadySentDialog.popUpOnce')}
+                </TextAccent>
+                {t('PopUpAlreadySentDialog.use')}
             </Description>
             <GoToStreamButton onClick={() => window.open(`https://twitch.tv/${streamerName.toLowerCase()}`, '_blank')}>
-                Go to stream
+                {t('PopUpAlreadySentDialog.goToStream')}
             </GoToStreamButton>
         </Dialog>
     );

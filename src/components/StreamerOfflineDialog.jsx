@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Button, Dialog, IconButton, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as CloseIcon } from './../assets/icons/CloseIcon.svg';
 import { getRandomStreamerOfflineGif } from '../services/database';
@@ -59,6 +60,7 @@ const GoToStreamButton = styled(Button)({
 
 const StreamerOfflineDialog = ({ open, onClose, streamerName }) => {
     const [gifUrl, setGifUrl] = useState('');
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getGif() {
@@ -91,13 +93,17 @@ const StreamerOfflineDialog = ({ open, onClose, streamerName }) => {
             </CloseButton>
             <GifContainer src={gifUrl} alt='Streamer offline gif' />
             <Title>
-                Streamer  offline 🙃
+                {t('StreamerOfflineDialog.offline')}
             </Title>
             <Description>
-                We’ll notify you when <TextAccent>{streamerName}</TextAccent> next stream it’s going to be 👇
+                {t('StreamerOfflineDialog.descriptionP1')}
+                <TextAccent>
+                    {t('StreamerOfflineDialog.descriptionP2', { streamerName })}
+                </TextAccent>
+                {t('StreamerOfflineDialog.descriptionP3')}
             </Description>
             <GoToStreamButton onClick={() => window.open('https://qapla.app.link/download', '_blank')}>
-                Download app
+                {t('StreamerOfflineDialog.download')}
             </GoToStreamButton>
         </Dialog>
     );

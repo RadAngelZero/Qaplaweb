@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { Button, Dialog, IconButton, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as SuccessIcon } from './../assets/icons/TickSquare.svg';
 import { ReactComponent as CloseIcon } from './../assets/icons/CloseIcon.svg';
@@ -38,6 +39,8 @@ const GoToStreamButton = styled(Button)({
 });
 
 const PopUpSentDialog = ({ open, onClose, streamerName }) => {
+    const { t } = useTranslation();
+
     return (
         <Dialog open={open}
             sx={{
@@ -60,10 +63,10 @@ const PopUpSentDialog = ({ open, onClose, streamerName }) => {
             </CloseButton>
             <SuccessIcon height={71.56} width={71.56} />
             <Title>
-                Boom. Sent. 🫡
+                {t('PopUpSentDialog.sent')}
             </Title>
             <GoToStreamButton onClick={() => window.open(`https://twitch.tv/${streamerName.toLowerCase()}`, '_blank')}>
-                Go to stream
+                {t('PopUpSentDialog.goToStream')}
             </GoToStreamButton>
         </Dialog>
     );

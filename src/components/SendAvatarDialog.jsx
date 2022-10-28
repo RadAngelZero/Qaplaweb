@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { Button, CircularProgress, Dialog, IconButton, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as CloseIcon } from './../assets/icons/CloseIcon.svg';
 import { ReactComponent as EditIcon } from './../assets/icons/Edit.svg';
@@ -67,6 +68,8 @@ const UpdatePopUpButton = styled(Button)({
 });
 
 const SendAvatarDialog = ({ onSendNow, onEditPopUp, open, onClose, streamerName, loadingPopUp }) => {
+    const { t } = useTranslation();
+
     return (
         <Dialog open={open}
             sx={{
@@ -94,19 +97,23 @@ const SendAvatarDialog = ({ onSendNow, onEditPopUp, open, onClose, streamerName,
                     }} />
                 :
                     <>
-                    Send avi on <TextAccent>{streamerName}</TextAccent>’s stream?
+                    {t('SendAvatarDialog.sendAviOn')}
+                    <TextAccent>
+                        {streamerName}
+                    </TextAccent>
+                    {t('SendAvatarDialog.streamerStream')}
                     </>
                 }
             </Title>
             <GoToStreamButton onClick={onSendNow}
                 disabled={loadingPopUp}>
-                Pop Up Now
+                {t('SendAvatarDialog.popUpNow')}
             </GoToStreamButton>
             <UpdatePopUpButton onClick={onEditPopUp}
                 startIcon={<EditIcon />}
                 variant='text'
                 disabled={loadingPopUp}>
-                Update Pop-up
+                {t('SendAvatarDialog.updatePopUp')}
             </UpdatePopUpButton>
         </Dialog>
     );

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Box, Button, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { getRandomAvatarAnimationGif } from '../services/database';
 
@@ -13,7 +14,7 @@ const Container = styled(Box)((props) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-end',
-    padding: '44px 55px',
+    padding: '44px 64px',
     webkitBoxSizing: 'border-box', /* Safari/Chrome, other WebKit */
     mozBoxSizing: 'border-box',    /* Firefox, other Gecko */
     boxSizing: 'border-box',         /* Opera/IE 8+ */
@@ -54,6 +55,7 @@ const PopUpButton = styled(Button)({
 
 const SendGreeting = ({ onClick }) => {
     const [gifUrl, setGifUrl] = useState('');
+    const { t } = useTranslation();
 
     useEffect(() => {
         async function getGif() {
@@ -67,13 +69,13 @@ const SendGreeting = ({ onClick }) => {
     return (
         <Container gif={gifUrl}>
             <Title>
-                Show up with style 👋
+                {t('SendGreeting.showUp')}
             </Title>
             <Description>
-                using your custom animated avi
+                {t('SendGreeting.usingYourAvi')}
             </Description>
             <PopUpButton onClick={onClick}>
-                Pop up on stream
+                {t('SendGreeting.popUp')}
             </PopUpButton>
         </Container>
     );
