@@ -440,10 +440,14 @@ export async function sendQoinsReaction(uid, amountQoins, streamerUid, media, me
  * @param {("emoji" | "emote")} emojiRain.type Type of rain (emoji or emote)
  * @param {Array<string>} emojiRain.emojis Array of strings with emojis (as text) or emotes (as urls)
  * @param {number} qoinsToRemove Amount of donated Qoins
+ * @param {string | null} avatarId User Avatar identifier
+ * @param {object | null} avatarBackground Avatar linear gradient background data
+ * @param {number} avatarBackground.angle Avatar gradient angle
+ * @param {Array<string>} avatarBackground.colors Array of colors for gradient background
  * @param {function} onSuccess Function to call once the cheer is sent
  * @param {function} onError Function to call on any possible error
  */
-export async function sendPrepaidReaction(uid, userName, twitchUserName, userPhotoURL, streamerUid, streamerName, media, message, messageExtraData, emojiRain, qoinsToRemove, removePrepaidDonation, onSuccess, onError) {
+export async function sendPrepaidReaction(uid, userName, twitchUserName, userPhotoURL, streamerUid, streamerName, media, message, messageExtraData, emojiRain, qoinsToRemove, removePrepaidDonation, avatarId, avatarBackground, onSuccess, onError) {
     let qoinsTaken = qoinsToRemove ? false : true;
 
     if (qoinsToRemove) {
@@ -468,7 +472,15 @@ export async function sendPrepaidReaction(uid, userName, twitchUserName, userPho
             const streamerDonationsChild = child(database, `/StreamersDonations/${streamerUid}`);
             const timestamp = (new Date()).getTime();
 
+            const avatar = avatarId && avatarBackground ? {
+                avatarId,
+                avatarBackground
+            }
+            :
+            {};
+
             const donationRef = push(streamerDonationsChild, {
+                avatar,
                 amountQoins: qoinsToRemove,
                 media,
                 message,

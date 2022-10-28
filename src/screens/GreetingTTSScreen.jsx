@@ -58,7 +58,6 @@ const UserChatBubble = styled(Box)({
     padding: '16px 24px',
     borderRadius: '20px 4px 20px 20px',
     alignSelf: 'flex-end',
-    marginBottom: '16px',
     display: 'flex',
 });
 
@@ -126,7 +125,6 @@ const OptionButton = styled(Button)({
     backgroundColor: '#0000',
     border: '2px solid',
     color: '#FF9BB3',
-    padding: '2px',
     borderRadius: '20px',
     alignSelf: 'flex-end',
     textTransform: 'none',
@@ -138,7 +136,6 @@ const ConfirmationButton = styled(Button)({
     backgroundColor: '#00FFDD',
     border: '2px solid',
     color: '#0D1021',
-    padding: '2px',
     borderRadius: '20px',
     alignSelf: 'flex-end',
     textTransform: 'none',

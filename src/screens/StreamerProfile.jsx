@@ -18,14 +18,12 @@ import StreamCard from '../components/StreamCard/StreamCard';
 import SocialButton from '../components/SocialButton/SocialButton';
 import {
     followStreamer,
-    getAnimationData,
     getStreamerFollowersNumber,
     getStreamerIsStreaming,
     getStreamerLinks,
     getStreamerPublicProfile,
     getStreamerStreams,
     getStreamerUidWithDeepLinkAlias,
-    getUserGreetingAnimation,
     getUserGreetingData,
     listenToFollowingStreamer,
     unfollowStreamer,
