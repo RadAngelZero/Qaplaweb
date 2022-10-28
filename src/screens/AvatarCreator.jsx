@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import styled from '@emotion/styled';
 import { Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { saveAvatarId, saveAvatarUrl, saveReadyPlayerMeUserId } from '../services/database';
 import { useAuth } from '../AuthProvider';
@@ -18,6 +18,7 @@ const AvatarCreator = () => {
     const iFrameRef = useRef(null);
     const user = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         window.addEventListener('message', subscribe);
@@ -84,7 +85,9 @@ const AvatarCreator = () => {
           }
 
           // Navgate to other place
-          navigate('/avatar/background');
+          navigate('/avatar/background', {
+            state: location.state
+          });
     }
 
     return (

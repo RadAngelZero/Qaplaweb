@@ -2,6 +2,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import styled from '@emotion/styled';
 import { Box, Button, CircularProgress } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { getAnimationsData, saveUserGreetingAnimation } from '../services/database';
 import AvatarAnimated from './AvatarAnimated';
@@ -91,6 +92,8 @@ const AvatarChooseAnimation = () => {
     const [animations, setAnimations] = useState({});
     const [showAnimation, setShowAnimation] = useState(false);
     const user = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         async function getAnimation() {
@@ -111,6 +114,9 @@ const AvatarChooseAnimation = () => {
 
     const saveAnimation = async () => {
         await saveUserGreetingAnimation(user.id, currentAnimation.id);
+        navigate('/popup/tts', {
+            state: location.state
+        });
     }
 
     return (

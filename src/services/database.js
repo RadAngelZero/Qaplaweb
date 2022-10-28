@@ -274,6 +274,12 @@ export async function getStreamerPublicProfile(streamerUid) {
     return await get(query(streamerProfileChild));
 }
 
+export async function getStreamerPublicDisplayName(streamerUid) {
+    const streamerDisplayNameChild = child(database, `/StreamersPublicProfiles/${streamerUid}/displayName`);
+
+    return await get(query(streamerDisplayNameChild));
+}
+
 //////////////////////
 // Streamer Links
 //////////////////////
@@ -681,6 +687,19 @@ export async function getStreamerUidWithDeepLinkAlias(linkAlias) {
     return await get(query(streamersDeepLinksRef, orderByValue(), equalTo(`https://myqap.la/${linkAlias}`)));
 }
 
+export async function getStreamerAlias(streamerUid) {
+    const streamerDeepLinkRef = child(database, `/StreamersDeepLinks/${streamerUid}`);
+
+    const deepLink = await get(query(streamerDeepLinkRef));
+    if (deepLink.exists()) {
+        const link = deepLink.val().replace('https://myqap.la/', '');
+
+        return link;
+    }
+
+    return '';
+}
+
 //////////////////////
 // User To Streamer Subscriptions
 //////////////////////
@@ -744,7 +763,7 @@ export async function getAnimationsData() {
 export async function getAnimationData(animationId) {
     const animation = child(database, `/AvatarsAnimationsOverlay/${animationId}`);
 
-    return get(query(animation));
+    return await get(query(animation));
 }
 
 //////////////////////
@@ -780,7 +799,7 @@ export async function saveUserGreetingMessage(uid, message) {
 export async function getUserGreetingAnimation(uid) {
     const animation = child(database, `/UsersGreetings/${uid}/animation`);
 
-    return get(query(animation));
+    return await get(query(animation));
 }
 
 /**
@@ -790,41 +809,79 @@ export async function getUserGreetingAnimation(uid) {
 export async function getUserGreetingData(uid) {
     const greeting = child(database, `/UsersGreetings/${uid}`);
 
-    return get(query(greeting));
+    return await get(query(greeting));
 }
 
-export async function getOverlayAnimationData(animationId) {
-    const animation = child(database, `/AvatarsAnimationsOverlay/${animationId}`);
+//////////////////////
+// Streams Greetings
+//////////////////////
 
-    return get(query(animation));
-}
+/**
+ * Saves the greeting of the user for the given streamer
+ * @param {string} uid User identifier
+ * @param {string} streamerUid Streamer identifier
+ * @param {string} avatarId Avatar identifier
+ * @param {string} animationId Animation identifier
+ * @param {string} message Message for TTS
+ * @param {string} twitchUsername Twitch user name
+ * @param {string} messageLanguage Language for the message to be spoken
+ */
+ export async function writeStreamGreeting(uid, streamerUid, avatarId, animationId, message, twitchUsername, messageLanguage) {
+    const streamGreeting = child(database, `/StreamsGreetings/${streamerUid}/${uid}`);
 
-export async function listenAnimationData(animationId, callback) {
-    const animation = child(database, `/AvatarsAnimationsOverlay/${animationId}`);
-
-    return onValue(query(animation), callback);
-}
-
-export async function saveCamera(animationId, position, rotation) {
-    const animationPosition = child(database, `/AvatarsAnimations/${animationId}/camera/position`);
-    await set(animationPosition, position);
-
-    const animationRotation = child(database, `/AvatarsAnimations/${animationId}/camera/rotation`);
-    await set(animationRotation, {
-        x: rotation.x,
-        y: rotation.y,
-        z: rotation.z
+    return await update(streamGreeting, {
+        avatarId,
+        animationId,
+        message,
+        twitchUsername,
+        messageLanguage,
+        timestamp: (new Date()).getTime(),
+        read: false
     });
 }
 
-export async function saveOverlayCamera(animationId, position, rotation) {
-    const animationPosition = child(database, `/AvatarsAnimationsOverlay/${animationId}/camera/position`);
-    await set(animationPosition, position);
+//////////////////////
+// Gifs Libraries
+//////////////////////
 
-    const animationRotation = child(database, `/AvatarsAnimationsOverlay/${animationId}/camera/rotation`);
-    await set(animationRotation, {
-        x: rotation.x,
-        y: rotation.y,
-        z: rotation.z
-    });
+/**
+ * Returns a random gif from the library of Streamer Offline gifs
+ */
+ export async function getRandomStreamerOfflineGif() {
+    const lengthChild = child(database, '/GifsLibraries/StreamerOffline/length');
+
+    const length = await get(query(lengthChild));
+    const index = Math.floor(Math.random() * length.val());
+
+    const gifChild = child(database, `/GifsLibraries/StreamerOffline/gifs/${index}`);
+
+    return await get(query(gifChild));
+}
+
+/**
+ * Returns a random gif from the library of Download App gifs
+ */
+ export async function getRandomDownloadAppGif() {
+    const lengthChild = child(database, '/GifsLibraries/DownloadApp/length');
+
+    const length = await get(query(lengthChild));
+    const index = Math.floor(Math.random() * length.val());
+
+    const gifChild = child(database, `/GifsLibraries/DownloadApp/gifs/${index}`);
+
+    return await get(query(gifChild));
+}
+
+/**
+ * Returns a random gif from the library of Avatar animation gifs
+ */
+export async function getRandomAvatarAnimationGif() {
+    const lengthChild = child(database, '/GifsLibraries/AvatarAnimation/length');
+
+    const length = await get(query(lengthChild));
+    const index = Math.floor(Math.random() * length.val());
+
+    const gifChild = child(database, `/GifsLibraries/AvatarAnimation/gifs/${index}`);
+
+    return await get(query(gifChild));
 }

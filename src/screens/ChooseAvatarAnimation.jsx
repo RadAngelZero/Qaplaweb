@@ -6,11 +6,11 @@ import { CircularProgress } from '@mui/material';
 import { OrbitControls } from '@react-three/drei';
 
 import AvatarAnimated from './AvatarAnimated';
-import { getOverlayAnimationData } from '../services/database';
+import { getAnimationData } from '../services/database';
 
 export async function loader({ params }) {
     const avatarUrl = `https://api.readyplayer.me/v1/avatars/${params.avatarId}.glb`;
-    const animationData = await getOverlayAnimationData(params.animationId);
+    const animationData = await getAnimationData(params.animationId);
 
     return {
         avatarUrl,

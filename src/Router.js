@@ -9,6 +9,7 @@ import ChooseAvatarAnimation, { loader as chooseAvatarAnimationLoader } from './
 import AvatarCreator from './screens/AvatarCreator';
 import AvatarChooseBackgroundColor from './screens/AvatarChooseBackgroundColor';
 import AvatarChooseAnimation from './screens/AvatarChooseAnimation';
+import GreetingTTSScreen from './screens/GreetingTTSScreen';
 
 const ErrorPage = () => {
     const error = useRouteError(); console.log(error); return <h1>Error</h1>
@@ -58,6 +59,12 @@ export default createBrowserRouter(
                 errorElement={<ErrorPage />}
                 loader={chooseAvatarAnimationLoader} />
             </Route>
+            <Route path='/popup/tts'
+                element={
+                    <ProtectedRoute>
+                        <GreetingTTSScreen />
+                    </ProtectedRoute>
+                } />
         </Route>
     )
 );

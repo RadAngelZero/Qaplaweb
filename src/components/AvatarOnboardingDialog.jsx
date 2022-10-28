@@ -69,8 +69,7 @@ const NextButton = styled(Button)({
 });
 
 const ProgressContainer = styled(Box)({
-    position: 'absolute',
-    bottom: '24px',
+    marginTop: '32px',
     display: 'flex',
     width: 52,
     justifyContent: 'space-between'
@@ -95,7 +94,7 @@ const DynamicStep = ({ currentStep, step }) => (
     step === currentStep ? <ActiveStep /> : <Step />
 );
 
-const AvatarOnboardingDialog = ({ open, onClose }) => {
+const AvatarOnboardingDialog = ({ open, onClose, streamerUid }) => {
     const [step, setStep] = useState(0);
     const navigate = useNavigate();
 
@@ -103,7 +102,11 @@ const AvatarOnboardingDialog = ({ open, onClose }) => {
         if (step === 0) {
             setStep(step + 1);
         } else {
-            navigate('/avatar/customize');
+            navigate('/avatar/customize', {
+                state: {
+                    streamerUid
+                }
+            });
         }
     }
 
@@ -111,9 +114,13 @@ const AvatarOnboardingDialog = ({ open, onClose }) => {
         <Dialog open={open}
             onClose={onClose}
             fullWidth
+            sx={{
+                background: 'rgba(2, 7, 30, 0.5)',
+                backdropFilter: 'blur(50px)'
+            }}
             PaperProps={{
                 style: {
-                    maxWidth: '560px',
+                    maxWidth: '618px',
                     backgroundColor: '#0D1021',
                     borderRadius: '40px'
                 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
 import { Avatar, Box, Button, Typography } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { AVATAR_GRADIENTS } from '../utils/colors';
 import { useAuth } from '../AuthProvider';
@@ -93,6 +94,8 @@ const AvatarChooseBackgroundColor = () => {
     const [backgroundColor, setBackgroundColor] = useState(AVATAR_GRADIENTS[0]);
     const [backgroundIndex, setBackgroundIndex] = useState(0);
     const user = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const getLinearGradient = (gradientData) => {
         let colors = '';
@@ -114,6 +117,9 @@ const AvatarChooseBackgroundColor = () => {
 
     const saveBackgroundColor = async () => {
         await saveAvatarBackground(user.id, backgroundColor);
+        navigate('/avatar/animation', {
+            state: location.state
+        })
     }
 
     return (
