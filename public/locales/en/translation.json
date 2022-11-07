@@ -56,12 +56,34 @@
         "unfollow": "Unfollow",
         "myContent": "My content",
         "customAlerts": "Custom alerts on stream",
-        "upcomingStreams": "Upcoming streams"
+        "upcomingStreams": "Upcoming streams",
+        "boostYourSub": "Boost your Twitch Sub"
+    },
+    "AvatarChooseBackgroundColor": {
+        "pickABackground": "Pick a background color",
+        "loading": "We’re cooking... it might take 10 to 15 seconds",
+        "description": "This is how you’ll look in your custom reactions on stream",
+        "useBackground": "Use background color"
+    },
+    "AvatarChooseAnimation": {
+        "useAnimation": "Use Animation"
+    },
+    "GreetingTTSScreen": {
+        "makeAnEntrance": "👋 Make an entrance. ",
+        "sayHi": "Say hi in your own way",
+        "readyToSave": "🔥 Lit! Ready to save?",
+        "editMessage": "Edit message",
+        "ready": "Save"
     },
     "SendReaction": {
         "send": "Send",
         "sendDescription": "on stream using your\nchannel points",
         "sendReaction": "Send Reaction"
+    },
+    "SendGreeting": {
+        "showUp": "Show up with style 👋",
+        "usingYourAvi": "using your custom animated avi",
+        "popUp": "Pop up on stream"
     },
     "PurchaseQoinsDialog": {
         "moreQoins": "25% more Qoins",
@@ -100,5 +122,53 @@
         "streamer": " {{streamerName}}’s ",
         "getUpdatesP2": "streams on your phone",
         "downloadApp": "Download the app"
+    },
+    "AvatarOnboardingDialog": {
+        "react": "React with personality",
+        "boostYourSub": "Boost your Twitch Sub",
+        "aviOnReaction": "Your avi appears on any reaction you send on stream",
+        "aviOnGreeting": "Use a custom animation when you show up on stream and make an entrance",
+        "next": "Next",
+        "createAvatar": "Create my Avatar"
+    },
+    "PopUpSentDialog": {
+        "sent": "Boom. Sent. 🫡",
+        "goToStream": "Go to stream"
+    },
+    "PopUpAlreadySentDialog": {
+        "alreadyPoped": "You already poped up 🫢",
+        "popUpOnce": "Pop ups work once per stream.",
+        "use": "It’s a way to say hi when you show up",
+        "goToStream": "Go to stream"
+    },
+    "NotASubDialog": {
+        "notASub": "You’re not a sub 🫣",
+        "availability": "Pop ups are available for channel suscribers. ",
+        "subscribeToPopUp": "Sucribe to pop up!",
+        "subscribe": "Subscribe to channel"
+    },
+    "StreamerOfflineDialog": {
+        "offline": "Streamer  offline 🙃",
+        "descriptionP1": "We’ll notify you when ",
+        "descriptionP2": "{{streamerName}}´s ",
+        "descriptionP3": "next stream it’s going to be 👇",
+        "download": "Download the app"
+    },
+    "PopUpFromMobileDialog": {
+        "popFromMobile": "Pop up from mobile",
+        "manage": "Manage your avi and react on stream from your phone",
+        "download": "Download the app"
+    },
+    "AvatarReadyDialog": {
+        "aviReady": "Your Avi is ready! 😭",
+        "sayHi": "Say hi whenever you show up on a stream you’re suscribed to",
+        "popUpNow": "Pop up now on stream",
+        "backToProfile": "Back to creator profile"
+    },
+    "SendAvatarDialog": {
+        "sendAviOn": "Send avi on ",
+        "streamerStream": "’s stream?",
+        "popUpNow": "Pop Up Now",
+        "updatePopUp": "Update Pop-up"
     }
 }

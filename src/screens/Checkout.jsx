@@ -301,7 +301,9 @@ const Checkout = ({ user, media, setMediaSelected, giphyText, setGiphyText, botV
                 },
                 totalDonationCost,
                 numberOfReactions > 0 && ((message && (!giphyText || (giphyText && giphyTextSelectedHere))) || (media && mediaType !== GIPHY_CLIPS) || (!giphyText && mediaType !== GIPHY_CLIPS)),
-                () => { setReactionSent(true); },
+                user.avatarId,
+                user.avatarBackground,
+                () => { setLockSendReactionButton(false); setReactionSent(true); },
                 () => alert('Error')
             );
         } else {

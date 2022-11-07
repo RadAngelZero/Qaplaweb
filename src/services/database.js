@@ -122,6 +122,56 @@ export async function removeQoinsFromUser(uid, qoinsToRemove) {
     });
 }
 
+/**
+ * Saves the 3D avatar url of the user
+ * @param {string} uid User identifier
+ * @param {string} avatarUrl Avatar url
+ * @returns {Promise<void>} Resulting DataSnaphsot of the query
+ */
+ export async function saveAvatarUrl(uid, avatarUrl) {
+    const userAvatarUrlChild = child(database, `/Users/${uid}/avatarUrl`);
+
+    return await set(userAvatarUrlChild, avatarUrl);
+}
+
+/**
+ * Saves the ready player me avatar identifier of the user
+ * @param {string} uid User identifier
+ * @param {string} rpmAvatarId Ready player me avatar identifier
+ * @returns {Promise<void>} Resulting DataSnaphsot of the query
+ */
+export async function saveAvatarId(uid, rpmAvatarId) {
+    const userAvataridChild = child(database, `/Users/${uid}/avatarId`);
+
+    return await set(userAvataridChild, rpmAvatarId);
+}
+
+/**
+ * Saves the avatar background
+ * @param {string} uid User identifier
+ * @param {Object} background Object describing gradient background for the avatar image
+ * @param {number} background.angle Avatar gradient angle
+ * @param {Array<string>} background.colors Array of colors for gradient background
+ * @returns {Promise<void>} Resulting DataSnaphsot of the query
+ */
+export async function saveAvatarBackground(uid, background) {
+    const userAvatarBackgroundChild = child(database, `/Users/${uid}/avatarBackground`);
+
+    return await set(userAvatarBackgroundChild, background);
+}
+
+/**
+ * Saves the ready player me user identifier of the user
+ * @param {string} uid User identifier
+ * @param {string} rpmUid Ready player me user identifier
+ * @returns {Promise<void>} Resulting DataSnaphsot of the query
+ */
+ export async function saveReadyPlayerMeUserId(uid, rpmUid) {
+    const userRpmUidChild = child(database, `/Users/${uid}/rpmUid`);
+
+    return await set(userRpmUidChild, rpmUid);
+}
+
 //////////////////////
 // Reactions count
 //////////////////////
@@ -222,6 +272,12 @@ export async function getStreamerPublicProfile(streamerUid) {
     const streamerProfileChild = child(database, `/StreamersPublicProfiles/${streamerUid}`);
 
     return await get(query(streamerProfileChild));
+}
+
+export async function getStreamerPublicDisplayName(streamerUid) {
+    const streamerDisplayNameChild = child(database, `/StreamersPublicProfiles/${streamerUid}/displayName`);
+
+    return await get(query(streamerDisplayNameChild));
 }
 
 //////////////////////
@@ -384,10 +440,14 @@ export async function sendQoinsReaction(uid, amountQoins, streamerUid, media, me
  * @param {("emoji" | "emote")} emojiRain.type Type of rain (emoji or emote)
  * @param {Array<string>} emojiRain.emojis Array of strings with emojis (as text) or emotes (as urls)
  * @param {number} qoinsToRemove Amount of donated Qoins
+ * @param {string | null} avatarId User Avatar identifier
+ * @param {object | null} avatarBackground Avatar linear gradient background data
+ * @param {number} avatarBackground.angle Avatar gradient angle
+ * @param {Array<string>} avatarBackground.colors Array of colors for gradient background
  * @param {function} onSuccess Function to call once the cheer is sent
  * @param {function} onError Function to call on any possible error
  */
-export async function sendPrepaidReaction(uid, userName, twitchUserName, userPhotoURL, streamerUid, streamerName, media, message, messageExtraData, emojiRain, qoinsToRemove, removePrepaidDonation, onSuccess, onError) {
+export async function sendPrepaidReaction(uid, userName, twitchUserName, userPhotoURL, streamerUid, streamerName, media, message, messageExtraData, emojiRain, qoinsToRemove, removePrepaidDonation, avatarId, avatarBackground, onSuccess, onError) {
     let qoinsTaken = qoinsToRemove ? false : true;
 
     if (qoinsToRemove) {
@@ -412,7 +472,15 @@ export async function sendPrepaidReaction(uid, userName, twitchUserName, userPho
             const streamerDonationsChild = child(database, `/StreamersDonations/${streamerUid}`);
             const timestamp = (new Date()).getTime();
 
+            const avatar = avatarId && avatarBackground ? {
+                avatarId,
+                avatarBackground
+            }
+            :
+            {};
+
             const donationRef = push(streamerDonationsChild, {
+                avatar,
                 amountQoins: qoinsToRemove,
                 media,
                 message,
@@ -631,6 +699,19 @@ export async function getStreamerUidWithDeepLinkAlias(linkAlias) {
     return await get(query(streamersDeepLinksRef, orderByValue(), equalTo(`https://myqap.la/${linkAlias}`)));
 }
 
+export async function getStreamerAlias(streamerUid) {
+    const streamerDeepLinkRef = child(database, `/StreamersDeepLinks/${streamerUid}`);
+
+    const deepLink = await get(query(streamerDeepLinkRef));
+    if (deepLink.exists()) {
+        const link = deepLink.val().replace('https://myqap.la/', '');
+
+        return link;
+    }
+
+    return '';
+}
+
 //////////////////////
 // User To Streamer Subscriptions
 //////////////////////
@@ -674,4 +755,145 @@ export async function listenToFollowingStreamer(uid, streamerUid, callback) {
     const streamerFollower = child(database, `/UserToStreamerSubscriptions/${uid}/${streamerUid}`);
 
     return onValue(query(streamerFollower), callback);
+}
+
+//////////////////////
+// Avatars Animations Overlay
+//////////////////////
+
+export async function getAnimationsData() {
+    const animations = child(database, `/AvatarsAnimationsOverlay`);
+
+    return get(query(animations));
+}
+
+/**
+ * Gets the given animation information (camera position, name, etc.)
+ * @param {string} animationId Animation identifier
+ * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
+ */
+export async function getAnimationData(animationId) {
+    const animation = child(database, `/AvatarsAnimationsOverlay/${animationId}`);
+
+    return await get(query(animation));
+}
+
+//////////////////////
+// Users Greetings
+//////////////////////
+
+/**
+ * Saves the avatar and animation ids for the user greeting
+ * @param {string} uid User identifier
+ * @param {string} animationId Animation identifier
+ */
+ export async function saveUserGreetingAnimation(uid, animationId) {
+    const userGreeting = child(database, `/UsersGreetings/${uid}/animation`);
+
+    return await update(userGreeting, { animationId });
+}
+
+/**
+ * Saves the TTS information for the greeting
+ * @param {string} uid User identifier
+ * @param {string} message Message to speak
+ */
+export async function saveUserGreetingMessage(uid, message) {
+    const userGreeting = child(database, `/UsersGreetings/${uid}/TTS`);
+
+    return await update(userGreeting, { message });
+}
+
+/**
+ * Returns the animation information of the greeting of the given user
+ * @param {string} uid User identifier
+ */
+export async function getUserGreetingAnimation(uid) {
+    const animation = child(database, `/UsersGreetings/${uid}/animation`);
+
+    return await get(query(animation));
+}
+
+/**
+ * Gets all the information about the user greeting of the given user
+ * @param {string} uid User identifier
+ */
+export async function getUserGreetingData(uid) {
+    const greeting = child(database, `/UsersGreetings/${uid}`);
+
+    return await get(query(greeting));
+}
+
+//////////////////////
+// Streams Greetings
+//////////////////////
+
+/**
+ * Saves the greeting of the user for the given streamer
+ * @param {string} uid User identifier
+ * @param {string} streamerUid Streamer identifier
+ * @param {string} avatarId Avatar identifier
+ * @param {string} animationId Animation identifier
+ * @param {string} message Message for TTS
+ * @param {string} twitchUsername Twitch user name
+ * @param {string} messageLanguage Language for the message to be spoken
+ */
+ export async function writeStreamGreeting(uid, streamerUid, avatarId, animationId, message, twitchUsername, messageLanguage) {
+    const streamGreeting = child(database, `/StreamsGreetings/${streamerUid}/${uid}`);
+
+    return await update(streamGreeting, {
+        avatarId,
+        animationId,
+        message,
+        twitchUsername,
+        messageLanguage,
+        timestamp: (new Date()).getTime(),
+        read: false
+    });
+}
+
+//////////////////////
+// Gifs Libraries
+//////////////////////
+
+/**
+ * Returns a random gif from the library of Streamer Offline gifs
+ */
+ export async function getRandomStreamerOfflineGif() {
+    const lengthChild = child(database, '/GifsLibraries/StreamerOffline/length');
+
+    const length = await get(query(lengthChild));
+    const index = Math.floor(Math.random() * length.val());
+
+    const gifChild = child(database, `/GifsLibraries/StreamerOffline/gifs/${index}`);
+
+    return await get(query(gifChild));
+}
+
+/**
+ * Returns a random gif from the library of Download App gifs
+ */
+ export async function getRandomDownloadAppGif() {
+    const lengthChild = child(database, '/GifsLibraries/DownloadApp/length');
+
+    const length = await get(query(lengthChild));
+    const index = Math.floor(Math.random() * length.val());
+
+    const gifChild = child(database, `/GifsLibraries/DownloadApp/gifs/${index}`);
+
+    return await get(query(gifChild));
+}
+
+/**
+ * Returns a random gif from the library of Avatar animation gifs
+ */
+export async function getRandomAvatarAnimationGif() {
+    const lengthChild = child(database, '/GifsLibraries/AvatarAnimation/length');
+
+    const length = await get(query(lengthChild));
+    const index = Math.floor(Math.random() * length.val());
+
+    const gifChild = child(database, `/GifsLibraries/AvatarAnimation/gifs/${index}`);
+
+    return await get(query(gifChild));
 }

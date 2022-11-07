@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Box, styled, Typography, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 import { ReactComponent as ShareArrow } from '../assets/ShareArrow.svg';
@@ -24,13 +24,25 @@ import {
     getStreamerPublicProfile,
     getStreamerStreams,
     getStreamerUidWithDeepLinkAlias,
+    getUserGreetingData,
     listenToFollowingStreamer,
-    unfollowStreamer
+    unfollowStreamer,
+    writeStreamGreeting
 } from '../services/database';
 import { getCurrentLanguage } from '../utils/i18n';
 import { useAuth } from '../AuthProvider';
 import LinkAccountDialog from '../components/LinkAccountDialog/LinkAccountDialog';
 import FollowingStreamerDialog from '../components/FollowingStreamerDialog/FollowingStreamerDialog';
+import AvatarOnboardingDialog from '../components/AvatarOnboardingDialog';
+import SendGreeting from '../components/SendGreeting';
+import { auth } from '../services/firebase';
+import PopUpSentDialog from '../components/PopUpSentDialog';
+import PopUpAlreadySentDialog from '../components/PopUpAlreadySentDialog';
+import NotASubDialog from '../components/NotASubDialog';
+import StreamerOfflineDialog from '../components/StreamerOfflineDialog';
+import PopUpFromMobileDialog from '../components/PopUpFromMobileDialog';
+import { getUserToStreamerRelation } from '../services/functions';
+import SendAvatarDialog from '../components/SendAvatarDialog';
 
 const linksData = {
     Twitch: {
@@ -248,8 +260,6 @@ const SendReactionContainer = styled(Box)({
 const EventsContainer = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
-    marginTop: '38px',
-
 });
 
 const EventsCardsContainer = styled(Box)({
@@ -283,6 +293,11 @@ export async function loader({ params }) {
     const links = await getStreamerLinks(streamerUid);
     const upcomingStreams = await getStreamerStreams(streamerUid);
 
+    let userGreeting = undefined;
+    if (auth.currentUser && auth.currentUser.uid) {
+        userGreeting = await getUserGreetingData(auth.currentUser.uid);
+    }
+
     return {
         streamerUid,
         ...profile.val(),
@@ -290,7 +305,8 @@ export async function loader({ params }) {
         isStreaming: isStreaming.val(),
         links: links.val() ?? [],
         upcomingStreams: upcomingStreams.val(),
-        profileDeepLink
+        profileDeepLink,
+        userGreeting: userGreeting && userGreeting.val() ? userGreeting.val() : undefined
     };
 }
 
@@ -307,15 +323,26 @@ const StreamerProfile = () => {
         links,
         isStreaming,
         upcomingStreams,
-        profileDeepLink
+        profileDeepLink,
+        userGreeting
     } = useLoaderData();
     const [openShareTooltip, setOpenShareTooltip] = useState(false);
     const [followingStreamer, setFollowingStreamer] = useState(false);
     const [hoverUnfollow, setHoverUnfollow] = useState(false);
     const [openAuthDialog, setOpenAuthDialog] = useState(false);
     const [openFollowingDialog, setOpenFollowingDialog] = useState(false);
+    const [openCreateAvatarDialog, setOpenCreateAvatarDialog] = useState(false);
+    const [isTryingToFollow, setIsTryingToFollow] = useState(false);
+    const [loadingPopUp, setLoadingPopUp] = useState(false);
+    const [openPopUpSentDialog, setOpenPopUpSentDialog] = useState(false);
+    const [openAlreadySentDialog, setOpenAlreadySentDialog] = useState(false);
+    const [openNotASubDialog, setOpenNotASubDialog] = useState(false);
+    const [openStreamerOfflineDialog, setOpenStreamerOfflineDialog] = useState(false);
+    const [openPopUpFromMobileDialog, setOpenPopUpFromMobileDialog] = useState(false);
+    const [openSendAvatarDialog, setOpenSendAvatarDialog] = useState(false);
     const user = useAuth();
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (user && user.id) {
@@ -353,6 +380,7 @@ const StreamerProfile = () => {
         if (uid || (user && user.id)) {
             await followStreamer(uid ? uid : user.id, streamerUid);
         } else {
+            setIsTryingToFollow(true);
             setOpenAuthDialog(true);
         }
     }
@@ -373,8 +401,62 @@ const StreamerProfile = () => {
 
     const onTwitchAccountLinked = async (user) => {
         setOpenAuthDialog(false);
-        await startFollowing(user.uid);
-        setOpenFollowingDialog(true);
+        if (isTryingToFollow) {
+            await startFollowing(user.uid);
+            setOpenFollowingDialog(true);
+        } else {
+            sendGreeting(user.uid);
+        }
+    }
+
+    const sendGreeting = (uid) => {
+        if (uid || (user && user.id)) {
+            if (userGreeting && userGreeting.animation && userGreeting.TTS) {
+                setOpenSendAvatarDialog(true);
+            } else {
+                setOpenCreateAvatarDialog(true);
+            }
+        } else {
+            setOpenAuthDialog(true);
+        }
+    }
+
+    const popUpNow = async () => {
+        setLoadingPopUp(true);
+        // In case the isStreaming value changes while open
+        const isStreaming = await getStreamerIsStreaming(streamerUid);
+        if (isStreaming.val()) {
+            const relationData = await getUserToStreamerRelation(user.twitchId, streamerUid);
+            if (relationData.data?.isSubscribed) {
+                try {
+                    await writeStreamGreeting(
+                        user.id,
+                        streamerUid,
+                        user.avatarId,
+                        userGreeting.animation.animationId,
+                        userGreeting.TTS.message,
+                        user.twitchUsername,
+                        getCurrentLanguage()
+                    );
+                    setOpenPopUpSentDialog(true);
+                } catch (error) {
+                    setOpenAlreadySentDialog(true);
+                }
+            } else {
+                setOpenNotASubDialog(true);
+            }
+        } else {
+            setOpenStreamerOfflineDialog(true);
+        }
+        setLoadingPopUp(false);
+    }
+
+    const sendTOEditGreeting = () => {
+        navigate('/avatar/animation', {
+            state: {
+                streamerUid
+            }
+        });
     }
 
     const userLanguage = getCurrentLanguage();
@@ -519,6 +601,14 @@ const StreamerProfile = () => {
                             <SendReaction streamerUid={streamerUid} />
                         </SendReactionContainer>
                     </InteractionContainer>
+                    <InteractionContainer style={{ marginTop: '32px', marginBottom: '32px' }}>
+                        <SectionHeader>
+                            {t('StreamerProfile.boostYourSub')}
+                        </SectionHeader>
+                        <SendReactionContainer>
+                            <SendGreeting onClick={(e) => sendGreeting()} />
+                        </SendReactionContainer>
+                    </InteractionContainer>
                     {upcomingStreams &&
                         <EventsContainer>
                             <SectionHeader>
@@ -543,6 +633,29 @@ const StreamerProfile = () => {
             <FollowingStreamerDialog open={openFollowingDialog}
                 onClose={() => setOpenFollowingDialog(false)}
                 streamerName={displayName} />
+            <AvatarOnboardingDialog open={openCreateAvatarDialog}
+                onClose={() => setOpenCreateAvatarDialog(false)}
+                streamerUid={streamerUid} />
+            <PopUpSentDialog open={openPopUpSentDialog}
+                onClose={() => { setOpenPopUpSentDialog(false); setOpenPopUpFromMobileDialog(true); }}
+                streamerName={displayName} />
+            <PopUpAlreadySentDialog open={openAlreadySentDialog}
+                onClose={() => { setOpenAlreadySentDialog(false); setOpenSendAvatarDialog(false);}}
+                streamerName={displayName} />
+            <NotASubDialog open={openNotASubDialog}
+                onClose={() => { setOpenNotASubDialog(false); setOpenPopUpFromMobileDialog(true); }}
+                streamerName={displayName} />
+            <StreamerOfflineDialog open={openStreamerOfflineDialog}
+                onClose={() => { setOpenStreamerOfflineDialog(false); setOpenSendAvatarDialog(false); }}
+                streamerName={displayName} />
+            <PopUpFromMobileDialog open={openPopUpFromMobileDialog}
+                onClose={() => { setOpenPopUpFromMobileDialog(false); setOpenSendAvatarDialog(false); }} />
+            <SendAvatarDialog open={openSendAvatarDialog}
+                onClose={() => loadingPopUp ? null : setOpenSendAvatarDialog(false)}
+                streamerName={displayName}
+                loadingPopUp={loadingPopUp}
+                onSendNow={popUpNow}
+                onEditPopUp={sendTOEditGreeting} />
         </Container>
     );
 
