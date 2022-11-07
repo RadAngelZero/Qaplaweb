@@ -293,7 +293,10 @@ export async function loader({ params }) {
     const links = await getStreamerLinks(streamerUid);
     const upcomingStreams = await getStreamerStreams(streamerUid);
 
-    const userGreeting = await getUserGreetingData(auth.currentUser.uid);
+    let userGreeting = undefined;
+    if (auth.currentUser && auth.currentUser.uid) {
+        userGreeting = await getUserGreetingData(auth.currentUser.uid);
+    }
 
     return {
         streamerUid,
@@ -303,7 +306,7 @@ export async function loader({ params }) {
         links: links.val() ?? [],
         upcomingStreams: upcomingStreams.val(),
         profileDeepLink,
-        userGreeting: userGreeting.val() ?? undefined
+        userGreeting: userGreeting && userGreeting.val() ? userGreeting.val() : undefined
     };
 }
 
