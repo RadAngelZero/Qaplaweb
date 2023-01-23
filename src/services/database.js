@@ -4,10 +4,8 @@ import {
     equalTo,
     get,
     orderByChild,
-    push,
     query,
     runTransaction,
-    ThenableReference,
     TransactionResult,
     update,
     onValue,
@@ -173,34 +171,6 @@ export async function saveAvatarBackground(uid, background) {
 }
 
 //////////////////////
-// Reactions count
-//////////////////////
-
-/**
- * Listen for changes on the given user profile
- * @param {string} uid User identifier
- * @param {string} streamerUid Streamer user identifier
- * @param {DataSnapshot} callback Handler for the database results
- */
-export function listenUserReactionsWithStreamer(uid, streamerUid, callback) {
-    const reactionsCountChild = child(database, `/UsersReactionsCount/${uid}/${streamerUid}`);
-
-    return onValue(query(reactionsCountChild), callback);
-}
-
-/**
- * Returns the count of prepaid reactions the user have with the given streamer
- * @param {string} uid User identifier
- * @param {string} streamerUid Streamer user identifier
- * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
- */
-export async function getUserReactionsWithStreamer(uid, streamerUid) {
-    const reactionsCountChild = child(database, `/UsersReactionsCount/${uid}/${streamerUid}`);
-
-    return await get(query(reactionsCountChild));
-}
-
-//////////////////////
 // User Streamer
 //////////////////////
 
@@ -238,17 +208,6 @@ export async function getStreamerFollowersNumber(streamerUid) {
 //////////////////////
 
 /**
- * Returns the public information of the given streamer
- * @param {string} streamerUid Stremer identifier
- * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
- */
-export async function getStreamerPublicData(streamerUid) {
-    const streamerPublicDataChild = child(database, `/UserStreamerPublicData/${streamerUid}`);
-
-    return await get(query(streamerPublicDataChild));
-}
-
-/**
  * Returns only the isStreaming of the given streamer
  * @param {string} streamerUid Streamer identifier
  * @returns {Promise<DataSnapshot>} Resulting DataSnaphsot of the query
@@ -274,12 +233,6 @@ export async function getStreamerPublicProfile(streamerUid) {
     return await get(query(streamerProfileChild));
 }
 
-export async function getStreamerPublicDisplayName(streamerUid) {
-    const streamerDisplayNameChild = child(database, `/StreamersPublicProfiles/${streamerUid}/displayName`);
-
-    return await get(query(streamerDisplayNameChild));
-}
-
 //////////////////////
 // Streamer Links
 //////////////////////
@@ -293,364 +246,6 @@ export async function getStreamerLinks(streamerUid) {
     const streamerLinksChild = child(database, `/StreamerLinks/${streamerUid}`);
 
     return await get(query(streamerLinksChild));
-}
-
-//////////////////////
-// Streamer Alerts Settings
-//////////////////////
-
-/**
- * Returns the reactionsEnabled setting value of the given streamer (used to know if the Qapla overlay is
- * enabled or not)
- * @param {string} streamerUid Streamer identifier
- * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
- */
-export async function streamerHasReactionsEnabled(streamerUid) {
-    const streamerReactionsEnabledChild = child(database, `/StreamerAlertsSettings/${streamerUid}/reactionsEnabled`);
-
-    return await get(query(streamerReactionsEnabledChild));
-}
-
-//////////////////////
-// Voice Bot Available Voices
-//////////////////////
-
-/**
- * Returns the list of available voices for the voice bot
- * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
- */
-export async function getBotVoices() {
-    const voiceBotAvailableVoicesChild = child(database, 'VoiceBotAvailableVoices');
-
-    return await get(query(voiceBotAvailableVoicesChild));
-}
-
-//////////////////////
-// Qoins Reactions
-//////////////////////
-
-/**
- * Store cheers on the database at StreamersDonations node and remove Qoins
- * @param {string} uid User identifier
- * @param {number} amountQoins Amount of donated Qoins
- * @param {string} streamerUid Streamer uid
- * @param {object | null} media Object for cheers with specified media
- * @param {string} media.type Type of media (one of "GIF", "EMOTE" or "MEME")
- * @param {string} media.url Url of the media
- * @param {string} message Message from the user
- * @param {object | null} messageExtraData Extra data for the message
- * @param {string} messageExtraData.voiceAPIName Google Text to speech API voice for the voice bot
- * @param {object} messageExtraData.giphyText Object with Giphy Text data
- * @param {Object | undefined} messageExtraData.giphyText Giphy text object
- * @param {Array<string>} emojis Emojis for emoji rain
- * @param {string} streamerName Name of the streamer
- * @param {string} userName Qapla username
- * @param {string} twitchUserName Username of Twitch
- * @param {string} userPhotoURL URL of the user profile photo
- * @param {function} onSuccess Function to call once the cheer is sent
- * @param {function} onError Function to call on any possible error
- */
-export async function sendQoinsReaction(uid, amountQoins, streamerUid, media, message, messageExtraData, emojis, streamerName, userName, twitchUserName, userPhotoURL, onSuccess, onError) {
-    const userQoinsChild = child(database, `/Users/${uid}/credits`);
-    const qoinsUpdated = await removeQoinsFromUser(uid, amountQoins);
-
-    if (qoinsUpdated.committed) {
-        const streamerBalanceUpdated = await addQoinsToStreamer(streamerUid, amountQoins);
-
-        if (streamerBalanceUpdated.committed) {
-            const streamerDonationsChild = child(database, `/StreamersDonations/${streamerUid}`);
-            const timestamp = (new Date()).getTime();
-
-            const donationRef = push(streamerDonationsChild, {
-                amountQoins,
-                media,
-                message,
-                messageExtraData,
-                emojiRain: {
-                    emojis,
-                },
-                timestamp,
-                uid,
-                read: false,
-                twitchUserName,
-                userName,
-                photoURL: userPhotoURL,
-                pointsChannelInteractions: false
-            });
-
-            const userDonationsAmountChild = child(database, `/UsersRewardsProgress/${uid}/donations/qoins`);
-
-            await runTransaction(userDonationsAmountChild, (totalDonatedQoins) => {
-                return totalDonatedQoins ? (totalDonatedQoins + amountQoins) : amountQoins
-            });
-
-            const donationsAdministrativeChild = child(database, `/StreamersDonationAdministrative/${donationRef.key}`);
-            await push(donationsAdministrativeChild, {
-                amountQoins,
-                message,
-                timestamp,
-                uid,
-                sent: false,
-                twitchUserName,
-                userName,
-                streamerName,
-                pointsChannelInteractions: false
-            });
-
-            return onSuccess();
-        } else {
-            // If we can not give the Qoins to the streamer then return the Qoins to the user
-            await runTransaction(userQoinsChild, (userQoins) => {
-                if (userQoins) {
-                    userQoins += amountQoins;
-                }
-
-                return userQoins >= 0 ? userQoins : 0;
-            });
-
-            return onError();
-        }
-    } else {
-        // Could not remove Qoins from the user
-        return onError();
-    }
-}
-
-//////////////////////
-// Prepaid Reactions
-//////////////////////
-
-/**
- * Store cheers on the database at StreamersDonations node and remove prepaid reaction (and Qoins if necessary)
- * @param {string} uid User identifier
- * @param {string} userName Qapla username
- * @param {string} twitchUserName Username of Twitch
- * @param {string} userPhotoURL URL of the user profile photo
- * @param {string} streamerUid Streamer uid
- * @param {string} streamerName Name of the streamer
- * @param {object | null} media Object for cheers with specified media
- * @param {string} media.type Type of media (one of "GIF", "EMOTE" or "MEME")
- * @param {string} media.url Url of the media
- * @param {string} message Message from the user
- * @param {object | null} messageExtraData Extra data for the message
- * @param {string} messageExtraData.voiceAPIName Google Text to speech API voice for the voice bot
- * @param {boolean} messageExtraData.isGiphyText True if contains giphy Text
- * @param {Object | undefined} messageExtraData.giphyText Giphy text object
- * @param {Object} emojiRain Emoji/Emote data for rain
- * @param {("emoji" | "emote")} emojiRain.type Type of rain (emoji or emote)
- * @param {Array<string>} emojiRain.emojis Array of strings with emojis (as text) or emotes (as urls)
- * @param {number} qoinsToRemove Amount of donated Qoins
- * @param {string | null} avatarId User Avatar identifier
- * @param {object | null} avatarBackground Avatar linear gradient background data
- * @param {number} avatarBackground.angle Avatar gradient angle
- * @param {Array<string>} avatarBackground.colors Array of colors for gradient background
- * @param {function} onSuccess Function to call once the cheer is sent
- * @param {function} onError Function to call on any possible error
- */
-export async function sendPrepaidReaction(uid, userName, twitchUserName, userPhotoURL, streamerUid, streamerName, media, message, messageExtraData, emojiRain, qoinsToRemove, removePrepaidDonation, avatarId, avatarBackground, onSuccess, onError) {
-    let qoinsTaken = qoinsToRemove ? false : true;
-
-    if (qoinsToRemove) {
-        qoinsTaken = (await removeQoinsFromUser(uid, qoinsToRemove)).committed;
-
-        if (qoinsTaken) {
-            addQoinsToStreamer(streamerUid, qoinsToRemove)
-        }
-    }
-
-    if (qoinsTaken) {
-        const reactionsCountChild = child(database, `/UsersReactionsCount/${uid}/${streamerUid}`);
-
-        let reactionTaken = {};
-        if (removePrepaidDonation) {
-            reactionTaken = await runTransaction(reactionsCountChild, (reactionsCount) => {
-                return reactionsCount - 1;
-            });
-        }
-
-        if (!removePrepaidDonation || reactionTaken.committed) {
-            const streamerDonationsChild = child(database, `/StreamersDonations/${streamerUid}`);
-            const timestamp = (new Date()).getTime();
-
-            const avatar = avatarId && avatarBackground ? {
-                avatarId,
-                avatarBackground
-            }
-            :
-            {};
-
-            const donationRef = push(streamerDonationsChild, {
-                avatar,
-                amountQoins: qoinsToRemove,
-                media,
-                message,
-                messageExtraData,
-                emojiRain,
-                timestamp,
-                uid,
-                read: false,
-                twitchUserName,
-                userName,
-                photoURL: userPhotoURL,
-                pointsChannelInteractions: true
-            });
-
-            if (qoinsToRemove) {
-                const userDonationsAmountChild = child(database, `/UsersRewardsProgress/${uid}/donations/qoins`);
-
-                await runTransaction(userDonationsAmountChild, (totalDonatedQoins) => {
-                    return totalDonatedQoins ? (totalDonatedQoins + qoinsToRemove) : qoinsToRemove
-                });
-            }
-
-            const donationsAdministrativeChild = child(database, `/StreamersDonationAdministrative/${donationRef.key}`);
-            await set(donationsAdministrativeChild, {
-                amountQoins: qoinsToRemove,
-                message,
-                timestamp,
-                uid,
-                sent: false,
-                twitchUserName,
-                userName,
-                streamerName,
-                pointsChannelInteractions: true
-            });
-
-            return onSuccess();
-        } else {
-            // If we can not remove the reaction from the count
-
-            // Give back Qoins to user
-            const userQoinsChild = child(database, `/Users/${uid}/credits`);
-            await runTransaction(userQoinsChild, (userQoins) => {
-                return userQoins ? (userQoins + qoinsToRemove) : qoinsToRemove;
-            });
-
-            // Remove Qoins from streamer
-            const userStreamerChild = child(database, `/UserStreamer/${streamerUid}/qoinsBalance`);
-            await runTransaction(userStreamerChild, (streamerQoinsBalance) => {
-                if (streamerQoinsBalance) {
-                    streamerQoinsBalance -= qoinsToRemove;
-                }
-
-                return streamerQoinsBalance ? (streamerQoinsBalance - qoinsToRemove) : 0;
-            });
-
-            return onError();
-        }
-    }
-}
-
-//////////////////////
-// Reactions Costs
-//////////////////////
-
-/**
- * Returns all the reaction types with their costs in Qoins
- * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
- */
-export async function getReactionsCosts() {
-    const reactionsCostsChild = child(database, '/InteractionsCosts');
-
-    return await get(query(reactionsCostsChild));
-}
-
-/**
- * Returns the specified reaction types with their cost in Qoins
- * @param {string} reactionType Type of reaction to load
- * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
- */
-export async function getReactionTypeCost(reactionType) {
-    const reactionsCostsChild = child(database, `/InteractionsCosts/${reactionType}`);
-
-    return await get(query(reactionsCostsChild));
-}
-
-//////////////////////
-// Reractions Sample
-//////////////////////
-
-/**
- * Gets the length of reactions samples for the given type
- * @param {string} type Type of reaction to get sample
- * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
- */
-export async function getReactionsSamplesCount(type) {
-    const reactionsSamplesLength = child(database, `/ReactionsSamples/${type}/length`);
-
-    return await get(query(reactionsSamplesLength));
-}
-
-/**
- * Gets the specified (by the index) reaction sample
- * @param {string} type Type of reaction to get sample
- * @param {number} index Index of the sample to get
- * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
- */
-export async function getReactionSample(type, index) {
-    const reactionsSample = child(database, `/ReactionsSamples/${type}/samples/${index}`);
-
-    return await get(query(reactionsSample));
-}
-
-//////////////////////
-// Qapla Reactions
-//////////////////////
-
-/**
- * Returns the Qapla library of memes
- * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
- */
-export async function getQaplaMemesLibrary() {
-    const memesLibrary = child(database, `/QaplaInteractions/Memes`);
-
-    return await get(query(memesLibrary));
-}
-
-//////////////////////
-// In App Purchases Products
-//////////////////////
-
-/**
- * Gets the information about Qoins to be bought on this web page
- * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
- */
-export async function getQoinsPackages() {
-    const qoinsPackages = child(database, '/inAppPurchasesProducts/web');
-
-    return await get(query(qoinsPackages));
-}
-
-//////////////////////
-// User Reactions Queue
-//////////////////////
-
-/**
- * Saves a reaction in the user Queue so it can be sent later (after a successful purchase of Qoins for example)
- * @param {string} uid User identifier
- * @param {string} streamerUid Streamer identifier
- * @param {object} reaction Reaction object
- * @returns {ThenableReference} Combined Promise and Reference; resolves when write is complete, but can be used immediately as the Reference to the child location
- */
-export function putReactionInQueue(uid, streamerUid, reaction) {
-    const userReactionQueue = child(database, `/UsersReactionsQueue/${uid}/${streamerUid}`);
-
-    return push(userReactionQueue, reaction);
-}
-
-//////////////////////
-// Qreators Codes
-//////////////////////
-
-/**
- * Returns all the streamer id´s who match the Qreator code (it will be only one streamer id but the query returns an objec of objects)
- * @param {string} qreatorCode Desired Streamer Qreator code
- * @returns {Promise<DataSnapshot>} Resulting DataSnapshot of the query
- */
-export async function getStreamerUidWithQreatorCode(qreatorCode) {
-    const qreatorCodeRef = child(database, `/QreatorsCodes`);
-
-    return await get(query(qreatorCodeRef, orderByChild('codeLowerCase'), equalTo(qreatorCode.toLowerCase())));
 }
 
 //////////////////////
@@ -697,19 +292,6 @@ export async function getStreamerUidWithDeepLinkAlias(linkAlias) {
     const streamersDeepLinksRef = child(database, '/StreamersDeepLinks');
 
     return await get(query(streamersDeepLinksRef, orderByValue(), equalTo(`https://myqap.la/${linkAlias}`)));
-}
-
-export async function getStreamerAlias(streamerUid) {
-    const streamerDeepLinkRef = child(database, `/StreamersDeepLinks/${streamerUid}`);
-
-    const deepLink = await get(query(streamerDeepLinkRef));
-    if (deepLink.exists()) {
-        const link = deepLink.val().replace('https://myqap.la/', '');
-
-        return link;
-    }
-
-    return '';
 }
 
 //////////////////////
@@ -761,12 +343,6 @@ export async function listenToFollowingStreamer(uid, streamerUid, callback) {
 // Avatars Animations Overlay
 //////////////////////
 
-export async function getAnimationsData() {
-    const animations = child(database, `/AvatarsAnimationsOverlay`);
-
-    return get(query(animations));
-}
-
 /**
  * Gets the given animation information (camera position, name, etc.)
  * @param {string} animationId Animation identifier
@@ -781,38 +357,6 @@ export async function getAnimationData(animationId) {
 //////////////////////
 // Users Greetings
 //////////////////////
-
-/**
- * Saves the avatar and animation ids for the user greeting
- * @param {string} uid User identifier
- * @param {string} animationId Animation identifier
- */
- export async function saveUserGreetingAnimation(uid, animationId) {
-    const userGreeting = child(database, `/UsersGreetings/${uid}/animation`);
-
-    return await update(userGreeting, { animationId });
-}
-
-/**
- * Saves the TTS information for the greeting
- * @param {string} uid User identifier
- * @param {string} message Message to speak
- */
-export async function saveUserGreetingMessage(uid, message) {
-    const userGreeting = child(database, `/UsersGreetings/${uid}/TTS`);
-
-    return await update(userGreeting, { message });
-}
-
-/**
- * Returns the animation information of the greeting of the given user
- * @param {string} uid User identifier
- */
-export async function getUserGreetingAnimation(uid) {
-    const animation = child(database, `/UsersGreetings/${uid}/animation`);
-
-    return await get(query(animation));
-}
 
 /**
  * Gets all the information about the user greeting of the given user
@@ -855,20 +399,6 @@ export async function getUserGreetingData(uid) {
 //////////////////////
 // Gifs Libraries
 //////////////////////
-
-/**
- * Returns a random gif from the library of Streamer Offline gifs
- */
- export async function getRandomStreamerOfflineGif() {
-    const lengthChild = child(database, '/GifsLibraries/StreamerOffline/length');
-
-    const length = await get(query(lengthChild));
-    const index = Math.floor(Math.random() * length.val());
-
-    const gifChild = child(database, `/GifsLibraries/StreamerOffline/gifs/${index}`);
-
-    return await get(query(gifChild));
-}
 
 /**
  * Returns a random gif from the library of Download App gifs

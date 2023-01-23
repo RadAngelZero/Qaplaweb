@@ -31,18 +31,11 @@ import {
 } from '../services/database';
 import { getCurrentLanguage } from '../utils/i18n';
 import { useAuth } from '../AuthProvider';
-import LinkAccountDialog from '../components/LinkAccountDialog/LinkAccountDialog';
 import FollowingStreamerDialog from '../components/FollowingStreamerDialog/FollowingStreamerDialog';
-import AvatarOnboardingDialog from '../components/AvatarOnboardingDialog';
 import SendGreeting from '../components/SendGreeting';
 import { auth } from '../services/firebase';
-import PopUpSentDialog from '../components/PopUpSentDialog';
-import PopUpAlreadySentDialog from '../components/PopUpAlreadySentDialog';
-import NotASubDialog from '../components/NotASubDialog';
-import StreamerOfflineDialog from '../components/StreamerOfflineDialog';
 import PopUpFromMobileDialog from '../components/PopUpFromMobileDialog';
 import { getUserToStreamerRelation } from '../services/functions';
-import SendAvatarDialog from '../components/SendAvatarDialog';
 
 const linksData = {
     Twitch: {
@@ -626,36 +619,11 @@ const StreamerProfile = () => {
                     }
                 </InteractionsEventsContainer>
             </MainContainer>
-            <LinkAccountDialog open={openAuthDialog}
-                onClose={() => setOpenAuthDialog(false)}
-                streamerName={displayName}
-                onSuccessfulSignIn={onTwitchAccountLinked} />
             <FollowingStreamerDialog open={openFollowingDialog}
                 onClose={() => setOpenFollowingDialog(false)}
                 streamerName={displayName} />
-            <AvatarOnboardingDialog open={openCreateAvatarDialog}
-                onClose={() => setOpenCreateAvatarDialog(false)}
-                streamerUid={streamerUid} />
-            <PopUpSentDialog open={openPopUpSentDialog}
-                onClose={() => { setOpenPopUpSentDialog(false); setOpenPopUpFromMobileDialog(true); }}
-                streamerName={displayName} />
-            <PopUpAlreadySentDialog open={openAlreadySentDialog}
-                onClose={() => { setOpenAlreadySentDialog(false); setOpenSendAvatarDialog(false);}}
-                streamerName={displayName} />
-            <NotASubDialog open={openNotASubDialog}
-                onClose={() => { setOpenNotASubDialog(false); setOpenPopUpFromMobileDialog(true); }}
-                streamerName={displayName} />
-            <StreamerOfflineDialog open={openStreamerOfflineDialog}
-                onClose={() => { setOpenStreamerOfflineDialog(false); setOpenSendAvatarDialog(false); }}
-                streamerName={displayName} />
             <PopUpFromMobileDialog open={openPopUpFromMobileDialog}
                 onClose={() => { setOpenPopUpFromMobileDialog(false); setOpenSendAvatarDialog(false); }} />
-            <SendAvatarDialog open={openSendAvatarDialog}
-                onClose={() => loadingPopUp ? null : setOpenSendAvatarDialog(false)}
-                streamerName={displayName}
-                loadingPopUp={loadingPopUp}
-                onSendNow={popUpNow}
-                onEditPopUp={sendTOEditGreeting} />
         </Container>
     );
 

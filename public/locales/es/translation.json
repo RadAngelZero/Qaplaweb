@@ -14,39 +14,6 @@
     "Helmet": {
         "title": "Reaccón Qapla"
     },
-    "SignIn": {
-        "title": "Vincula tu Twitch para reaccionar en stream",
-        "continueWithTwitch": "Continuar con Twitch",
-        "loading": "Cargando..."
-    },
-    "Layout": {
-        "reaction": "Reacciones",
-        "customReaction": "Reacción",
-        "customTTS": "TTS personalizado"
-    },
-    "ChatBot": {
-        "writeYourMessage": "Escribe tu mensaje",
-        "whatYouWantToSay": "🗣 ¿Qué le quieres decir en el directo?",
-        "skip": "Omitir",
-        "TTS": "Text-to-Speech",
-        "chooseABotVoiceP1": "🔥 ¡Cool!",
-        "chooseABotVoiceP2": "🤖 Ahora escoge una voz para el bot:",
-        "wantToAddMedia": "👌 ¿Deseas agregar multimedia divertida a tu TTS?",
-        "addMediaToMyTTS": "Agregar {{mediaType}} a mi TTS",
-        "onlySendTTS": "Solo enviar TTS"
-    },
-    "Checkout": {
-        "customTTS": "TTS personalizado",
-        "edit": {
-            "gifs": "Editar Gif",
-            "stickers": "Editar Sticker",
-            "memes": "Editar Meme",
-            "tts": "Editar TTS"
-        },
-        "sendTip": "Agregar Extra Tip",
-        "other": "Otra",
-        "sendReaction": "Enviar Reacción"
-    },
     "StreamerProfile": {
         "followers": "Seguidores",
         "share": "Compartir",
@@ -59,22 +26,6 @@
         "upcomingStreams": "Streams proximos",
         "boostYourSub": "Boostea tu Sub de Twitch"
     },
-    "AvatarChooseBackgroundColor": {
-        "pickABackground": "Escoge un color de fondo",
-        "loading": "Cocinando... puede tomar de 10 a 15 segundos",
-        "description": "Así es como te veras en tus reacciones enviadas en stream",
-        "useBackground": "Usar Fondo"
-    },
-    "AvatarChooseAnimation": {
-        "useAnimation": "Usar Animación"
-    },
-    "GreetingTTSScreen": {
-        "makeAnEntrance": "👋 Haz una entrada. ",
-        "sayHi": "Di hola a tu manera",
-        "readyToSave": "🔥 ¡Genial! ¿Listo para guardar?",
-        "editMessage": "Editar mensaje",
-        "ready": "Guardar"
-    },
     "SendReaction": {
         "send": "Envia",
         "sendDescription": "en stream usando tus\npuntos de canal",
@@ -85,37 +36,6 @@
         "usingYourAvi": "usando tu avatar animado",
         "popUp": "Saluda en stream"
     },
-    "PurchaseQoinsDialog": {
-        "moreQoins": "25% más Qoins",
-        "qoinsPrice": "${{price}} MXN",
-        "boostYourReaction": "Mejora tus reacciones",
-        "sendFreeReactions": "Envia reacciones sin puntos de canal",
-        "sendExtraTip": "Envia Extra Tips (el 100% va para el streamer)"
-    },
-    "HeaderBar": {
-        "myQoins": "💰 Mis Qoins"
-    },
-    "ReactionsDialog": {
-        "sent": "¡Reacción enviada!",
-        "description": "Puedes revisar tu balance de Qoins desde la app",
-        "download": "Descargar el app",
-        "imGood": "Estoy bien"
-    },
-    "EmojiSelector": {
-        "emotesCategories": {
-            "follower": "Seguidor",
-            "bits": "Bits",
-            "subTier1": "Sub Nivel 1",
-            "subTier2": "Sub Nivel 2",
-            "subTier3": "Sub Nivel 3",
-            "global": "Twitch Emotes"
-        }
-    },
-    "noQreatorCode": "Necesitas un link valido continuar\npregunta a tu streamer por su link",
-    "LinkAccountDialog": {
-        "linkToFollow": "Vincula tu cuenta de Twitch para seguir a ",
-        "continueWithTwitch": "Continuar con Twitch"
-    },
     "FollowingStreamerDialog": {
         "following": "¡Siguiendo!",
         "getUpdatesP1": "Obtén actualizaciones sobre los streams de ",
@@ -123,52 +43,9 @@
         "getUpdatesP2": "en tu teléfono",
         "downloadApp": "Descarga el app"
     },
-    "AvatarOnboardingDialog": {
-        "react": "Reacciona con personalidad",
-        "boostYourSub": "Boost your Twitch Sub",
-        "aviOnReaction": "Tu avatar se mostrara en la reacciones que mandes en stream",
-        "aviOnGreeting": "Usa una animación personalizaad cuando llegas a un stream y haz una entrada",
-        "next": "Siguiente",
-        "createAvatar": "Crear mi Avatar"
-    },
-    "PopUpSentDialog": {
-        "sent": "Boom. Enviado. 🫡",
-        "goToStream": "Ir al stream"
-    },
-    "PopUpAlreadySentDialog": {
-        "alreadyPoped": "Ya saludaste hoy 🫢",
-        "popUpOnce": "Saluda una vez por stream. ",
-        "use": "Es una manera de decir hola cuando llegas",
-        "goToStream": "Ir al stream"
-    },
-    "NotASubDialog": {
-        "notASub": "No eres sub 🫣",
-        "availability": "Los saludos estan disponibles para suscriptores del canal. ",
-        "subscribeToPopUp": "¡Suscribete para saludar!",
-        "subscribe": "Suscribirse al canal"
-    },
-    "StreamerOfflineDialog": {
-        "offline": "Streamer  offline 🙃",
-        "descriptionP1": "Te notificaremos cuando sera el siguiente stream de ",
-        "descriptionP2": "{{streamerName}} ",
-        "descriptionP3": " 👇",
-        "download": "Descargar el app"
-    },
     "PopUpFromMobileDialog": {
         "popFromMobile": "Saluda desde la app",
         "manage": "Maneja tu avatar y reacciona en stream desde tu celular",
         "download": "Descargar el app"
-    },
-    "AvatarReadyDialog": {
-        "aviReady": "¡Tu avatar esta listo! 😭",
-        "sayHi": "Di hola cuando llegues a un stream en el que estas suscrito",
-        "popUpNow": "Saluda ahora en stream",
-        "backToProfile": "Volver al perfil del creador"
-    },
-    "SendAvatarDialog": {
-        "sendAviOn": "Enviar avatar en el stream de ",
-        "streamerStream": "?",
-        "popUpNow": "Saludar ahora",
-        "updatePopUp": "Actualizar Saludo"
     }
 }
