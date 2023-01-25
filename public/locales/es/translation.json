@@ -43,9 +43,13 @@
         "getUpdatesP2": "en tu teléfono",
         "downloadApp": "Descarga el app"
     },
-    "PopUpFromMobileDialog": {
+    "DownloadAppDialog": {
         "popFromMobile": "Saluda desde la app",
         "manage": "Maneja tu avatar y reacciona en stream desde tu celular",
+        "followFromMobile": "No te pierdas un stream",
+        "getUpdates": "Sigue la actividad de {{streamerName}} desde tu celular",
+        "reactFromMobile": "Envía memes en stream",
+        "reactLikeInChat": "Es como reaccionar en un chat, ¡pero en stream!",
         "download": "Descargar el app"
     }
 }

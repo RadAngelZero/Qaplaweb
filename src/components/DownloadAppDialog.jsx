@@ -54,7 +54,7 @@ const GoToStreamButton = styled(Button)({
     }
 });
 
-const PopUpFromMobileDialog = ({ open, onClose }) => {
+const DownloadAppDialog = ({ open, onClose, title, description }) => {
     const [gifUrl, setGifUrl] = useState('');
     const { t } = useTranslation();
 
@@ -89,16 +89,16 @@ const PopUpFromMobileDialog = ({ open, onClose }) => {
             </CloseButton>
             <GifContainer src={gifUrl} alt='Download app gif' />
             <Title>
-                {t('PopUpFromMobileDialog.popFromMobile')}
+                {title}
             </Title>
             <Description>
-                {t('PopUpFromMobileDialog.manage')}
+                {description}
             </Description>
             <GoToStreamButton onClick={() => window.open('https://qapla.app.link/download', '_blank')}>
-                {t('PopUpFromMobileDialog.download')}
+                {t('DownloadAppDialog.download')}
             </GoToStreamButton>
         </Dialog>
     );
 }
 
-export default PopUpFromMobileDialog;
+export default DownloadAppDialog;

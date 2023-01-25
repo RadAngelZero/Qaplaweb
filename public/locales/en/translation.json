@@ -43,9 +43,13 @@
         "getUpdatesP2": "streams on your phone",
         "downloadApp": "Download the app"
     },
-    "PopUpFromMobileDialog": {
+    "DownloadAppDialog": {
         "popFromMobile": "Pop up from mobile",
         "manage": "Manage your avi and react on stream from your phone",
+        "followFromMobile": "Never miss a stream",
+        "getUpdates": "Get updates about {{streamerName}} activity on your phone",
+        "reactFromMobile": "Meme on stream",
+        "reactLikeInChat": "React on Twitch just as you would on a messaging app",
         "download": "Download the app"
     }
 }

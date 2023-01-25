@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button, Box, styled, Typography, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 import { ReactComponent as ShareArrow } from '../assets/ShareArrow.svg';
@@ -17,25 +17,19 @@ import SendReaction from '../components/SendReaction/SendReaction';
 import StreamCard from '../components/StreamCard/StreamCard';
 import SocialButton from '../components/SocialButton/SocialButton';
 import {
-    followStreamer,
     getStreamerFollowersNumber,
     getStreamerIsStreaming,
     getStreamerLinks,
     getStreamerPublicProfile,
     getStreamerStreams,
     getStreamerUidWithDeepLinkAlias,
-    getUserGreetingData,
-    listenToFollowingStreamer,
-    unfollowStreamer,
-    writeStreamGreeting
+    getUserGreetingData
 } from '../services/database';
 import { getCurrentLanguage } from '../utils/i18n';
-import { useAuth } from '../AuthProvider';
 import FollowingStreamerDialog from '../components/FollowingStreamerDialog/FollowingStreamerDialog';
 import SendGreeting from '../components/SendGreeting';
 import { auth } from '../services/firebase';
-import PopUpFromMobileDialog from '../components/PopUpFromMobileDialog';
-import { getUserToStreamerRelation } from '../services/functions';
+import DownloadAppDialog from '../components/DownloadAppDialog';
 
 const linksData = {
     Twitch: {
@@ -316,34 +310,18 @@ const StreamerProfile = () => {
         links,
         isStreaming,
         upcomingStreams,
-        profileDeepLink,
-        userGreeting
+        profileDeepLink
     } = useLoaderData();
     const [openShareTooltip, setOpenShareTooltip] = useState(false);
-    const [followingStreamer, setFollowingStreamer] = useState(false);
-    const [hoverUnfollow, setHoverUnfollow] = useState(false);
-    const [openAuthDialog, setOpenAuthDialog] = useState(false);
     const [openFollowingDialog, setOpenFollowingDialog] = useState(false);
-    const [openCreateAvatarDialog, setOpenCreateAvatarDialog] = useState(false);
-    const [isTryingToFollow, setIsTryingToFollow] = useState(false);
-    const [loadingPopUp, setLoadingPopUp] = useState(false);
-    const [openPopUpSentDialog, setOpenPopUpSentDialog] = useState(false);
-    const [openAlreadySentDialog, setOpenAlreadySentDialog] = useState(false);
-    const [openNotASubDialog, setOpenNotASubDialog] = useState(false);
-    const [openStreamerOfflineDialog, setOpenStreamerOfflineDialog] = useState(false);
-    const [openPopUpFromMobileDialog, setOpenPopUpFromMobileDialog] = useState(false);
-    const [openSendAvatarDialog, setOpenSendAvatarDialog] = useState(false);
-    const user = useAuth();
+    const [openDownloadAppDialog, setOpenDownloadAppDialog] = useState(false);
     const { t } = useTranslation();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (user && user.id) {
-            listenToFollowingStreamer(user.id, streamerUid, (following) => {
-                setFollowingStreamer(following.exists());
-            });
-        }
-    }, [user, streamerUid]);
+    /**
+     * We are only using useState after hooks because we need the t function from useTranslation for the
+     * default state value
+     */
+    const [downloadAppDialogTitle, setDownloadAppDialogTitle] = useState(t('DownloadAppDialog.popFromMobile'));
+    const [downloadAppDialogDescription, setDownloadAppDialogDescription] = useState(t('DownloadAppDialog.manage'));
 
     const getStreamDateData = (timestamp) => {
         const date = new Date(timestamp);
@@ -369,87 +347,22 @@ const StreamerProfile = () => {
         setOpenShareTooltip(true);
     }
 
-    const startFollowing = async (uid) => {
-        if (uid || (user && user.id)) {
-            await followStreamer(uid ? uid : user.id, streamerUid);
-        } else {
-            setIsTryingToFollow(true);
-            setOpenAuthDialog(true);
-        }
+    const startFollowing = () => {
+        setDownloadAppDialogTitle(t('DownloadAppDialog.followFromMobile'));
+        setDownloadAppDialogDescription(t('DownloadAppDialog.getUpdates', { streamerName: displayName }));
+        setOpenDownloadAppDialog(true);
     }
 
-    const handleUnfollow = async () => {
-        if (user && user.id) {
-            await unfollowStreamer(user.id, streamerUid);
-        }
+    const sendReaction = () => {
+        setDownloadAppDialogTitle(t('DownloadAppDialog.reactFromMobile'));
+        setDownloadAppDialogDescription(t('DownloadAppDialog.reactLikeInChat'));
+        setOpenDownloadAppDialog(true);
     }
 
-    const handleHoverEnterUnfollow = () => {
-        setHoverUnfollow(true);
-    }
-
-    const handleHoverLeaveUnfollow = () => {
-        setHoverUnfollow(false);
-    }
-
-    const onTwitchAccountLinked = async (user) => {
-        setOpenAuthDialog(false);
-        if (isTryingToFollow) {
-            await startFollowing(user.uid);
-            setOpenFollowingDialog(true);
-        } else {
-            sendGreeting(user.uid);
-        }
-    }
-
-    const sendGreeting = (uid) => {
-        if (uid || (user && user.id)) {
-            if (userGreeting && userGreeting.animation && userGreeting.TTS) {
-                setOpenSendAvatarDialog(true);
-            } else {
-                setOpenCreateAvatarDialog(true);
-            }
-        } else {
-            setOpenAuthDialog(true);
-        }
-    }
-
-    const popUpNow = async () => {
-        setLoadingPopUp(true);
-        // In case the isStreaming value changes while open
-        const isStreaming = await getStreamerIsStreaming(streamerUid);
-        if (isStreaming.val()) {
-            const relationData = await getUserToStreamerRelation(user.twitchId, streamerUid);
-            if (relationData.data?.isSubscribed) {
-                try {
-                    await writeStreamGreeting(
-                        user.id,
-                        streamerUid,
-                        user.avatarId,
-                        userGreeting.animation.animationId,
-                        userGreeting.TTS.message,
-                        user.twitchUsername,
-                        getCurrentLanguage()
-                    );
-                    setOpenPopUpSentDialog(true);
-                } catch (error) {
-                    setOpenAlreadySentDialog(true);
-                }
-            } else {
-                setOpenNotASubDialog(true);
-            }
-        } else {
-            setOpenStreamerOfflineDialog(true);
-        }
-        setLoadingPopUp(false);
-    }
-
-    const sendTOEditGreeting = () => {
-        navigate('/avatar/animation', {
-            state: {
-                streamerUid
-            }
-        });
+    const sendGreeting = () => {
+        setDownloadAppDialogTitle(t('DownloadAppDialog.popFromMobile'));
+        setDownloadAppDialogDescription(t('DownloadAppDialog.manage'));
+        setOpenDownloadAppDialog(true);
     }
 
     const userLanguage = getCurrentLanguage();
@@ -499,20 +412,9 @@ const StreamerProfile = () => {
                                     <ShareArrow style={{ marginLeft: '8px' }} />
                                 </ShareButton>
                             </Tooltip>
-                            {followingStreamer ?
-                                <UnfollowButton onMouseEnter={handleHoverEnterUnfollow} onMouseLeave={handleHoverLeaveUnfollow} onClick={handleUnfollow}>
-                                    {hoverUnfollow ?
-                                        t('StreamerProfile.unfollow')
-                                        :
-                                        t('StreamerProfile.following')
-                                    }
-                                </UnfollowButton>
-                                :
-                                /* (e) => startFollowing() to prevent e to be send as uid paramater for startFollowing */
-                                <FollowButton onClick={(e) => startFollowing()}>
-                                    {t('StreamerProfile.follow')}
-                                </FollowButton>
-                            }
+                            <FollowButton onClick={startFollowing}>
+                                {t('StreamerProfile.follow')}
+                            </FollowButton>
                         </QuickButtonsContainer>
                     </StreamerInfoTopContiner>
                     <BioText>
@@ -591,7 +493,8 @@ const StreamerProfile = () => {
                             {t('StreamerProfile.customAlerts')}
                         </SectionHeader>
                         <SendReactionContainer>
-                            <SendReaction streamerUid={streamerUid} />
+                            <SendReaction onClick={sendReaction}
+                                streamerUid={streamerUid} />
                         </SendReactionContainer>
                     </InteractionContainer>
                     <InteractionContainer style={{ marginTop: '32px', marginBottom: '32px' }}>
@@ -599,7 +502,7 @@ const StreamerProfile = () => {
                             {t('StreamerProfile.boostYourSub')}
                         </SectionHeader>
                         <SendReactionContainer>
-                            <SendGreeting onClick={(e) => sendGreeting()} />
+                            <SendGreeting onClick={sendGreeting} />
                         </SendReactionContainer>
                     </InteractionContainer>
                     {upcomingStreams &&
@@ -622,8 +525,10 @@ const StreamerProfile = () => {
             <FollowingStreamerDialog open={openFollowingDialog}
                 onClose={() => setOpenFollowingDialog(false)}
                 streamerName={displayName} />
-            <PopUpFromMobileDialog open={openPopUpFromMobileDialog}
-                onClose={() => { setOpenPopUpFromMobileDialog(false); setOpenSendAvatarDialog(false); }} />
+            <DownloadAppDialog open={openDownloadAppDialog}
+                onClose={() => setOpenDownloadAppDialog(false)}
+                title={downloadAppDialogTitle}
+                description={downloadAppDialogDescription} />
         </Container>
     );
 
