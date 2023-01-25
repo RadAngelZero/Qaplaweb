@@ -103,24 +103,6 @@ export async function updateUserProfile(uid, dateToUpdate) {
 }
 
 /**
- * Remove the amount of Qoins from the given user credits node
- * @param {string} uid User identifier
- * @param {number} qoinsToRemove Qoins to remove from the user
- * @returns {Promise<TransactionResult>} Result of the transaction
- */
-export async function removeQoinsFromUser(uid, qoinsToRemove) {
-    const userQoinsChild = child(database, `/Users/${uid}/credits`);
-
-    return await runTransaction(userQoinsChild, (userQoins) => {
-        if (userQoins && userQoins >= qoinsToRemove) {
-            userQoins -= qoinsToRemove;
-        }
-
-        return userQoins >= 0 ? userQoins : 0;
-    });
-}
-
-/**
  * Saves the 3D avatar url of the user
  * @param {string} uid User identifier
  * @param {string} avatarUrl Avatar url
@@ -173,24 +155,6 @@ export async function saveAvatarBackground(uid, background) {
 //////////////////////
 // User Streamer
 //////////////////////
-
-/**
- * Add the amount of Qoins to the given streamer Qoins balance
- * @param {string} streamerUid Streamer identifier
- * @param {number} qoinsToAdd Qoins to add to the streamer
- * @returns {Promise<TransactionResult>} Result of the transaction
- */
-export async function addQoinsToStreamer(streamerUid, qoinsToAdd) {
-    const userStreamerChild = child(database, `/UserStreamer/${streamerUid}/qoinsBalance`);
-
-    return await runTransaction(userStreamerChild, (streamerQoinsBalance) => {
-        if (streamerQoinsBalance) {
-            streamerQoinsBalance += qoinsToAdd;
-        }
-
-        return streamerQoinsBalance ? streamerQoinsBalance : qoinsToAdd;
-    });
-}
 
 /**
  * Returns the number of followers of the given streamer public profile

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Button, Typography, Box } from '@mui/material';
 import styled from '@emotion/styled';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
 import SendReactionBackground from '../../assets/SendReactionBackground.png'
 import { getReactionModuleGifs } from '../../services/database';
@@ -92,11 +91,10 @@ const GifRender = styled(Box)({
     backgroundPosition: 'center',
 })
 
-const SendReaction = ({ streamerUid }) => {
+const SendReaction = ({ onClick }) => {
     const [textRotator, setTextRotator] = useState('Memes');
     const [gif, setGif] = useState(null);
     const { t } = useTranslation();
-    const navigate = useNavigate();
 
     useEffect(() => {
         async function getGifs() {
@@ -114,11 +112,6 @@ const SendReaction = ({ streamerUid }) => {
         }
     }, [gif]);
 
-    const navigateToSendReaction = () => {
-        localStorage.setItem('streamerUid', streamerUid);
-        navigate('/react');
-    }
-
     return (
         <Container>
             <LeftContainer>
@@ -131,7 +124,7 @@ const SendReaction = ({ streamerUid }) => {
                 <SubTitle>
                     {t('SendReaction.sendDescription')}
                 </SubTitle>
-                <SendButton onClick={navigateToSendReaction}>
+                <SendButton onClick={onClick}>
                     {t('SendReaction.sendReaction')}
                 </SendButton>
             </LeftContainer>
