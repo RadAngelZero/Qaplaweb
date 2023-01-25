@@ -25,6 +25,11 @@ code {
     monospace;
 }
 
+a {
+    color: unset;
+    text-decoration: none;
+}
+
 /* width */
 ::-webkit-scrollbar {
     position: absolute;
