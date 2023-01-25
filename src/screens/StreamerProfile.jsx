@@ -165,26 +165,6 @@ const FollowButton = styled(Button)({
     },
 });
 
-const UnfollowButton = styled(Button)({
-    width: '105px',
-    height: '40px',
-    backgroundColor: '#0000',
-    borderRadius: '20px',
-    color: '#fff',
-    fontSize: '16px',
-    fontWeight: '500',
-    lineHeight: '21px',
-    letterSpacing: '-0.3199999928474426px',
-    textAlign: 'center',
-    verticalAlign: 'center',
-    textTransform: 'none',
-    border: '1px solid #3B4BF9',
-    '&:hover': {
-        backgroundColor: '#F33',
-        border: '1px solid #F00',
-    },
-});
-
 const ProfilePic = styled(Box)({
     width: '106px',
     height: '105px',
